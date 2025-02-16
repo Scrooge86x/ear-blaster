@@ -1,3 +1,8 @@
+out/
+.vs/
+CMakePresets.json
+CMakeUserPresets.json
+
 # C++ objects and libs
 *.slo
 *.lo
