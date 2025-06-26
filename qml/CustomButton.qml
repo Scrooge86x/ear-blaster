@@ -8,7 +8,8 @@ RoundButton {
     anchors.rightMargin: 30
 
     scale: root.down ? 0.96 : 1
-    implicitWidth: contentItem.implicitWidth + 40
+    leftPadding: 20
+    rightPadding: 20
 
     contentItem: Text {
         text: root.text
@@ -21,8 +22,6 @@ RoundButton {
     background: Rectangle {
         anchors.fill: parent
         color: "#3c3c24"
-        border.color: "#3c3c24"
-        border.width: 1
         radius: 7
     }
 }
