@@ -26,6 +26,13 @@ Window {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
+            ScrollBar.vertical.width: 12
+            ScrollBar.vertical.interactive: true
+
+            padding: 0
+            rightPadding: ScrollBar.vertical.width + 7
+
             ListView {
                 model: soundConfigModel
                 spacing: 3
@@ -48,7 +55,7 @@ Window {
     RoundButton {
         id: addSoundButton
         anchors.right: parent.right
-        anchors.rightMargin: 10
+        anchors.rightMargin: 30
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 10
         font.pixelSize: 30
@@ -78,6 +85,8 @@ Window {
         background: Rectangle {
             anchors.fill: parent
             color: "#646446"
+            border.width: 1
+            border.color: "#3c3c24"
             radius: addSoundButton.width / 2
         }
     }
