@@ -37,30 +37,12 @@ Rectangle {
         }
     }
 
-    RoundButton {
+    CustomButton {
         id: playButton
-        anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 30
-        scale: playButton.down ? 0.96 : 1
 
+        text: "play"
         onClicked: playRequested()
-
-        contentItem: Text {
-            text: "play"
-            font: playButton.font
-            color: "#ddd"
-            anchors.centerIn: playButtonBackground
-        }
-
-        background: Rectangle {
-            id: playButtonBackground
-            width: playButton.width + 15
-            height: playButton.height
-            color: "#3c3c24"
-            border.color: "#3c3c24"
-            border.width: 1
-            radius: 7
-        }
     }
 }
