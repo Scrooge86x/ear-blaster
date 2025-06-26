@@ -43,7 +43,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: 20
 
-        text: "stop"
+        text: qsTr("stop")
         onClicked: stopRequested()
     }
     CustomButton {
@@ -51,7 +51,7 @@ Rectangle {
         anchors.right: stopButton.left
         anchors.rightMargin: 10
 
-        text: "play"
+        text: qsTr("play")
         onClicked: playRequested()
     }
 }
