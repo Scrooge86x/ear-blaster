@@ -13,6 +13,7 @@ public:
 
     // TODO: Implement setDevice and getDevices
     Q_INVOKABLE void play(const QString& filePath);
+    Q_INVOKABLE void stop();
     Q_INVOKABLE void setVolume(const float volume);
 private:
     QMediaPlayer m_mediaPlayer{};

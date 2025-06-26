@@ -13,6 +13,7 @@ Rectangle {
     property string sequence
 
     signal playRequested()
+    signal stopRequested()
 
     Text {
         anchors.verticalCenter: parent.verticalCenter
@@ -38,9 +39,17 @@ Rectangle {
     }
 
     CustomButton {
-        id: playButton
+        id: stopButton
         anchors.right: parent.right
         anchors.rightMargin: 30
+
+        text: "stop"
+        onClicked: stopRequested()
+    }
+    CustomButton {
+        id: playButton
+        anchors.right: stopButton.left
+        anchors.rightMargin: 20
 
         text: "play"
         onClicked: playRequested()

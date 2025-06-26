@@ -42,6 +42,9 @@ Window {
                     onPlayRequested: {
                         soundPlayer.play(modelData.path)
                     }
+                    onStopRequested: {
+                        soundPlayer.stop()
+                    }
                 }
             }
         }

@@ -18,6 +18,11 @@ void SoundPlayer::play(const QString &filePath)
     m_mediaPlayer.play();
 }
 
+void SoundPlayer::stop()
+{
+    m_mediaPlayer.stop();
+}
+
 void SoundPlayer::setVolume(const float volume)
 {
     m_audioOutput.setVolume(qBound(0.f, volume, 1.f));
