@@ -19,7 +19,8 @@ qt_add_qml_module(${PROJECT_NAME}
     URI ear-blaster
     VERSION 1.0
     QML_FILES
-        qml/main.qml
+        qml/Main.qml
+        qml/SoundElement.qml
 )
 
 set_target_properties(${PROJECT_NAME}

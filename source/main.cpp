@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine{};
 
     using namespace Qt::Literals::StringLiterals;
-    engine.load(QUrl(u"qrc:/qt/qml/ear-blaster/qml/main.qml"_s));
+    engine.load(QUrl(u"qrc:/qt/qml/ear-blaster/qml/Main.qml"_s));
     if (engine.rootObjects().isEmpty())
         return -1;
 
