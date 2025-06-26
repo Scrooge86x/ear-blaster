@@ -6,34 +6,23 @@ include(qt.cmake)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR}
-    COMPONENTS
-        Quick
-)
+find_package(Qt6 6.8 REQUIRED COMPONENTS Quick)
+
+qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 NEW)
+
 qt_standard_project_setup()
 
-set(PROJECT_SOURCES
-    ./source/main.cpp
+qt_add_executable(${PROJECT_NAME}
+    source/main.cpp
 )
 
-if(QT_VERSION VERSION_LESS 5.15)
-    qt5_add_resources(PROJECT_SOURCES qml.qrc)
-elseif(QT_VERSION VERSION_LESS 6.2)
-    qt_add_resources(PROJECT_SOURCES qml.qrc)
-endif()
-
-qt_add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
-
-if(QT_VERSION VERSION_GREATER_EQUAL 6.2)
-    qt_add_qml_module(${PROJECT_NAME}
-        URI ear-blaster
-        VERSION 1.0
-        RESOURCE_PREFIX "/qt/qml/"
-        QML_FILES
-            ./qml/main.qml
-    )
-endif()
+qt_add_qml_module(${PROJECT_NAME}
+    URI ear-blaster
+    VERSION 1.0
+    QML_FILES
+        qml/main.qml
+)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
@@ -44,8 +33,3 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
         Qt::Quick
 )
-
-
-if(Qt6_FOUND)
-    qt_import_qml_plugins(${PROJECT_NAME})
-endif()
