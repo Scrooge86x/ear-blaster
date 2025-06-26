@@ -14,6 +14,7 @@ qt_standard_project_setup()
 qt_add_executable(${PROJECT_NAME}
     source/main.cpp
     source/soundplayer.h source/soundplayer.cpp
+    source/configmanager.h source/configmanager.cpp
 )
 
 qt_add_qml_module(${PROJECT_NAME}
