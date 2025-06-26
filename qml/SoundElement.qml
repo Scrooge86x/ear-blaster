@@ -41,7 +41,7 @@ Rectangle {
     CustomButton {
         id: stopButton
         anchors.right: parent.right
-        anchors.rightMargin: 30
+        anchors.rightMargin: 20
 
         text: "stop"
         onClicked: stopRequested()
@@ -49,7 +49,7 @@ Rectangle {
     CustomButton {
         id: playButton
         anchors.right: stopButton.left
-        anchors.rightMargin: 20
+        anchors.rightMargin: 10
 
         text: "play"
         onClicked: playRequested()
