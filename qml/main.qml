@@ -5,8 +5,10 @@ import QtQuick.Controls.Universal
 Window {
     id: root
     visible: true
-    width: 640
-    height: 480
+    width: 900
+    minimumWidth: 600
+    height: 650
+    minimumHeight: 400
     title: "ear-blaster"
     color: "#3c3c24"
 
