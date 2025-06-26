@@ -1,11 +1,20 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+
+#include "soundplayer.h"
 
 int main(int argc, char *argv[])
 {
+    // Sounds way better than the default
+    qputenv("QT_MEDIA_BACKEND", "windows");
+
     QGuiApplication app{ argc, argv };
 
     QQmlApplicationEngine engine{};
+
+    SoundPlayer soundPlayer{};
+    engine.rootContext()->setContextProperty("soundPlayer", &soundPlayer);
 
     using namespace Qt::Literals::StringLiterals;
     engine.load(QUrl(u"qrc:/qt/qml/ear-blaster/qml/Main.qml"_s));

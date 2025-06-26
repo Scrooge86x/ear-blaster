@@ -13,7 +13,7 @@ Window {
     property var soundConfig: [
         {
             name: "Sound 1",
-            path: "E:\\test-sounds\\1.wav",
+            path: "E:\\test-sounds\\1.mp3",
             sequence: "Ctrl+Shift+1"
         },
         {
@@ -39,6 +39,9 @@ Window {
                     name: modelData.name
                     path: modelData.path
                     sequence: modelData.sequence
+                    onPlayRequested: {
+                        soundPlayer.play(modelData.path)
+                    }
                 }
             }
         }
