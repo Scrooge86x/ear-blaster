@@ -111,12 +111,13 @@ Window {
                 spacing: 3
 
                 delegate: SoundElement {
-                    name: model.name
                     path: model.path
                     sequence: model.sequence
+                    Component.onCompleted: name = model.name // Avoids a binding loop in onNameChanged
                     onPlayRequested: soundPlayer.play(model.path)
                     onStopRequested: soundPlayer.stop()
                     onDeleteRequested: soundConfigModel.remove(index, 1)
+                    onNameChanged: soundConfigModel.setProperty(index, "name", name)
                 }
             }
         }

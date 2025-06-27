@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Universal
 
 Rectangle {
+    id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
     color: "#646446"
@@ -16,26 +17,36 @@ Rectangle {
     signal stopRequested()
     signal deleteRequested()
 
-    Text {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: 20
+    TextField {
+        id: soundNameInput
+        anchors {
+            verticalCenter: parent.verticalCenter
+            left: parent.left
+            leftMargin: 20
+            right: playButton.left
+            rightMargin: 20
+        }
 
-        font.pixelSize: 25
-        text: name
+        font.pixelSize: 20
         color: "#ddd"
+        text: name
 
-        MouseArea {
-            id: mouseArea
-            hoverEnabled: true
+        onTextChanged: name = text
+
+        background: Rectangle {
             anchors.fill: parent
+            color: root.color
+            border.width: soundNameInput.cursorVisible ? 1 : 0
+            border.color: "#ddd"
+            radius: 7
         }
 
         ToolTip {
+            y: 0
             font.pixelSize: 12
             text: path
             delay: 300
-            visible: mouseArea.containsMouse
+            visible: soundNameInput.hovered
         }
     }
 
