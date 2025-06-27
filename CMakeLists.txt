@@ -23,7 +23,6 @@ qt_add_qml_module(${PROJECT_NAME}
     QML_FILES
         qml/Main.qml
         qml/SoundElement.qml
-        qml/CustomButton.qml
 )
 
 set_target_properties(${PROJECT_NAME}
