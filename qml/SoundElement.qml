@@ -55,6 +55,7 @@ Rectangle {
 
     RoundButton {
         id: playButton
+        Universal.foreground: "#fff"
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: stopButton.left
         anchors.rightMargin: 10
@@ -68,6 +69,7 @@ Rectangle {
 
     RoundButton {
         id: stopButton
+        Universal.foreground: "#fff"
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: deleteButton.left
         anchors.rightMargin: 10
@@ -81,6 +83,7 @@ Rectangle {
 
     RoundButton {
         id: deleteButton
+        Universal.foreground: "#fff"
         anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 10
