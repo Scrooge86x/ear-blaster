@@ -6,8 +6,7 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: Universal.background
-    border.color: Universal.foreground
+    color: Universal.accent
     radius: 10
 
     property string name
@@ -27,6 +26,8 @@ Rectangle {
             right: playButton.left
             rightMargin: 20
         }
+
+        Universal.accent: Universal.Cobalt
 
         font.pixelSize: 20
         color: Universal.foreground

@@ -14,6 +14,9 @@ Window {
     color: Universal.background
 
     Universal.theme: Universal.Dark
+    Universal.foreground: "#ddd"
+    Universal.background: "#3c3c24"
+    Universal.accent: "#646446"
 
     ListModel {
         id: soundConfigModel
@@ -169,9 +172,17 @@ Window {
             text: "+"
             font.family: "Arial"
             font.pixelSize: 30
-            color: Universal.background
+            color: Universal.foreground
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+        }
+
+        background: Rectangle {
+            anchors.fill: parent
+            color: Universal.accent
+            border.width: 1
+            border.color: Universal.background
+            radius: addSoundButton.width / 2
         }
     }
 }
