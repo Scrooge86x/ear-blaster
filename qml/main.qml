@@ -29,33 +29,65 @@ Window {
         }
     }
 
-    ComboBox  {
-        id: deviceComboBox
+    RowLayout {
+        id: topBar
         anchors {
             top: parent.top
+            left: parent.left
             right: parent.right
             margins: 7
         }
-        width: 300
 
-        model: audioDevices
-        textRole: "name"
+        RowLayout {
+            Label {
+                text: "Volume:"
+                color: "#ddd"
+            }
 
-        onActivated: (index) => {
-            const device = audioDevices[index];
-            soundPlayer.setDevice(device.id);
+            Slider {
+                id: volumeSlider
+                from: 0.0
+                to: 1.0
+                value: 1.0
+                stepSize: 0.01
+                Layout.preferredWidth: 150
+
+                onMoved: soundPlayer.setVolume(value)
+            }
+
+            Label {
+                Layout.preferredWidth: 35
+                text: `${Math.round(volumeSlider.value * 100)}%`
+                color: "#aaa"
+                font.pixelSize: 13
+            }
         }
 
-        delegate: ItemDelegate {
-            width: deviceComboBox.width
-            text: modelData.name
-            highlighted: deviceComboBox.highlightedIndex === index
+        Item { Layout.fillWidth: true }
+
+        ComboBox  {
+            id: deviceComboBox
+            Layout.preferredWidth: 300
+
+            model: audioDevices
+            textRole: "name"
+
+            onActivated: (index) => {
+                const device = audioDevices[index];
+                soundPlayer.setDevice(device.id);
+            }
+
+            delegate: ItemDelegate {
+                width: deviceComboBox.width
+                text: modelData.name
+                highlighted: deviceComboBox.highlightedIndex === index
+            }
         }
     }
 
     ColumnLayout {
         anchors {
-            top: deviceComboBox.bottom
+            top: topBar.bottom
             right: parent.right
             bottom: parent.bottom
             left: parent.left
