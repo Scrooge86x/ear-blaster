@@ -45,10 +45,11 @@ Rectangle {
         }
 
         ToolTip {
-            y: 0
+            x: 0
+            y: -20
             font.pixelSize: 12
             text: path
-            delay: 300
+            delay: 400
             visible: !soundNameInput.focus && soundNameInput.hovered
         }
     }
