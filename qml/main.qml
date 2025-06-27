@@ -13,6 +13,8 @@ Window {
     title: "ear-blaster"
     color: "#3c3c24"
 
+    Universal.theme: Universal.Dark
+
     ListModel {
         id: soundConfigModel
         Component.onCompleted: {
@@ -87,6 +89,7 @@ Window {
     }
 
     ColumnLayout {
+        clip: true
         anchors {
             top: topBar.bottom
             right: parent.right
