@@ -6,7 +6,8 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: "#646446"
+    color: Universal.background
+    border.color: Universal.foreground
     radius: 10
 
     property string name
@@ -28,7 +29,7 @@ Rectangle {
         }
 
         font.pixelSize: 20
-        color: "#ddd"
+        color: Universal.foreground
         text: name
 
         onTextChanged: name = text
@@ -38,7 +39,7 @@ Rectangle {
             anchors.fill: parent
             color: root.color
             border.width: soundNameInput.focus ? 1 : 0
-            border.color: "#ddd"
+            border.color: Universal.foreground
             radius: 7
         }
 
@@ -51,29 +52,41 @@ Rectangle {
         }
     }
 
-    CustomButton {
+    RoundButton {
         id: playButton
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: stopButton.left
         anchors.rightMargin: 10
+        leftPadding: 15
+        rightPadding: 15
 
+        radius: 7
         text: qsTr("play")
         onClicked: playRequested()
     }
 
-    CustomButton {
+    RoundButton {
         id: stopButton
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: deleteButton.left
         anchors.rightMargin: 10
+        leftPadding: 15
+        rightPadding: 15
 
+        radius: 7
         text: qsTr("stop")
         onClicked: stopRequested()
     }
 
-    CustomButton {
+    RoundButton {
         id: deleteButton
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 10
+        leftPadding: 15
+        rightPadding: 15
 
+        radius: 7
         text: qsTr("delete")
         onClicked: deleteRequested()
     }
