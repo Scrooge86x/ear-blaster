@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
+import QtQuick.Dialogs
 
 Window {
     id: root
@@ -124,6 +125,31 @@ Window {
         }
     }
 
+    FileDialog {
+        id: fileDialog
+        acceptLabel: qsTr("Select")
+        rejectLabel: qsTr("Cancel")
+        fileMode: FileDialog.OpenFiles
+        nameFilters: [
+            "Audio (*.mp3 *.wav)",
+            "MP3 (*.mp3)",
+            "WAV (*.wav)",
+        ]
+        onAccepted: {
+            let filePath = selectedFile.toString().replace("file://", "")
+            if (Qt.platform.os === "windows") {
+                filePath = filePath.substring(1);
+            }
+
+            const dotIndex = filePath.lastIndexOf(".");
+            soundConfigModel.append({
+                name: filePath.substring(0, dotIndex),
+                path: filePath,
+                sequence: "",
+            });
+        }
+    }
+
     RoundButton {
         id: addSoundButton
         anchors.right: parent.right
@@ -132,14 +158,7 @@ Window {
         anchors.bottomMargin: 10
         font.pixelSize: 30
 
-        onClicked: {
-            const n = soundConfigModel.count + 1
-            soundConfigModel.append({
-                name: `Sound ${n}`,
-                path: `E:\\test-sounds\\${n}.mp3`,
-                sequence: `Ctrl+Shift+${n}`,
-            });
-        }
+        onClicked: fileDialog.open()
 
         width: 50
         height: 50
