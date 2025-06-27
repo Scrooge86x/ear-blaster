@@ -46,7 +46,7 @@ Rectangle {
             font.pixelSize: 12
             text: path
             delay: 300
-            visible: soundNameInput.hovered
+            visible: !soundNameInput.cursorVisible && soundNameInput.hovered
         }
     }
 
