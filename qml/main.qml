@@ -114,12 +114,9 @@ Window {
                     name: model.name
                     path: model.path
                     sequence: model.sequence
-                    onPlayRequested: {
-                        soundPlayer.play(model.path)
-                    }
-                    onStopRequested: {
-                        soundPlayer.stop()
-                    }
+                    onPlayRequested: soundPlayer.play(model.path)
+                    onStopRequested: soundPlayer.stop()
+                    onDeleteRequested: soundConfigModel.remove(index, 1)
                 }
             }
         }
