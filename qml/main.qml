@@ -20,9 +20,47 @@ Window {
         }
     }
 
+    property var audioDevices: []
+    Component.onCompleted: {
+        audioDevices = soundPlayer.getDevices();
+        if (audioDevices.length) {
+            deviceComboBox.currentIndex = 0;
+            soundPlayer.setDevice(audioDevices[0].id);
+        }
+    }
+
+    ComboBox  {
+        id: deviceComboBox
+        anchors {
+            top: parent.top
+            right: parent.right
+            margins: 7
+        }
+        width: 300
+
+        model: audioDevices
+        textRole: "name"
+
+        onActivated: (index) => {
+            const device = audioDevices[index];
+            soundPlayer.setDevice(device.id);
+        }
+
+        delegate: ItemDelegate {
+            width: deviceComboBox.width
+            text: modelData.name
+            highlighted: deviceComboBox.highlightedIndex === index
+        }
+    }
+
     ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 7
+        anchors {
+            top: deviceComboBox.bottom
+            right: parent.right
+            bottom: parent.bottom
+            left: parent.left
+            margins: 7
+        }
 
         ScrollView {
             Layout.fillWidth: true

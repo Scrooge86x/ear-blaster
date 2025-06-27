@@ -3,6 +3,7 @@
 #include <QAudioDevice>
 #include <QMediaDevices>
 #include <QtMinMax>
+#include <QVariant>
 
 SoundPlayer::SoundPlayer(QObject *parent)
     : QObject{ parent }
@@ -26,4 +27,27 @@ void SoundPlayer::stop()
 void SoundPlayer::setVolume(const float volume)
 {
     m_audioOutput.setVolume(qBound(0.f, volume, 1.f));
+}
+
+void SoundPlayer::setDevice(const QString &deviceId)
+{
+    for (const QAudioDevice &device : QMediaDevices::audioOutputs()) {
+        if (device.id() == deviceId) {
+            m_audioOutput.setDevice(device);
+            return;
+        }
+    }
+    qWarning() << "Device not found:" << deviceId;
+}
+
+QVariantList SoundPlayer::getDevices()
+{
+    QVariantList devices{};
+    for (const QAudioDevice &device : QMediaDevices::audioOutputs()) {
+        devices.append(QVariantMap{
+            { "name", device.description() },
+            { "id", device.id() },
+        });
+    }
+    return devices;
 }
