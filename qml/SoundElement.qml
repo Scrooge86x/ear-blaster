@@ -32,11 +32,12 @@ Rectangle {
         text: name
 
         onTextChanged: name = text
+        onEditingFinished: soundNameInput.focus = false
 
         background: Rectangle {
             anchors.fill: parent
             color: root.color
-            border.width: soundNameInput.cursorVisible ? 1 : 0
+            border.width: soundNameInput.focus ? 1 : 0
             border.color: "#ddd"
             radius: 7
         }
@@ -46,7 +47,7 @@ Rectangle {
             font.pixelSize: 12
             text: path
             delay: 300
-            visible: !soundNameInput.cursorVisible && soundNameInput.hovered
+            visible: !soundNameInput.focus && soundNameInput.hovered
         }
     }
 
