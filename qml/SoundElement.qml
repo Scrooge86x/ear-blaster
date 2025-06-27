@@ -6,7 +6,7 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: "#646446"
+    color: Universal.accent
     radius: 10
 
     property string name
@@ -27,8 +27,10 @@ Rectangle {
             rightMargin: 20
         }
 
+        Universal.accent: Universal.Cobalt
+
         font.pixelSize: 20
-        color: "#ddd"
+        color: Universal.foreground
         text: name
 
         onTextChanged: name = text
@@ -38,42 +40,58 @@ Rectangle {
             anchors.fill: parent
             color: root.color
             border.width: soundNameInput.focus ? 1 : 0
-            border.color: "#ddd"
+            border.color: Universal.foreground
             radius: 7
         }
 
         ToolTip {
-            y: 0
+            x: 0
+            y: -20
             font.pixelSize: 12
             text: path
-            delay: 300
+            delay: 400
             visible: !soundNameInput.focus && soundNameInput.hovered
         }
     }
 
-    CustomButton {
+    RoundButton {
         id: playButton
+        Universal.foreground: "#fff"
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: stopButton.left
         anchors.rightMargin: 10
+        leftPadding: 15
+        rightPadding: 15
 
+        radius: 7
         text: qsTr("play")
         onClicked: playRequested()
     }
 
-    CustomButton {
+    RoundButton {
         id: stopButton
+        Universal.foreground: "#fff"
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: deleteButton.left
         anchors.rightMargin: 10
+        leftPadding: 15
+        rightPadding: 15
 
+        radius: 7
         text: qsTr("stop")
         onClicked: stopRequested()
     }
 
-    CustomButton {
+    RoundButton {
         id: deleteButton
+        Universal.foreground: "#fff"
+        anchors.verticalCenter: parent.verticalCenter
         anchors.right: parent.right
         anchors.rightMargin: 10
+        leftPadding: 15
+        rightPadding: 15
 
+        radius: 7
         text: qsTr("delete")
         onClicked: deleteRequested()
     }
