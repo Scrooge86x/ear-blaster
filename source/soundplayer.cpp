@@ -5,7 +5,7 @@
 #include <QtMinMax>
 #include <QVariant>
 
-SoundPlayer::SoundPlayer(QObject *parent)
+SoundPlayer::SoundPlayer(QObject* parent)
     : QObject{ parent }
 {
     m_audioOutput.setDevice(QMediaDevices::defaultAudioOutput());
@@ -13,7 +13,7 @@ SoundPlayer::SoundPlayer(QObject *parent)
     m_mediaPlayer.setAudioOutput(&m_audioOutput);
 }
 
-void SoundPlayer::play(const QString &filePath)
+void SoundPlayer::play(const QString& filePath)
 {
     m_mediaPlayer.setSource(QUrl::fromLocalFile(filePath));
     m_mediaPlayer.play();
@@ -26,12 +26,12 @@ void SoundPlayer::stop()
 
 void SoundPlayer::setVolume(const float volume)
 {
-    m_audioOutput.setVolume(qBound(0.f, volume, 1.f));
+    m_audioOutput.setVolume(volume);
 }
 
-void SoundPlayer::setDevice(const QString &deviceId)
+void SoundPlayer::setDevice(const QString& deviceId)
 {
-    for (const QAudioDevice &device : QMediaDevices::audioOutputs()) {
+    for (const QAudioDevice& device : QMediaDevices::audioOutputs()) {
         if (device.id() == deviceId) {
             m_audioOutput.setDevice(device);
             return;
@@ -43,7 +43,7 @@ void SoundPlayer::setDevice(const QString &deviceId)
 QVariantList SoundPlayer::getDevices()
 {
     QVariantList devices{};
-    for (const QAudioDevice &device : QMediaDevices::audioOutputs()) {
+    for (const QAudioDevice& device : QMediaDevices::audioOutputs()) {
         devices.append(QVariantMap{
             { "name", device.description() },
             { "id", device.id() },

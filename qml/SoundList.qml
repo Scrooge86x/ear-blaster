@@ -21,7 +21,6 @@ Rectangle {
                 right: parent.right
             }
             height: content.height
-            z: 0
             cursorShape: Qt.ClosedHandCursor
 
             drag.target: held ? content : undefined

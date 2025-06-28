@@ -9,7 +9,7 @@ class ConfigManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit ConfigManager(QObject *parent = nullptr);
+    explicit ConfigManager(QObject* parent = nullptr);
 
     Q_INVOKABLE void loadConfig(const QString& filePath);
     Q_INVOKABLE void saveConfig(const QString& filePath);

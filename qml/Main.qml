@@ -10,7 +10,7 @@ Window {
     minimumWidth: 600
     height: 650
     minimumHeight: 400
-    title: "ear-blaster"
+    title: "Ear Blaster"
     color: Universal.background
 
     Universal.theme: Universal.Dark
@@ -46,7 +46,7 @@ Window {
 
         RowLayout {
             Label {
-                text: "Volume:"
+                text: qsTr("Volume:")
                 color: Universal.foreground
             }
 

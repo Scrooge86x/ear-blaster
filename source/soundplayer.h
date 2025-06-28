@@ -9,7 +9,7 @@ class SoundPlayer : public QObject
 {
     Q_OBJECT
 public:
-    explicit SoundPlayer(QObject *parent = nullptr);
+    explicit SoundPlayer(QObject* parent = nullptr);
 
     // TODO: Implement setDevice and getDevices
     Q_INVOKABLE void play(const QString& filePath);
