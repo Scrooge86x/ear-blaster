@@ -42,12 +42,15 @@ Rectangle {
                 held = true
                 z = -1
             }
-            onReleased: {
+
+            function releasedHandler() {
                 focusStealer.z = 0
                 focusStealer.cursorShape = Qt.ArrowCursor
                 held = false
                 z = 0
             }
+            onReleased: releasedHandler()
+            onCanceled: releasedHandler()
 
             SoundElement {
                 id: content
