@@ -119,9 +119,10 @@ Window {
                     filePath = filePath.substring(1);
                 }
 
-                const dotIndex = filePath.lastIndexOf(".");
+                const slashPos = filePath.lastIndexOf("/");
+                const dotPos = filePath.lastIndexOf(".");
                 soundConfigModel.append({
-                    name: filePath.substring(0, dotIndex),
+                    name: filePath.substring(slashPos + 1, dotPos),
                     path: filePath,
                     sequence: "",
                 });
