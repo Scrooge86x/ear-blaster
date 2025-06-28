@@ -17,6 +17,17 @@ Rectangle {
     signal stopRequested()
     signal deleteRequested()
 
+    Text {
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+
+        font.pixelSize: 20
+        color: Universal.foreground
+        text: "≡"
+        font.family: "Arial"
+    }
+
     TextField {
         id: soundNameInput
         anchors {
