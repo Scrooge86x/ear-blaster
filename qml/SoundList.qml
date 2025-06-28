@@ -17,8 +17,8 @@ Rectangle {
 
             property bool held: false
             anchors {
-                left: parent.left
-                right: parent.right
+                left: parent?.left
+                right: parent?.right
             }
             height: content.height
             cursorShape: Qt.ClosedHandCursor

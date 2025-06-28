@@ -113,17 +113,19 @@ Window {
             "WAV (*.wav)",
         ]
         onAccepted: {
-            let filePath = selectedFile.toString().replace("file://", "")
-            if (Qt.platform.os === "windows") {
-                filePath = filePath.substring(1);
-            }
+            for (const file of selectedFiles) {
+                let filePath = file.toString().replace("file://", "")
+                if (Qt.platform.os === "windows") {
+                    filePath = filePath.substring(1);
+                }
 
-            const dotIndex = filePath.lastIndexOf(".");
-            soundConfigModel.append({
-                name: filePath.substring(0, dotIndex),
-                path: filePath,
-                sequence: "",
-            });
+                const dotIndex = filePath.lastIndexOf(".");
+                soundConfigModel.append({
+                    name: filePath.substring(0, dotIndex),
+                    path: filePath,
+                    sequence: "",
+                });
+            }
         }
     }
 
