@@ -13,7 +13,7 @@ Rectangle {
         id: focusStealer
         anchors.fill: root
         enabled: false
-        z: 1
+        z: 0
         onClicked: forceActiveFocus()
         preventStealing: true
         propagateComposedEvents: true
@@ -31,16 +31,20 @@ Rectangle {
                 right: parent?.right
             }
             height: content.height
-            cursorShape: Qt.ClosedHandCursor
 
             drag.target: held ? content : undefined
             drag.axis: Drag.YAxis
+            cursorShape: Qt.ClosedHandCursor
 
             onPressed: {
+                focusStealer.z = 1
+                focusStealer.cursorShape = Qt.ClosedHandCursor
                 held = true
                 z = -1
             }
             onReleased: {
+                focusStealer.z = 0
+                focusStealer.cursorShape = Qt.ArrowCursor
                 held = false
                 z = 0
             }
@@ -79,7 +83,10 @@ Rectangle {
                     listModel.remove(index, 1)
                 }
                 onNameChanged: listModel.setProperty(index, "name", name)
-                onFocusChanged: (hasFocus) => focusStealer.enabled = hasFocus
+                onFocusChanged: (hasFocus) => {
+                    focusStealer.z = hasFocus ? 1 : 0
+                    focusStealer.enabled = hasFocus
+                }
             }
 
             DropArea {
