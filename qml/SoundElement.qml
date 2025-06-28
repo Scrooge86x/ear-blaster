@@ -6,7 +6,7 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: Universal.accent
+    color: Qt.lighter(Universal.background, 2.2)
     radius: 10
 
     property string name
@@ -37,8 +37,6 @@ Rectangle {
             right: playButton.left
             rightMargin: 20
         }
-
-        Universal.accent: Universal.Cobalt
 
         font.pixelSize: 20
         color: Universal.foreground

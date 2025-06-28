@@ -16,7 +16,7 @@ Window {
     Universal.theme: Universal.Dark
     Universal.foreground: "#ddd"
     Universal.background: "#0f0f0f"
-    Universal.accent: "#222"
+    Universal.accent: Universal.Orange
 
     ListModel {
         id: soundConfigModel
