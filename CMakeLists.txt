@@ -12,6 +12,7 @@ qt_policy(SET QTP0004 NEW)
 qt_standard_project_setup()
 
 qt_add_executable(${PROJECT_NAME}
+    resources/icon.rc
     source/main.cpp
     source/soundplayer.h source/soundplayer.cpp
     source/configmanager.h source/configmanager.cpp
