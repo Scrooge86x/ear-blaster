@@ -13,15 +13,18 @@ SoundPlayer::SoundPlayer(QObject* parent)
     m_mediaPlayer.setAudioOutput(&m_audioOutput);
 }
 
-void SoundPlayer::play(const QString& filePath)
+void SoundPlayer::play(const int id, const QString& filePath)
 {
+    m_currentTrackId = id;
     m_mediaPlayer.setSource(QUrl::fromLocalFile(filePath));
     m_mediaPlayer.play();
 }
 
-void SoundPlayer::stop()
+void SoundPlayer::stop(const int id)
 {
-    m_mediaPlayer.stop();
+    if (m_currentTrackId == id) {
+        m_mediaPlayer.stop();
+    }
 }
 
 void SoundPlayer::setVolume(const float volume)

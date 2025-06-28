@@ -54,8 +54,8 @@ Rectangle {
                 path: model.path
                 sequence: model.sequence
                 Component.onCompleted: name = model.name // Avoids a binding loop in onNameChanged
-                onPlayRequested: soundPlayer.play(model.path)
-                onStopRequested: soundPlayer.stop()
+                onPlayRequested: soundPlayer.play(index, model.path)
+                onStopRequested: soundPlayer.stop(index)
                 onDeleteRequested: listModel.remove(index, 1)
                 onNameChanged: listModel.setProperty(index, "name", name)
             }
