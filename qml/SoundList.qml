@@ -108,7 +108,7 @@ Rectangle {
             Layout.fillHeight: true
 
             ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-            ScrollBar.vertical.width: 12
+            ScrollBar.vertical.width: 9
             ScrollBar.vertical.interactive: true
 
             padding: 0
