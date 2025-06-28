@@ -51,13 +51,21 @@ Rectangle {
                     }
                 }
 
+                property int lastIndex
+
                 path: model.path
                 sequence: model.sequence
-                Component.onCompleted: name = model.name // Avoids a binding loop in onNameChanged
-                onPlayRequested: soundPlayer.play(index, model.path)
-                onStopRequested: soundPlayer.stop(index)
+                Component.onCompleted: {
+                    name = model.name // Avoids a binding loop in onNameChanged
+                    lastIndex = index
+                }
+                onPlayRequested: {
+                    lastIndex = index
+                    soundPlayer.play(lastIndex, model.path)
+                }
+                onStopRequested: soundPlayer.stop(lastIndex)
                 onDeleteRequested: {
-                    soundPlayer.stop(index)
+                    soundPlayer.stop(lastIndex)
                     listModel.remove(index, 1)
                 }
                 onNameChanged: listModel.setProperty(index, "name", name)
