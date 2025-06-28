@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs
+import QtMultimedia
 
 Window {
     id: root
@@ -21,18 +22,28 @@ Window {
     ListModel {
         id: soundConfigModel
         Component.onCompleted: {
-            append({ name: "Sound 1", path: "E:\\test-sounds\\1.mp3", sequence: "Ctrl+Shift+1" })
-            append({ name: "Sound 2", path: "E:\\test-sounds\\2.wav", sequence: "Ctrl+Shift+2" })
+            append({ name: "Sound 1", path: "E:\\test-sounds\\1.mp3", sequence: "Ctrl+Shift+1" });
+            append({ name: "Sound 2", path: "E:\\test-sounds\\2.wav", sequence: "Ctrl+Shift+2" });
         }
     }
 
-    property var audioDevices: []
-    Component.onCompleted: {
-        audioDevices = soundPlayer.getDevices();
-        if (audioDevices.length) {
-            deviceComboBox.currentIndex = 0;
-            soundPlayer.setDevice(audioDevices[0].id);
+    property ListModel audioDevices: ListModel {}
+    function updateAudioDevices() {
+        audioDevices.clear();
+        for (const device of mediaDevices.audioOutputs) {
+            audioDevices.append({ name: device.description });
         }
+    }
+
+    MediaDevices {
+        id: mediaDevices
+        onAudioOutputsChanged: updateAudioDevices()
+    }
+
+    Component.onCompleted: {
+        updateAudioDevices();
+        deviceComboBox.currentIndex = 0;
+        soundPlayer.setDevice(mediaDevices.audioOutputs[0]);
     }
 
     RowLayout {
@@ -73,19 +84,14 @@ Window {
 
         ComboBox  {
             id: deviceComboBox
-            Layout.preferredWidth: 300
-
             model: audioDevices
             textRole: "name"
+            Layout.preferredWidth: 300
 
-            onActivated: (index) => {
-                const device = audioDevices[index];
-                soundPlayer.setDevice(device.id);
-            }
-
+            onActivated: (index) => soundPlayer.setDevice(mediaDevices.audioOutputs[index])
             delegate: ItemDelegate {
                 width: deviceComboBox.width
-                text: modelData.name
+                text: model.name
                 highlighted: deviceComboBox.highlightedIndex === index
             }
         }

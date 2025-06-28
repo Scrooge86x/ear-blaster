@@ -32,25 +32,7 @@ void SoundPlayer::setVolume(const float volume)
     m_audioOutput.setVolume(volume);
 }
 
-void SoundPlayer::setDevice(const QString& deviceId)
+void SoundPlayer::setDevice(const QAudioDevice& device)
 {
-    for (const QAudioDevice& device : QMediaDevices::audioOutputs()) {
-        if (device.id() == deviceId) {
-            m_audioOutput.setDevice(device);
-            return;
-        }
-    }
-    qWarning() << "Device not found:" << deviceId;
-}
-
-QVariantList SoundPlayer::getDevices()
-{
-    QVariantList devices{};
-    for (const QAudioDevice& device : QMediaDevices::audioOutputs()) {
-        devices.append(QVariantMap{
-            { "name", device.description() },
-            { "id", device.id() },
-        });
-    }
-    return devices;
+    m_audioOutput.setDevice(device);
 }
