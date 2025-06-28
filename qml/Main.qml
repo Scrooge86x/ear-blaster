@@ -91,41 +91,14 @@ Window {
         }
     }
 
-    ColumnLayout {
-        clip: true
+    SoundList {
+        listModel: soundConfigModel
         anchors {
             top: topBar.bottom
             right: parent.right
             bottom: parent.bottom
             left: parent.left
             margins: 7
-        }
-
-        ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-
-            ScrollBar.vertical.policy: ScrollBar.AlwaysOn
-            ScrollBar.vertical.width: 12
-            ScrollBar.vertical.interactive: true
-
-            padding: 0
-            rightPadding: ScrollBar.vertical.width + 7
-
-            ListView {
-                model: soundConfigModel
-                spacing: 3
-
-                delegate: SoundElement {
-                    path: model.path
-                    sequence: model.sequence
-                    Component.onCompleted: name = model.name // Avoids a binding loop in onNameChanged
-                    onPlayRequested: soundPlayer.play(model.path)
-                    onStopRequested: soundPlayer.stop()
-                    onDeleteRequested: soundConfigModel.remove(index, 1)
-                    onNameChanged: soundConfigModel.setProperty(index, "name", name)
-                }
-            }
         }
     }
 
