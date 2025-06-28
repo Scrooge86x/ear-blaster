@@ -9,6 +9,16 @@ Rectangle {
     clip: true
     color: Universal.background
 
+    MouseArea {
+        id: focusStealer
+        anchors.fill: root
+        enabled: false
+        z: 1
+        onClicked: forceActiveFocus()
+        preventStealing: true
+        propagateComposedEvents: true
+    }
+
     Component {
         id: dragDelegate
 
@@ -69,6 +79,7 @@ Rectangle {
                     listModel.remove(index, 1)
                 }
                 onNameChanged: listModel.setProperty(index, "name", name)
+                onFocusChanged: (hasFocus) => focusStealer.enabled = hasFocus
             }
 
             DropArea {

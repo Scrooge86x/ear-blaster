@@ -46,6 +46,7 @@ Rectangle {
 
         onTextChanged: name = text
         onEditingFinished: soundNameInput.focus = false
+        onFocusChanged: root.focusChanged(focus)
 
         background: Rectangle {
             anchors.fill: parent
