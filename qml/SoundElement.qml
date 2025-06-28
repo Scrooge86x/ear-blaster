@@ -18,9 +18,10 @@ Rectangle {
     signal deleteRequested()
 
     Text {
+        id: tripleBar
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
-        anchors.leftMargin: 10
+        anchors.leftMargin: 7
 
         font.pixelSize: 20
         color: Universal.foreground
@@ -32,10 +33,10 @@ Rectangle {
         id: soundNameInput
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
-            leftMargin: 20
+            left: tripleBar.right
+            leftMargin: 6
             right: playButton.left
-            rightMargin: 20
+            rightMargin: 10
         }
 
         font.pixelSize: 20
@@ -46,6 +47,7 @@ Rectangle {
         onEditingFinished: soundNameInput.focus = false
         onFocusChanged: root.focusChanged(focus)
 
+        leftPadding: 6
         background: Rectangle {
             anchors.fill: parent
             color: root.color
