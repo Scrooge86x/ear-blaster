@@ -156,8 +156,6 @@ Window {
         background: Rectangle {
             anchors.fill: parent
             color: Universal.accent
-            border.width: 1
-            border.color: Universal.background
             radius: addSoundButton.width / 2
         }
     }
