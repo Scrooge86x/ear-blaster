@@ -32,6 +32,9 @@ TextField {
         }
 
         switch (event.key) {
+        case Qt.Key_Backspace:
+            text = sequence = "";
+            return editingFinished();
         case Qt.Key_Escape:
             text = "";
             return editingFinished();
