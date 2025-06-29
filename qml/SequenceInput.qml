@@ -19,8 +19,9 @@ TextField {
     }
 
     onEditingFinished: {
-        if (text.endsWith("+")) {
-            text = "";
+        if (!text || text.endsWith("+")) {
+            text = sequence;
+            return;
         }
         sequence = text;
     }
@@ -32,7 +33,7 @@ TextField {
 
         switch (event.key) {
         case Qt.Key_Escape:
-            text = ""
+            text = "";
             return editingFinished();
         case Qt.Key_Return:
             return;
