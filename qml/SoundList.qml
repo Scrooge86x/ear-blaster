@@ -19,6 +19,8 @@ Rectangle {
         propagateComposedEvents: true
     }
 
+    property int uniqueIndex: 0
+
     Component {
         id: dragDelegate
 
@@ -68,21 +70,18 @@ Rectangle {
                     }
                 }
 
-                property int lastIndex
+                property int initialIndex
 
                 path: model.path
                 sequence: model.sequence
                 Component.onCompleted: {
                     name = model.name // Avoids a binding loop in onNameChanged
-                    lastIndex = index
+                    initialIndex = uniqueIndex++
                 }
-                onPlayRequested: {
-                    lastIndex = index
-                    soundPlayer.play(lastIndex, model.path)
-                }
-                onStopRequested: soundPlayer.stop(lastIndex)
+                onPlayRequested: soundPlayer.play(initialIndex, model.path)
+                onStopRequested: soundPlayer.stop(initialIndex)
                 onDeleteRequested: {
-                    soundPlayer.stop(lastIndex)
+                    soundPlayer.stop(initialIndex)
                     listModel.remove(index, 1)
                 }
                 onNameChanged: listModel.setProperty(index, "name", name)
