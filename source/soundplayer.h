@@ -12,7 +12,6 @@ class SoundPlayer : public QObject
 public:
     explicit SoundPlayer(QObject* parent = nullptr);
 
-    // TODO: Implement setDevice and getDevices
     Q_INVOKABLE void play(const int id, const QString& filePath);
     Q_INVOKABLE void stop(const int id);
     Q_INVOKABLE void setVolume(const float volume);
