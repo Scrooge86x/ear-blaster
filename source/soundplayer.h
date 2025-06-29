@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMediaPlayer>
 #include <QAudioOutput>
+#include <QAudioDevice>
 
 class SoundPlayer : public QObject
 {
@@ -16,6 +17,7 @@ public:
     Q_INVOKABLE void stop(const int id);
     Q_INVOKABLE void setVolume(const float volume);
     Q_INVOKABLE void setDevice(const QAudioDevice& device);
+    Q_INVOKABLE QAudioDevice getDevice() const;
 private:
     QMediaPlayer m_mediaPlayer{};
     QAudioOutput m_audioOutput{};

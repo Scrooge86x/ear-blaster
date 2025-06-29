@@ -30,8 +30,12 @@ Window {
     property ListModel audioDevices: ListModel {}
     function updateAudioDevices() {
         audioDevices.clear();
-        for (const device of mediaDevices.audioOutputs) {
+        for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
+            const device = mediaDevices.audioOutputs[i];
             audioDevices.append({ name: device.description });
+            if (device.id.toString() === soundPlayer.getDevice().id.toString()) {
+                deviceComboBox.currentIndex = i
+            }
         }
     }
 
@@ -41,9 +45,9 @@ Window {
     }
 
     Component.onCompleted: {
-        updateAudioDevices();
         deviceComboBox.currentIndex = 0;
         soundPlayer.setDevice(mediaDevices.audioOutputs[0]);
+        updateAudioDevices();
     }
 
     RowLayout {

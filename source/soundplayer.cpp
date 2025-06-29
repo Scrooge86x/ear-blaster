@@ -1,6 +1,5 @@
 #include "soundplayer.h"
 
-#include <QAudioDevice>
 #include <QMediaDevices>
 #include <QtMinMax>
 #include <QVariant>
@@ -35,4 +34,9 @@ void SoundPlayer::setVolume(const float volume)
 void SoundPlayer::setDevice(const QAudioDevice& device)
 {
     m_audioOutput.setDevice(device);
+}
+
+QAudioDevice SoundPlayer::getDevice() const
+{
+    return m_audioOutput.device();
 }
