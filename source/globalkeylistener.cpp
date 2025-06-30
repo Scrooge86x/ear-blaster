@@ -309,9 +309,25 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     _In_ const ::WPARAM wParam,
     _In_ const ::LPARAM lParam
 ) {
-    if (nCode != HC_ACTION || wParam != WM_KEYUP && wParam != WM_SYSKEYUP) {
+    const auto* const keyInfo{ reinterpret_cast<::KBDLLHOOKSTRUCT*>(lParam) };
+    const auto& vkCode{ keyInfo->vkCode };
+
+    using KeyInfo = std::tuple<::DWORD, ::DWORD, ::DWORD>;
+    static KeyInfo oldKeyInfo{};
+    KeyInfo newKeyInfo{ vkCode, keyInfo->scanCode, keyInfo->flags };
+
+    if (nCode != HC_ACTION || wParam != WM_KEYDOWN && wParam != WM_SYSKEYDOWN) {
+        std::get<2>(newKeyInfo) &= ~LLKHF_UP;
+        if (oldKeyInfo == newKeyInfo) {
+            oldKeyInfo = {};
+        }
         return ::CallNextHookEx(NULL, nCode, wParam, lParam);
     }
+
+    if (oldKeyInfo == newKeyInfo) {
+        return ::CallNextHookEx(NULL, nCode, wParam, lParam);
+    }
+    oldKeyInfo = newKeyInfo;
 
     // TODO: Create a cached keyboard layout instead of getting the whole
     // keyboard state every time a key is pressed systemwide
@@ -332,9 +348,6 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     keyState[VK_SHIFT   ] = 0;
     keyState[VK_LSHIFT  ] = 0;
     keyState[VK_RSHIFT  ] = 0;
-
-    const auto* const keyInfo{ reinterpret_cast<::KBDLLHOOKSTRUCT*>(lParam) };
-    const auto& vkCode{ keyInfo->vkCode };
 
     // GetKeyState must be used instead of reading states from keyState array
     // because it wouldn't update if the app isn't focused
