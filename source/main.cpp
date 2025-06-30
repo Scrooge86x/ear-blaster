@@ -19,9 +19,7 @@ int main(int argc, char *argv[])
 
     SoundPlayer soundPlayer{};
     engine.rootContext()->setContextProperty("soundPlayer", &soundPlayer);
-
-    GlobalKeyListener globalKeyListener{};
-    engine.rootContext()->setContextProperty("globalKeyListener", &globalKeyListener);
+    engine.rootContext()->setContextProperty("globalKeyListener", &GlobalKeyListener::instance());
 
     using namespace Qt::Literals::StringLiterals;
     engine.load(QUrl(u"qrc:/qt/qml/ear-blaster/qml/Main.qml"_s));

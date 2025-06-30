@@ -10,8 +10,13 @@ class GlobalKeyListener : public QObject
     Q_OBJECT
 public:
     explicit GlobalKeyListener(QObject* parent = nullptr);
+    virtual ~GlobalKeyListener();
 
+    static GlobalKeyListener& instance();
     Q_INVOKABLE QString sequenceToString(const Qt::Key key, const Qt::KeyboardModifiers modifiers) const;
+
+signals:
+    void globalHotkeyPressed(const QString hotkey);
 };
 
 #endif // GLOBALKEYLISTENER_H

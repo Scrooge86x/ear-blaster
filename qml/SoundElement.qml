@@ -121,4 +121,14 @@ Rectangle {
         onEditingFinished: focus = false
         onSequenceChanged: root.sequence = sequenceInput.sequence
     }
+
+    Connections {
+        enabled: sequence !== ""
+        target: globalKeyListener
+        function onGlobalHotkeyPressed(hotkey) {
+            if (hotkey === sequence) {
+                playRequested()
+            }
+        }
+    }
 }
