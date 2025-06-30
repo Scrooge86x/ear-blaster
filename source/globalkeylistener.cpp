@@ -309,7 +309,7 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     _In_ const ::WPARAM wParam,
     _In_ const ::LPARAM lParam
 ) {
-    if (nCode != HC_ACTION || wParam != WM_KEYUP) {
+    if (nCode != HC_ACTION || wParam != WM_KEYUP && wParam != WM_SYSKEYUP) {
         return ::CallNextHookEx(NULL, nCode, wParam, lParam);
     }
 
