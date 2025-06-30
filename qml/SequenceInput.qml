@@ -38,6 +38,7 @@ TextField {
         case Qt.Key_Escape:
             text = "";
             return editingFinished();
+        case Qt.Key_Enter:
         case Qt.Key_Return:
             return;
         }
