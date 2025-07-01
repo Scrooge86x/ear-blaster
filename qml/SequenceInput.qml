@@ -4,7 +4,6 @@ import QtQuick.Layouts
 
 TextField {
     property string sequence
-    property string globalSequence
 
     id: root
     readOnly: true
@@ -27,14 +26,6 @@ TextField {
         sequence = text;
     }
 
-    Connections {
-        enabled: root.focus
-        target: globalKeyListener
-        function onGlobalHotkeyPressed(hotkey) {
-            globalSequence = hotkey;
-        }
-    }
-
     Keys.onPressed: (event) => {
         if (event.isAutoRepeat || !event.key) {
             return;
@@ -52,7 +43,7 @@ TextField {
             return;
         }
 
-        text = globalSequence;
+        text = globalKeyListener.currentSequence;
         event.accepted = true;
     }
 }

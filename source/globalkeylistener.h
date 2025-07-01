@@ -8,15 +8,21 @@
 class GlobalKeyListener : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString currentSequence READ getCurrentSequence NOTIFY currentSequenceChanged)
+
 public:
     explicit GlobalKeyListener(QObject* parent = nullptr);
     virtual ~GlobalKeyListener();
 
     static GlobalKeyListener& instance();
-    Q_INVOKABLE QString sequenceToString(const Qt::Key key, const Qt::KeyboardModifiers modifiers) const;
+    QString getCurrentSequence() const;
 
 signals:
-    void globalHotkeyPressed(const QString hotkey);
+    void currentSequenceChanged(const QString& hotkey);
+
+private:
+    friend void setCurrentSequence(const QString&);
+    QString m_currentSequence{};
 };
 
 #endif // GLOBALKEYLISTENER_H

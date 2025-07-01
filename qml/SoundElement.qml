@@ -125,7 +125,7 @@ Rectangle {
     Connections {
         enabled: sequence !== ""
         target: globalKeyListener
-        function onGlobalHotkeyPressed(hotkey) {
+        function onCurrentSequenceChanged(hotkey) {
             if (hotkey === sequence) {
                 playRequested();
             }

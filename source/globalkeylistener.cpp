@@ -322,6 +322,32 @@ static inline void updateKeyboardModifiers(const ::DWORD vkCode, const bool isDo
     }
 }
 
+static inline QString sequenceToString(const Qt::Key key, const Qt::KeyboardModifiers modifiers) {
+    switch (key) {
+    case Qt::Key_Control:
+    case Qt::Key_Shift:
+    case Qt::Key_Alt:
+    case Qt::Key_Meta:
+        return QKeySequence{ modifiers }.toString();
+    default:
+        if (modifiers.testFlag(Qt::KeypadModifier)) {
+            return QKeySequence{ key | modifiers }.toString().replace("Num+", "Num");
+        } else {
+            return QKeySequence{ key | modifiers }.toString();
+        }
+    }
+}
+
+void setCurrentSequence(const QString& newSequence) {
+    auto& gkl{ GlobalKeyListener::instance() };
+    if (gkl.m_currentSequence == newSequence) {
+        return;
+    }
+
+    gkl.m_currentSequence = newSequence;
+    emit gkl.currentSequenceChanged(newSequence);
+}
+
 extern "C" {
 static ::LRESULT CALLBACK win32KeyboardHook(
     _In_ const int nCode,
@@ -375,8 +401,7 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     keyState[VK_RSHIFT  ] = 0;
 
     const auto key{ win32KeyToQtKey(vkCode, keyInfo->scanCode, keyState) };
-    auto& gkl{ GlobalKeyListener::instance() };
-    gkl.globalHotkeyPressed(gkl.sequenceToString(key, g_keyboardLModifiers | g_keyboardRModifiers));
+    setCurrentSequence(sequenceToString(key, g_keyboardLModifiers | g_keyboardRModifiers));
 
     return ::CallNextHookEx(NULL, nCode, wParam, lParam);
 }
@@ -426,19 +451,7 @@ GlobalKeyListener& GlobalKeyListener::instance()
     return globalKeyListener;
 }
 
-QString GlobalKeyListener::sequenceToString(const Qt::Key key, const Qt::KeyboardModifiers modifiers) const
+QString GlobalKeyListener::getCurrentSequence() const
 {
-    switch (key) {
-    case Qt::Key_Control:
-    case Qt::Key_Shift:
-    case Qt::Key_Alt:
-    case Qt::Key_Meta:
-        return QKeySequence{ modifiers }.toString();
-    default:
-        if (modifiers.testFlag(Qt::KeypadModifier)) {
-            return QKeySequence{ key | modifiers }.toString().replace("Num+", "Num");
-        } else {
-            return QKeySequence{ key | modifiers }.toString();
-        }
-    }
+    return m_currentSequence;
 }
