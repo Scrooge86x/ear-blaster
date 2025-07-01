@@ -27,7 +27,7 @@ TextField {
     }
 
     Keys.onPressed: (event) => {
-        if (event.isAutoRepeat) {
+        if (event.isAutoRepeat || !event.key) {
             return;
         }
 
