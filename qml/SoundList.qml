@@ -20,6 +20,7 @@ Rectangle {
     }
 
     property int uniqueIndex: 0
+    property bool disablePlayback: false
 
     Component {
         id: dragDelegate
@@ -70,6 +71,7 @@ Rectangle {
                     }
                 }
 
+                disablePlayback: root.disablePlayback
                 path: model.path
                 Component.onCompleted: {
                     name = model.name // Avoids a binding loop in onNameChanged
@@ -80,8 +82,9 @@ Rectangle {
                 onNameChanged: listModel.setProperty(index, "name", name)
                 onSequenceChanged: listModel.setProperty(index, "sequence", sequence)
                 onFocusChanged: (hasFocus) => {
-                    focusStealer.z = hasFocus ? 1 : 0
-                    focusStealer.enabled = hasFocus
+                    focusStealer.z = hasFocus ? 1 : 0;
+                    focusStealer.enabled = hasFocus;
+                    root.disablePlayback = hasFocus;
                 }
             }
 

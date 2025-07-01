@@ -12,6 +12,7 @@ Rectangle {
     property string path
     property string sequence
     property int initialIndex
+    property bool disablePlayback: false
 
     signal deleteRequested()
 
@@ -127,7 +128,7 @@ Rectangle {
         enabled: sequence !== ""
         target: globalKeyListener
         function onCurrentSequenceChanged(hotkey) {
-            if (hotkey === sequence) {
+            if (!disablePlayback && hotkey === sequence) {
                 soundPlayer.play(initialIndex, path);
             }
         }
