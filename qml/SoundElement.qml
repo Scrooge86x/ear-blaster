@@ -127,7 +127,7 @@ Rectangle {
         target: globalKeyListener
         function onGlobalHotkeyPressed(hotkey) {
             if (hotkey === sequence) {
-                playRequested()
+                playRequested();
             }
         }
     }

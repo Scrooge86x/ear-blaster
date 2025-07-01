@@ -303,12 +303,35 @@
     return Qt::Key(key < 0x20 ? KeyTbl[vkCode] : key);
 }
 
+static Qt::KeyboardModifiers g_keyboardLModifiers{};
+static Qt::KeyboardModifiers g_keyboardRModifiers{};
+
+static inline void updateKeyboardModifiers(const ::DWORD vkCode, const bool isDown) {
+    if (vkCode == VK_LSHIFT)   { g_keyboardLModifiers = isDown ? g_keyboardLModifiers | Qt::ShiftModifier   : g_keyboardLModifiers & ~Qt::ShiftModifier; }
+    if (vkCode == VK_LCONTROL) { g_keyboardLModifiers = isDown ? g_keyboardLModifiers | Qt::ControlModifier : g_keyboardLModifiers & ~Qt::ControlModifier; }
+    if (vkCode == VK_LMENU)    { g_keyboardLModifiers = isDown ? g_keyboardLModifiers | Qt::AltModifier     : g_keyboardLModifiers & ~Qt::AltModifier; }
+    if (vkCode == VK_RSHIFT)   { g_keyboardRModifiers = isDown ? g_keyboardRModifiers | Qt::ShiftModifier   : g_keyboardRModifiers & ~Qt::ShiftModifier; }
+    if (vkCode == VK_RCONTROL) { g_keyboardRModifiers = isDown ? g_keyboardRModifiers | Qt::ControlModifier : g_keyboardRModifiers & ~Qt::ControlModifier; }
+    if (vkCode == VK_RMENU)    { g_keyboardRModifiers = isDown ? g_keyboardRModifiers | Qt::AltModifier     : g_keyboardRModifiers & ~Qt::AltModifier; }
+
+    // RModifiers not set here - they get OR'ed with LModifiers later when used
+    if (vkCode >= VK_NUMPAD0 && vkCode <= VK_DIVIDE) {
+        g_keyboardLModifiers |= Qt::KeypadModifier;
+    } else {
+        g_keyboardLModifiers &= ~Qt::KeypadModifier;
+    }
+}
+
 extern "C" {
 static ::LRESULT CALLBACK win32KeyboardHook(
     _In_ const int nCode,
     _In_ const ::WPARAM wParam,
     _In_ const ::LPARAM lParam
 ) {
+    if (nCode != HC_ACTION) {
+        return ::CallNextHookEx(NULL, nCode, wParam, lParam);
+    }
+
     const auto* const keyInfo{ reinterpret_cast<::KBDLLHOOKSTRUCT*>(lParam) };
     const auto& vkCode{ keyInfo->vkCode };
 
@@ -316,7 +339,8 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     static KeyInfo oldKeyInfo{};
     KeyInfo newKeyInfo{ vkCode, keyInfo->scanCode, keyInfo->flags };
 
-    if (nCode != HC_ACTION || wParam != WM_KEYDOWN && wParam != WM_SYSKEYDOWN) {
+    if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
+        updateKeyboardModifiers(vkCode, false);
         std::get<2>(newKeyInfo) &= ~LLKHF_UP;
         if (oldKeyInfo == newKeyInfo) {
             oldKeyInfo = {};
@@ -328,6 +352,7 @@ static ::LRESULT CALLBACK win32KeyboardHook(
         return ::CallNextHookEx(NULL, nCode, wParam, lParam);
     }
     oldKeyInfo = newKeyInfo;
+    updateKeyboardModifiers(vkCode, true);
 
     // TODO: Create a cached keyboard layout instead of getting the whole
     // keyboard state every time a key is pressed systemwide
@@ -349,28 +374,9 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     keyState[VK_LSHIFT  ] = 0;
     keyState[VK_RSHIFT  ] = 0;
 
-    // GetKeyState must be used instead of reading states from keyState array
-    // because it wouldn't update if the app isn't focused
-    Qt::KeyboardModifiers modifiers{};
-    if (::GetKeyState(VK_SHIFT) < 0) {
-        modifiers |= Qt::ShiftModifier;
-    }
-    if (::GetKeyState(VK_CONTROL) < 0) {
-        modifiers |= Qt::ControlModifier;
-    }
-    if (::GetKeyState(VK_MENU) < 0) {
-        modifiers |= Qt::AltModifier;
-    }
-    if (::GetKeyState(VK_LWIN) < 0 || ::GetKeyState(VK_RWIN) < 0) {
-        modifiers |= Qt::MetaModifier;
-    }
-    if (vkCode >= VK_NUMPAD0 && vkCode <= VK_DIVIDE) {
-        modifiers |= Qt::KeypadModifier;
-    }
-
     const auto key{ win32KeyToQtKey(vkCode, keyInfo->scanCode, keyState) };
     auto& gkl{ GlobalKeyListener::instance() };
-    gkl.globalHotkeyPressed(gkl.sequenceToString(key, modifiers));
+    gkl.globalHotkeyPressed(gkl.sequenceToString(key, g_keyboardLModifiers | g_keyboardRModifiers));
 
     return ::CallNextHookEx(NULL, nCode, wParam, lParam);
 }
@@ -397,6 +403,13 @@ GlobalKeyListener::GlobalKeyListener(QObject* parent)
         qWarning() << "Couldn't create WH_KEYBOARD_LL hook.";
         return;
     }
+
+    if (::GetKeyState(VK_LSHIFT) < 0)   { g_keyboardLModifiers |= Qt::ShiftModifier; }
+    if (::GetKeyState(VK_LCONTROL) < 0) { g_keyboardLModifiers |= Qt::ControlModifier; }
+    if (::GetKeyState(VK_LMENU) < 0)    { g_keyboardLModifiers |= Qt::AltModifier; }
+    if (::GetKeyState(VK_RSHIFT) < 0)   { g_keyboardRModifiers |= Qt::ShiftModifier; }
+    if (::GetKeyState(VK_RCONTROL) < 0) { g_keyboardRModifiers |= Qt::ControlModifier; }
+    if (::GetKeyState(VK_RMENU) < 0)    { g_keyboardRModifiers |= Qt::AltModifier; }
 }
 
 GlobalKeyListener::~GlobalKeyListener()
