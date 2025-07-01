@@ -355,10 +355,10 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     }
 
     const auto* const keyInfo{ reinterpret_cast<::KBDLLHOOKSTRUCT*>(lParam) };
-    const auto& vkCode{ keyInfo->vkCode };
+    auto vkCode{ keyInfo->vkCode };
 
-    static const ::UINT lShiftScanCode{ MapVirtualKey(VK_LSHIFT, MAPVK_VK_TO_VSC) };
-    static const ::UINT rShiftScanCode{ MapVirtualKey(VK_RSHIFT, MAPVK_VK_TO_VSC) };
+    static const ::UINT lShiftScanCode{ ::MapVirtualKey(VK_LSHIFT, MAPVK_VK_TO_VSC) };
+    static const ::UINT rShiftScanCode{ ::MapVirtualKey(VK_RSHIFT, MAPVK_VK_TO_VSC) };
 
     using KeyInfo = std::tuple<::DWORD, ::DWORD, ::DWORD>;
     static KeyInfo oldKeyInfo{};
@@ -396,8 +396,31 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     ) {
         return ::CallNextHookEx(NULL, nCode, wParam, lParam);
     }
-
     oldKeyInfo = newKeyInfo;
+
+    // TODO: Verify if there aren't different numpad layouts
+    // https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-kbdllhookstruct
+    // Article above states that LLKHF_EXTENDED:
+    // "Specifies whether the key is an extended key,
+    // such as a function key or a key on the numeric keypad.
+    // The value is 1 if the key is an extended key; otherwise, it is 0."
+    // But for some reason it's reversed in practice?
+    if (!(keyInfo->flags & LLKHF_EXTENDED)) {
+        switch (vkCode) {
+            case VK_INSERT: vkCode = VK_NUMPAD0; break;
+            case VK_END:    vkCode = VK_NUMPAD1; break;
+            case VK_DOWN:   vkCode = VK_NUMPAD2; break;
+            case VK_NEXT:   vkCode = VK_NUMPAD3; break;
+            case VK_LEFT:   vkCode = VK_NUMPAD4; break;
+            case VK_CLEAR:  vkCode = VK_NUMPAD5; break;
+            case VK_RIGHT:  vkCode = VK_NUMPAD6; break;
+            case VK_HOME:   vkCode = VK_NUMPAD7; break;
+            case VK_UP:     vkCode = VK_NUMPAD8; break;
+            case VK_PRIOR:  vkCode = VK_NUMPAD9; break;
+            case VK_DELETE: vkCode = VK_DECIMAL; break;
+            default: break;
+        }
+    }
     updateKeyboardModifiers(vkCode, true);
 
     // TODO: Create a cached keyboard layout instead of getting the whole
