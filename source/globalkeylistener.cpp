@@ -291,14 +291,17 @@
     // "This buffer may be returned without being null-terminated even though the variable name suggests that it is null-terminated."
     // So I guess I should still leave space for the null terminator?
     QChar keyBuffer[utf16MaxCodePointSize + 1]{};
+
+    // wFlags: "If bit 2 is set, keyboard state is not changed (Windows 10, version 1607 and newer)"
     const auto result{ ::ToUnicode(
         vkCode,
         scanCode,
         keyState,
         reinterpret_cast<::LPWSTR>(keyBuffer),
         std::size(keyBuffer),
-        NULL
+        1 << 2
     ) };
+
     const auto key{ result ? keyBuffer[0].toUpper().unicode() : 0 };
     return Qt::Key(key < 0x20 ? KeyTbl[vkCode] : key);
 }
