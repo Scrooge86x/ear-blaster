@@ -18,7 +18,7 @@ TextField {
     }
 
     onEditingFinished: {
-        if (!text || text.endsWith("+")) {
+        if (!text || text.endsWith("+") && !text.endsWith("Num+")) {
             text = sequence;
             return;
         }
