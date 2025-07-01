@@ -1,8 +1,6 @@
 #include "soundplayer.h"
 
 #include <QMediaDevices>
-#include <QtMinMax>
-#include <QVariant>
 
 SoundPlayer::SoundPlayer(QObject* parent)
     : QObject{ parent }

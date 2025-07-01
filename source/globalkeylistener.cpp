@@ -5,7 +5,7 @@
 #include <Windows.h>
 
 #include <QKeySequence>
-#include <QKeyEvent>
+#include <QDebug>
 
 [[nodiscard]] static inline Qt::Key win32KeyToQtKey(
     const ::UINT vkCode,
@@ -429,12 +429,12 @@ GlobalKeyListener::GlobalKeyListener(QObject* parent)
         return;
     }
 
-    if (::GetKeyState(VK_LSHIFT) < 0)   { g_keyboardLModifiers |= Qt::ShiftModifier; }
+    if (::GetKeyState(VK_LSHIFT)   < 0) { g_keyboardLModifiers |= Qt::ShiftModifier; }
     if (::GetKeyState(VK_LCONTROL) < 0) { g_keyboardLModifiers |= Qt::ControlModifier; }
-    if (::GetKeyState(VK_LMENU) < 0)    { g_keyboardLModifiers |= Qt::AltModifier; }
-    if (::GetKeyState(VK_RSHIFT) < 0)   { g_keyboardRModifiers |= Qt::ShiftModifier; }
+    if (::GetKeyState(VK_LMENU)    < 0) { g_keyboardLModifiers |= Qt::AltModifier; }
+    if (::GetKeyState(VK_RSHIFT)   < 0) { g_keyboardRModifiers |= Qt::ShiftModifier; }
     if (::GetKeyState(VK_RCONTROL) < 0) { g_keyboardRModifiers |= Qt::ControlModifier; }
-    if (::GetKeyState(VK_RMENU) < 0)    { g_keyboardRModifiers |= Qt::AltModifier; }
+    if (::GetKeyState(VK_RMENU)    < 0) { g_keyboardRModifiers |= Qt::AltModifier; }
 }
 
 GlobalKeyListener::~GlobalKeyListener()
