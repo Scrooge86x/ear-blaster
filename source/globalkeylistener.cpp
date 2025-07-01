@@ -307,19 +307,15 @@ static Qt::KeyboardModifiers g_keyboardLModifiers{};
 static Qt::KeyboardModifiers g_keyboardRModifiers{};
 
 static inline void updateKeyboardModifiers(const ::DWORD vkCode, const bool isDown) {
-    if (vkCode == VK_LSHIFT)   { g_keyboardLModifiers = isDown ? g_keyboardLModifiers | Qt::ShiftModifier   : g_keyboardLModifiers & ~Qt::ShiftModifier; }
-    if (vkCode == VK_LCONTROL) { g_keyboardLModifiers = isDown ? g_keyboardLModifiers | Qt::ControlModifier : g_keyboardLModifiers & ~Qt::ControlModifier; }
-    if (vkCode == VK_LMENU)    { g_keyboardLModifiers = isDown ? g_keyboardLModifiers | Qt::AltModifier     : g_keyboardLModifiers & ~Qt::AltModifier; }
-    if (vkCode == VK_RSHIFT)   { g_keyboardRModifiers = isDown ? g_keyboardRModifiers | Qt::ShiftModifier   : g_keyboardRModifiers & ~Qt::ShiftModifier; }
-    if (vkCode == VK_RCONTROL) { g_keyboardRModifiers = isDown ? g_keyboardRModifiers | Qt::ControlModifier : g_keyboardRModifiers & ~Qt::ControlModifier; }
-    if (vkCode == VK_RMENU)    { g_keyboardRModifiers = isDown ? g_keyboardRModifiers | Qt::AltModifier     : g_keyboardRModifiers & ~Qt::AltModifier; }
+    if (vkCode == VK_LSHIFT)   { g_keyboardLModifiers.setFlag(Qt::ShiftModifier,   isDown); }
+    if (vkCode == VK_LCONTROL) { g_keyboardLModifiers.setFlag(Qt::ControlModifier, isDown); }
+    if (vkCode == VK_LMENU)    { g_keyboardLModifiers.setFlag(Qt::AltModifier,     isDown); }
+    if (vkCode == VK_RSHIFT)   { g_keyboardRModifiers.setFlag(Qt::ShiftModifier,   isDown); }
+    if (vkCode == VK_RCONTROL) { g_keyboardRModifiers.setFlag(Qt::ControlModifier, isDown); }
+    if (vkCode == VK_RMENU)    { g_keyboardRModifiers.setFlag(Qt::AltModifier,     isDown); }
 
     // RModifiers not set here - they get OR'ed with LModifiers later when used
-    if (vkCode >= VK_NUMPAD0 && vkCode <= VK_DIVIDE) {
-        g_keyboardLModifiers |= Qt::KeypadModifier;
-    } else {
-        g_keyboardLModifiers &= ~Qt::KeypadModifier;
-    }
+    g_keyboardLModifiers.setFlag(Qt::KeypadModifier, vkCode >= VK_NUMPAD0 && vkCode <= VK_DIVIDE);
 }
 
 static inline QString sequenceToString(const Qt::Key key, const Qt::KeyboardModifiers modifiers) {
@@ -429,12 +425,12 @@ GlobalKeyListener::GlobalKeyListener(QObject* parent)
         return;
     }
 
-    if (::GetKeyState(VK_LSHIFT)   < 0) { g_keyboardLModifiers |= Qt::ShiftModifier; }
-    if (::GetKeyState(VK_LCONTROL) < 0) { g_keyboardLModifiers |= Qt::ControlModifier; }
-    if (::GetKeyState(VK_LMENU)    < 0) { g_keyboardLModifiers |= Qt::AltModifier; }
-    if (::GetKeyState(VK_RSHIFT)   < 0) { g_keyboardRModifiers |= Qt::ShiftModifier; }
-    if (::GetKeyState(VK_RCONTROL) < 0) { g_keyboardRModifiers |= Qt::ControlModifier; }
-    if (::GetKeyState(VK_RMENU)    < 0) { g_keyboardRModifiers |= Qt::AltModifier; }
+    g_keyboardLModifiers.setFlag(Qt::ShiftModifier,   ::GetKeyState(VK_LSHIFT)   < 0);
+    g_keyboardLModifiers.setFlag(Qt::ControlModifier, ::GetKeyState(VK_LCONTROL) < 0);
+    g_keyboardLModifiers.setFlag(Qt::AltModifier,     ::GetKeyState(VK_LMENU)    < 0);
+    g_keyboardRModifiers.setFlag(Qt::ShiftModifier,   ::GetKeyState(VK_RSHIFT)   < 0);
+    g_keyboardRModifiers.setFlag(Qt::ControlModifier, ::GetKeyState(VK_RCONTROL) < 0);
+    g_keyboardRModifiers.setFlag(Qt::AltModifier,     ::GetKeyState(VK_RMENU)    < 0);
 }
 
 GlobalKeyListener::~GlobalKeyListener()
