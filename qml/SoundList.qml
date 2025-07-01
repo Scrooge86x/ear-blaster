@@ -70,20 +70,13 @@ Rectangle {
                     }
                 }
 
-                property int initialIndex
-
                 path: model.path
                 Component.onCompleted: {
                     name = model.name // Avoids a binding loop in onNameChanged
                     sequence = model.sequence
                     initialIndex = uniqueIndex++
                 }
-                onPlayRequested: soundPlayer.play(initialIndex, model.path)
-                onStopRequested: soundPlayer.stop(initialIndex)
-                onDeleteRequested: {
-                    soundPlayer.stop(initialIndex)
-                    listModel.remove(index, 1)
-                }
+                onDeleteRequested: listModel.remove(index, 1)
                 onNameChanged: listModel.setProperty(index, "name", name)
                 onSequenceChanged: listModel.setProperty(index, "sequence", sequence)
                 onFocusChanged: (hasFocus) => {

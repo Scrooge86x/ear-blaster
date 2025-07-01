@@ -11,9 +11,8 @@ Rectangle {
     property string name
     property string path
     property string sequence
+    property int initialIndex
 
-    signal playRequested()
-    signal stopRequested()
     signal deleteRequested()
 
     Text {
@@ -76,7 +75,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("play")
-        onClicked: playRequested()
+        onClicked: soundPlayer.play(initialIndex, path)
     }
 
     RoundButton {
@@ -90,7 +89,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("stop")
-        onClicked: stopRequested()
+        onClicked: soundPlayer.stop(initialIndex)
     }
 
     RoundButton {
@@ -104,7 +103,10 @@ Rectangle {
 
         radius: 7
         text: qsTr("delete")
-        onClicked: deleteRequested()
+        onClicked: {
+            soundPlayer.stop(initialIndex);
+            deleteRequested();
+        }
     }
 
     SequenceInput {
@@ -126,7 +128,7 @@ Rectangle {
         target: globalKeyListener
         function onCurrentSequenceChanged(hotkey) {
             if (hotkey === sequence) {
-                playRequested();
+                soundPlayer.play(initialIndex, path);
             }
         }
     }
