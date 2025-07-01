@@ -357,11 +357,25 @@ static ::LRESULT CALLBACK win32KeyboardHook(
     const auto* const keyInfo{ reinterpret_cast<::KBDLLHOOKSTRUCT*>(lParam) };
     const auto& vkCode{ keyInfo->vkCode };
 
+    static const ::UINT lShiftScanCode{ MapVirtualKey(VK_LSHIFT, MAPVK_VK_TO_VSC) };
+    static const ::UINT rShiftScanCode{ MapVirtualKey(VK_RSHIFT, MAPVK_VK_TO_VSC) };
+
     using KeyInfo = std::tuple<::DWORD, ::DWORD, ::DWORD>;
     static KeyInfo oldKeyInfo{};
     KeyInfo newKeyInfo{ vkCode, keyInfo->scanCode, keyInfo->flags };
 
     if (wParam == WM_KEYUP || wParam == WM_SYSKEYUP) {
+
+        // Ignores weird shift keyup events that are generated if you:
+        // - turn numlock on
+        // - hold shift
+        // - press numpad<N>
+        if (vkCode == VK_LSHIFT && keyInfo->scanCode != lShiftScanCode
+            || vkCode == VK_RSHIFT && keyInfo->scanCode != rShiftScanCode
+        ) {
+            return ::CallNextHookEx(NULL, nCode, wParam, lParam);
+        }
+
         updateKeyboardModifiers(vkCode, false);
         std::get<2>(newKeyInfo) &= ~LLKHF_UP;
         if (oldKeyInfo == newKeyInfo) {
@@ -370,9 +384,19 @@ static ::LRESULT CALLBACK win32KeyboardHook(
         return ::CallNextHookEx(NULL, nCode, wParam, lParam);
     }
 
-    if (oldKeyInfo == newKeyInfo) {
+    // Ignore repeated keydown events, also ignore weird shift keydown events
+    // that happen if you:
+    // - turn numlock on
+    // - hold down shift
+    // - hold down numpad<N>
+    // - release numpad<N>
+    if (oldKeyInfo == newKeyInfo
+        || vkCode == VK_LSHIFT && g_keyboardLModifiers.testFlag(Qt::ShiftModifier)
+        || vkCode == VK_RSHIFT && g_keyboardRModifiers.testFlag(Qt::ShiftModifier)
+    ) {
         return ::CallNextHookEx(NULL, nCode, wParam, lParam);
     }
+
     oldKeyInfo = newKeyInfo;
     updateKeyboardModifiers(vkCode, true);
 
