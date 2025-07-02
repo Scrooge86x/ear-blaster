@@ -339,10 +339,6 @@ static inline QString sequenceToString(const Qt::Key key, const Qt::KeyboardModi
 
 void setCurrentSequence(const QString& newSequence) {
     auto& gkl{ GlobalKeyListener::instance() };
-    if (gkl.m_currentSequence == newSequence) {
-        return;
-    }
-
     gkl.m_currentSequence = newSequence;
     emit gkl.currentSequenceChanged(newSequence);
 }
