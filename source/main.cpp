@@ -13,6 +13,9 @@ int main(int argc, char *argv[])
     // Fix for resize causing flickering
     qputenv("QT_D3D_NO_FLIP", "1" );
 
+    // Qt documentation says that QApplication should be used instead
+    // because of Qt Labs Platform, but this would disable the dark titlebar
+    // on windows 10 so for now it will stay as QGuiApplication
     QGuiApplication app{ argc, argv };
 
     QQmlApplicationEngine engine{};

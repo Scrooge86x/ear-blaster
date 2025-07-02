@@ -22,6 +22,8 @@ qt_add_executable(${PROJECT_NAME}
 qt_add_qml_module(${PROJECT_NAME}
     URI ear-blaster
     VERSION 1.0
+    RESOURCES
+        resources/ear-blaster.ico
     QML_FILES
         qml/Main.qml
         qml/SoundElement.qml
