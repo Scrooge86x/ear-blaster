@@ -16,6 +16,7 @@ qt_add_executable(${PROJECT_NAME}
     source/main.cpp
     source/soundplayer.h source/soundplayer.cpp
     source/configmanager.h source/configmanager.cpp
+    source/globalkeylistener.h source/globalkeylistener.cpp
 )
 
 qt_add_qml_module(${PROJECT_NAME}
@@ -25,6 +26,7 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/Main.qml
         qml/SoundElement.qml
         qml/SoundList.qml
+        qml/SequenceInput.qml
 )
 
 set_target_properties(${PROJECT_NAME}

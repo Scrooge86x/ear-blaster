@@ -22,8 +22,8 @@ Window {
     ListModel {
         id: soundConfigModel
         Component.onCompleted: {
-            append({ name: "Sound 1", path: "E:\\test-sounds\\1.mp3", sequence: "Ctrl+Shift+1" });
-            append({ name: "Sound 2", path: "E:\\test-sounds\\2.wav", sequence: "Ctrl+Shift+2" });
+            append({ name: "Sound 1", path: "E:\\test-sounds\\1.mp3", sequence: "Ctrl+Num1" });
+            append({ name: "Sound 2", path: "E:\\test-sounds\\2.wav", sequence: "Ctrl+Num2" });
         }
     }
 

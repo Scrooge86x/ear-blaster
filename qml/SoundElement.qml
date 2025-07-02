@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls.Universal
 
 Rectangle {
@@ -12,9 +11,9 @@ Rectangle {
     property string name
     property string path
     property string sequence
+    property int initialIndex
+    property bool disablePlayback: false
 
-    signal playRequested()
-    signal stopRequested()
     signal deleteRequested()
 
     Text {
@@ -44,7 +43,7 @@ Rectangle {
         text: name
 
         onTextChanged: name = text
-        onEditingFinished: soundNameInput.focus = false
+        onEditingFinished: focus = false
         onFocusChanged: root.focusChanged(focus)
 
         leftPadding: 6
@@ -77,7 +76,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("play")
-        onClicked: playRequested()
+        onClicked: soundPlayer.play(initialIndex, path)
     }
 
     RoundButton {
@@ -91,20 +90,47 @@ Rectangle {
 
         radius: 7
         text: qsTr("stop")
-        onClicked: stopRequested()
+        onClicked: soundPlayer.stop(initialIndex)
     }
 
     RoundButton {
         id: deleteButton
         Universal.foreground: "#fff"
         anchors.verticalCenter: parent.verticalCenter
-        anchors.right: parent.right
+        anchors.right: sequenceInput.left
         anchors.rightMargin: 10
         leftPadding: 15
         rightPadding: 15
 
         radius: 7
         text: qsTr("delete")
-        onClicked: deleteRequested()
+        onClicked: {
+            soundPlayer.stop(initialIndex);
+            deleteRequested();
+        }
+    }
+
+    SequenceInput {
+        id: sequenceInput
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: parent.right
+        anchors.rightMargin: 10
+        width: 150
+        height: 36
+        sequence: root.sequence
+
+        onFocusChanged: root.focusChanged(focus)
+        onEditingFinished: focus = false
+        onSequenceChanged: root.sequence = sequenceInput.sequence
+    }
+
+    Connections {
+        enabled: sequence !== ""
+        target: globalKeyListener
+        function onCurrentSequenceChanged(hotkey) {
+            if (!disablePlayback && hotkey === sequence) {
+                soundPlayer.play(initialIndex, path);
+            }
+        }
     }
 }

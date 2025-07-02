@@ -20,6 +20,7 @@ Rectangle {
     }
 
     property int uniqueIndex: 0
+    property bool disablePlayback: false
 
     Component {
         id: dragDelegate
@@ -70,24 +71,20 @@ Rectangle {
                     }
                 }
 
-                property int initialIndex
-
+                disablePlayback: root.disablePlayback
                 path: model.path
-                sequence: model.sequence
                 Component.onCompleted: {
                     name = model.name // Avoids a binding loop in onNameChanged
+                    sequence = model.sequence
                     initialIndex = uniqueIndex++
                 }
-                onPlayRequested: soundPlayer.play(initialIndex, model.path)
-                onStopRequested: soundPlayer.stop(initialIndex)
-                onDeleteRequested: {
-                    soundPlayer.stop(initialIndex)
-                    listModel.remove(index, 1)
-                }
+                onDeleteRequested: listModel.remove(index, 1)
                 onNameChanged: listModel.setProperty(index, "name", name)
+                onSequenceChanged: listModel.setProperty(index, "sequence", sequence)
                 onFocusChanged: (hasFocus) => {
-                    focusStealer.z = hasFocus ? 1 : 0
-                    focusStealer.enabled = hasFocus
+                    focusStealer.z = hasFocus ? 1 : 0;
+                    focusStealer.enabled = hasFocus;
+                    root.disablePlayback = hasFocus;
                 }
             }
 
