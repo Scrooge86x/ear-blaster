@@ -7,6 +7,12 @@ import Qt.labs.platform
 
 ApplicationWindow {
     id: root
+
+    Universal.theme: Universal.Dark
+    Universal.foreground: "#ddd"
+    Universal.background: "#0f0f0f"
+    Universal.accent: Universal.Orange
+
     visible: true
     width: 900
     minimumWidth: 600
@@ -15,10 +21,10 @@ ApplicationWindow {
     title: "Ear Blaster"
     color: Universal.background
 
-    Universal.theme: Universal.Dark
-    Universal.foreground: "#ddd"
-    Universal.background: "#0f0f0f"
-    Universal.accent: Universal.Orange
+    topPadding: 7
+    rightPadding: 7
+    bottomPadding: 7
+    leftPadding: 7
 
     SystemTrayIcon {
         id: trayIcon
@@ -118,7 +124,6 @@ ApplicationWindow {
             top: parent.top
             left: parent.left
             right: parent.right
-            margins: 7
         }
 
         RowLayout {
@@ -173,7 +178,7 @@ ApplicationWindow {
             right: parent.right
             bottom: parent.bottom
             left: parent.left
-            margins: 7
+            topMargin: 7
         }
     }
 
