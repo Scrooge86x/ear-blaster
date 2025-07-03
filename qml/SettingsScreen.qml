@@ -12,6 +12,11 @@ Item {
             onClicked: backClicked()
         }
 
+        Button {
+            text: "Restore defaults"
+            onClicked: AppSettings.restoreDefaults()
+        }
+
         Label {
             text: "On close behavior:"
         }
