@@ -13,5 +13,11 @@ Settings {
         HideToTray,
         HideKeepTray
     }
-    property real closeBehavior: AppSettings.CloseBehavior.HideToTray
+    property real closeBehavior: AppSettings.CloseBehavior.HideKeepTray
+
+    enum SecondPressBehavior {
+        StartOver,
+        StopSound
+    }
+    property real secondPressBehavior: AppSettings.SecondPressBehavior.StopSound
 }

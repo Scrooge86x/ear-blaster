@@ -34,6 +34,11 @@ void SoundPlayer::setDevice(const QAudioDevice& device)
     m_audioOutput.setDevice(device);
 }
 
+bool SoundPlayer::isStillPlaying(const int id) const
+{
+    return m_mediaPlayer.isPlaying() && id == m_currentTrackId;
+}
+
 QAudioDevice SoundPlayer::getDevice() const
 {
     return m_audioOutput.device();

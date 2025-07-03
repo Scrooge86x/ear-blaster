@@ -129,7 +129,21 @@ Rectangle {
         target: globalKeyListener
         function onCurrentSequenceChanged(hotkey) {
             if (!disablePlayback && hotkey === sequence) {
-                soundPlayer.play(initialIndex, path);
+                switch (AppSettings.secondPressBehavior) {
+                case AppSettings.SecondPressBehavior.StartOver:
+                    soundPlayer.play(initialIndex, path);
+                    break;
+                case AppSettings.SecondPressBehavior.StopSound:
+                    if (soundPlayer.isStillPlaying(initialIndex)) {
+                        soundPlayer.stop(initialIndex);
+                    } else {
+                        soundPlayer.play(initialIndex, path);
+                    }
+                    break;
+                default:
+                    console.error("Invalid second press behavior specified:", AppSettings.secondPressBehavior);
+                    break;
+                }
             }
         }
     }

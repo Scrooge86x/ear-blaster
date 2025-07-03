@@ -16,6 +16,7 @@ public:
     Q_INVOKABLE void stop(const int id);
     Q_INVOKABLE void setVolume(const float volume);
     Q_INVOKABLE void setDevice(const QAudioDevice& device);
+    Q_INVOKABLE bool isStillPlaying(const int id) const;
     Q_INVOKABLE QAudioDevice getDevice() const;
 private:
     QMediaPlayer m_mediaPlayer{};
