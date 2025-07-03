@@ -50,6 +50,7 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("Show")
+                icon.source: "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico"
                 onTriggered: {
                     if (AppSettings.closeBehavior == AppSettings.CloseBehavior.HideToTray) {
                         trayIcon.safeHide();
@@ -57,6 +58,8 @@ ApplicationWindow {
                     root.show();
                 }
             }
+
+            MenuSeparator {}
 
             MenuItem {
                 text: qsTr("Exit")
