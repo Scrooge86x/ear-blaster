@@ -5,7 +5,7 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: Qt.lighter(Universal.background, 2.2)
+    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, 0.075))
     radius: 10
 
     property string name
@@ -23,7 +23,7 @@ Rectangle {
         anchors.leftMargin: 7
 
         font.pixelSize: 20
-        color: Universal.foreground
+        color: AppSettings.foregroundColor
         text: "≡"
         font.family: "Arial"
     }
@@ -39,7 +39,7 @@ Rectangle {
         }
 
         font.pixelSize: 20
-        color: Universal.foreground
+        color: AppSettings.foregroundColor
         text: name
 
         onTextChanged: name = text
@@ -51,7 +51,7 @@ Rectangle {
             anchors.fill: parent
             color: root.color
             border.width: soundNameInput.focus ? 1 : 0
-            border.color: Universal.foreground
+            border.color: AppSettings.foregroundColor
             radius: 7
         }
 

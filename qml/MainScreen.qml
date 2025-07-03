@@ -32,7 +32,7 @@ Item {
         RowLayout {
             Label {
                 text: qsTr("Volume:")
-                color: Universal.foreground
+                color: AppSettings.foregroundColor
             }
 
             Slider {
@@ -52,7 +52,7 @@ Item {
             Label {
                 Layout.preferredWidth: 35
                 text: `${Math.round(volumeSlider.value * 100)}%`
-                color: Universal.foreground
+                color: AppSettings.foregroundColor
                 font.pixelSize: 13
             }
         }
@@ -146,14 +146,14 @@ Item {
             text: "+"
             font.family: "Arial"
             font.pixelSize: 30
-            color: Universal.foreground
+            color: AppSettings.foregroundColor
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
 
         background: Rectangle {
             anchors.fill: parent
-            color: Universal.accent
+            color: AppSettings.accentColor
             radius: addSoundButton.width / 2
         }
 

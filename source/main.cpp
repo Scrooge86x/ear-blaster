@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QIcon>
 
 #include "soundplayer.h"
 #include "globalkeylistener.h"
@@ -17,6 +18,10 @@ int main(int argc, char *argv[])
     // because of Qt Labs Platform, but this would disable the dark titlebar
     // on windows 10 so for now it will stay as QGuiApplication
     QGuiApplication app{ argc, argv };
+
+    // The icon already set from the windows rc file, but in order for
+    // ColorDialog to pick it up, it needs to also be set here
+    app.setWindowIcon(QIcon{ ":/qt/qml/ear-blaster/resources/ear-blaster.ico" });
 
     QQmlApplicationEngine engine{};
 

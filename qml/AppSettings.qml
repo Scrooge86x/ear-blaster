@@ -7,6 +7,9 @@ Settings {
 
     property string sounds: "[]"
     property real mainVolume: 1.0
+    property string foregroundColor: "#ddd"
+    property string backgroundColor: "#0f0f0f"
+    property string accentColor: "#fa6800"
 
     enum CloseBehavior {
         Quit,

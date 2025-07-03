@@ -7,7 +7,7 @@ Rectangle {
 
     id: root
     clip: true
-    color: Universal.background
+    color: AppSettings.backgroundColor
 
     MouseArea {
         id: focusStealer

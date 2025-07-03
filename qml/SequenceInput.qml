@@ -11,9 +11,9 @@ TextField {
 
     background: Rectangle {
         anchors.fill: parent
-        color: Universal.background
+        color: AppSettings.backgroundColor
         border.width: parent.focus ? 1 : 0
-        border.color: Universal.accent
+        border.color: AppSettings.accentColor
         radius: 7
     }
 

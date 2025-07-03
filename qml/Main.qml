@@ -9,9 +9,9 @@ ApplicationWindow {
     id: root
 
     Universal.theme: Universal.Dark
-    Universal.foreground: "#ddd"
-    Universal.background: "#0f0f0f"
-    Universal.accent: Universal.Orange
+    Universal.foreground: AppSettings.foregroundColor
+    Universal.background: AppSettings.backgroundColor
+    Universal.accent: AppSettings.accentColor
 
     visible: true
     width: 900
@@ -19,7 +19,7 @@ ApplicationWindow {
     height: 650
     minimumHeight: 400
     title: "Ear Blaster"
-    color: Universal.background
+    color: AppSettings.backgroundColor
 
     topPadding: 7
     rightPadding: 7
