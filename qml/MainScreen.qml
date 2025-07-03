@@ -5,6 +5,8 @@ import QtQuick.Controls.Universal
 import QtQuick.Dialogs
 
 Item {
+    signal settingsClicked()
+
     property ListModel audioDevices: ListModel {}
 
     Component.onCompleted: {
@@ -69,6 +71,11 @@ Item {
                 text: model.name
                 highlighted: deviceComboBox.highlightedIndex === index
             }
+        }
+
+        Button {
+            text: "Settings"
+            onClicked: settingsClicked()
         }
     }
 

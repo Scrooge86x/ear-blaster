@@ -31,6 +31,7 @@ qt_add_qml_module(${PROJECT_NAME}
     QML_FILES
         qml/Main.qml
         qml/MainScreen.qml
+        qml/SettingsScreen.qml
         qml/SoundElement.qml
         qml/SoundList.qml
         qml/SequenceInput.qml

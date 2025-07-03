@@ -58,11 +58,21 @@ ApplicationWindow {
 
     Component {
         id: mainScreen
-        MainScreen {}
+        MainScreen {
+            onSettingsClicked: stackView.push(settingsScreen)
+        }
     }
 
-    Loader {
+    Component {
+        id: settingsScreen
+        SettingsScreen {
+            onBackClicked: stackView.pop()
+        }
+    }
+
+    StackView {
+        id: stackView
         anchors.fill: parent
-        sourceComponent: mainScreen
+        initialItem: mainScreen
     }
 }
