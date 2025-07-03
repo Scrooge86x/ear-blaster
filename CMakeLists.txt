@@ -4,7 +4,7 @@ project(ear-blaster LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.8 REQUIRED COMPONENTS Quick Multimedia)
+find_package(Qt6 6.9 REQUIRED COMPONENTS Quick Multimedia)
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
