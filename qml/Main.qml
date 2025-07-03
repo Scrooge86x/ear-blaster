@@ -27,9 +27,12 @@ ApplicationWindow {
     leftPadding: 7
 
     onClosing: (close) => {
+        if (AppSettings.closeBehavior == AppSettings.CloseBehavior.Quit) {
+            return;
+        }
+
         root.hide();
-        trayIcon.show();
-        trayIcon.menu = trayMenu;
+        trayIcon.safeShow();
         close.accepted = false;
     }
 
@@ -37,14 +40,20 @@ ApplicationWindow {
         id: trayIcon
         icon.source: "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico"
         tooltip: "Ear Blaster"
+        Component.onCompleted: {
+            if (AppSettings.closeBehavior === AppSettings.CloseBehavior.HideKeepTray) {
+                trayIcon.show()
+            }
+        }
         menu: Menu {
             id: trayMenu
 
             MenuItem {
                 text: qsTr("Show")
                 onTriggered: {
-                    trayIcon.menu = null; // This is a workaround for the fact that trayIcon.hide() causes the menu to get destroyed
-                    trayIcon.hide();
+                    if (AppSettings.closeBehavior == AppSettings.CloseBehavior.HideToTray) {
+                        trayIcon.safeHide();
+                    }
                     root.show();
                 }
             }
@@ -52,6 +61,35 @@ ApplicationWindow {
             MenuItem {
                 text: qsTr("Exit")
                 onTriggered: Qt.exit(0)
+            }
+        }
+
+        // safeShow and safeHide functions are a workaround for the fact
+        // that trayIcon.hide() causes the menu to get destroyed
+        function safeShow() {
+            if (!trayIcon.visible) {
+                trayIcon.show();
+                trayIcon.menu = trayMenu;
+            }
+        }
+
+        function safeHide() {
+            if (trayIcon.visible) {
+                trayIcon.menu = null;
+                trayIcon.hide();
+            }
+        }
+    }
+    Connections {
+        target: AppSettings
+        function onCloseBehaviorChanged() {
+            switch (AppSettings.closeBehavior) {
+            case AppSettings.CloseBehavior.Quit:         trayIcon.safeHide(); break;
+            case AppSettings.CloseBehavior.HideToTray:   trayIcon.safeHide(); break;
+            case AppSettings.CloseBehavior.HideKeepTray: trayIcon.safeShow(); break;
+            default:
+                console.error("Invalid close behavior specified:", closeBehavior);
+                break;
             }
         }
     }
