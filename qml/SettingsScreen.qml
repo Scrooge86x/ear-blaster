@@ -8,20 +8,20 @@ Item {
 
     ColumnLayout {
         Button {
-            text: "Back"
+            text: qsTr("Back")
             onClicked: backClicked()
         }
 
         Button {
-            text: "Restore defaults"
+            text: qsTr("Restore defaults")
             onClicked: AppSettings.restoreDefaults()
         }
 
         Label {
-            text: "On close behavior:"
+            text: qsTr("On close behavior:")
         }
         ComboBox  {
-            model: ["Quit", "Hide to tray", "Hide (tray always visible)"]
+            model: [qsTr("Quit"), qsTr("Hide to tray"), qsTr("Hide (tray always visible)")]
             Layout.preferredWidth: 240
 
             currentIndex: AppSettings.closeBehavior
@@ -34,10 +34,10 @@ Item {
         }
 
         Label {
-            text: "On second hotkey press:"
+            text: qsTr("On second hotkey press:")
         }
         ComboBox  {
-            model: ["Restart sound", "Stop sound"]
+            model: [qsTr("Restart sound"), qsTr("Stop sound")]
             Layout.preferredWidth: 150
 
             currentIndex: AppSettings.secondPressBehavior
@@ -50,7 +50,7 @@ Item {
         }
 
         Label {
-            text: "App colors:"
+            text: qsTr("App colors:")
         }
         RowLayout {
             Rectangle {
@@ -59,7 +59,7 @@ Item {
                 color: AppSettings.foregroundColor
             }
             Button {
-                text: "foreground"
+                text: qsTr("foreground")
                 onClicked: foregroundColorDialog.open()
 
                 ColorDialog {
@@ -77,7 +77,7 @@ Item {
                 border.color: AppSettings.foregroundColor
             }
             Button {
-                text: "background"
+                text: qsTr("background")
                 onClicked: backgroundColorDialog.open()
 
                 ColorDialog {
@@ -93,7 +93,7 @@ Item {
                 color: AppSettings.accentColor
             }
             Button {
-                text: "accent"
+                text: qsTr("accent")
                 onClicked: accentColorDialog.open()
 
                 ColorDialog {
@@ -105,7 +105,7 @@ Item {
         }
 
         CheckBox {
-            text: "Save window geometry"
+            text: qsTr("Save window geometry")
             checked: AppSettings.windowGeometry
             onToggled: AppSettings.windowGeometry = checked ? "{}" : ""  // Anything other than "" will get filled in during shutdown
         }

@@ -74,7 +74,7 @@ Item {
         }
 
         Button {
-            text: "Settings"
+            text: qsTr("Settings")
             onClicked: settingsClicked()
         }
     }
@@ -115,7 +115,7 @@ Item {
             }
 
             AppSettings.sounds = JSON.stringify(soundList);
-            console.info(`Config written to: ${AppSettings.location}`);
+            console.info("Config written to:", AppSettings.location);
         }
     }
 
