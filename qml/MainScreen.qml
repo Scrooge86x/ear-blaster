@@ -89,7 +89,9 @@ Item {
                 }
 
                 for (const sound of sounds) {
-                    if (Object.keys(sound).toString() !== "name,path,sequence") {
+                    const expectedKeys = ["name", "path", "sequence"];
+                    if (Object.keys(sound).length !== expectedKeys.length
+                            || !expectedKeys.every(key => key in sound)) {
                         console.error("Error: corruted sound detected in config file.", JSON.stringify(sound));
                         continue;
                     }

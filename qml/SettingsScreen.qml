@@ -103,5 +103,11 @@ Item {
                 }
             }
         }
+
+        CheckBox {
+            text: "Save window geometry"
+            checked: AppSettings.windowGeometry
+            onToggled: AppSettings.windowGeometry = checked ? "{}" : ""  // Anything other than "" will get filled in during shutdown
+        }
     }
 }

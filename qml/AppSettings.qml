@@ -16,14 +16,16 @@ Settings {
             accentColor: "#fa6800",
             closeBehavior: AppSettings.CloseBehavior.HideKeepTray,
             secondPressBehavior: AppSettings.SecondPressBehavior.StopSound,
+            windowGeometry: "{}", // Anything other than "" will get filled in during shutdown
         };
     }
 
-    property string sounds: "[]"
+    property string sounds: "[]" // { "name": "", "path": "", "sequence": "" }
     property real mainVolume: getDefaults()["mainVolume"]
     property string foregroundColor: getDefaults()["foregroundColor"]
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
+    property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
 
     enum CloseBehavior {
         Quit,

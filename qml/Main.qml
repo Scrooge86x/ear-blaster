@@ -26,9 +26,48 @@ ApplicationWindow {
     bottomPadding: 7
     leftPadding: 7
 
+    function exitApp() {
+        if (AppSettings.windowGeometry !== "") {
+            AppSettings.windowGeometry = JSON.stringify({
+                x: root.x,
+                y: root.y,
+                width: root.width,
+                height: root.height,
+                maximized: root.visibility === Window.Maximized,
+            });
+        }
+        Qt.exit(0);
+    }
+
+    Component.onCompleted: {
+        if (AppSettings.windowGeometry === "") {
+            return;
+        }
+
+        try {
+            const windowGeometry = JSON.parse(AppSettings.windowGeometry);
+            const expectedKeys = ["x", "y", "width", "height", "maximized"];
+            if (Object.keys(windowGeometry).length !== expectedKeys.length
+                    || !expectedKeys.every(key => key in windowGeometry)) {
+                return console.error("Invalid window geometry configuration detected: ", AppSettings.windowGeometry);
+            }
+
+            if (windowGeometry.maximized) {
+                root.visibility = Window.Maximized;
+            } else {
+                root.x      = windowGeometry.x;
+                root.y      = windowGeometry.y;
+                root.width  = Math.max(windowGeometry.width,  root.minimumWidth);
+                root.height = Math.max(windowGeometry.height, root.minimumHeight);
+            }
+        } catch (error) {
+            console.error("Error while reading windowData: ", error);
+        }
+    }
+
     onClosing: (close) => {
         if (AppSettings.closeBehavior == AppSettings.CloseBehavior.Quit) {
-            return;
+            return exitApp();
         }
 
         root.hide();
@@ -63,7 +102,7 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("Exit")
-                onTriggered: Qt.exit(0)
+                onTriggered: exitApp()
             }
         }
 
