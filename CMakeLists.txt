@@ -30,6 +30,7 @@ qt_add_qml_module(${PROJECT_NAME}
         resources/ear-blaster.ico
     QML_FILES
         qml/Main.qml
+        qml/MainScreen.qml
         qml/SoundElement.qml
         qml/SoundList.qml
         qml/SequenceInput.qml
