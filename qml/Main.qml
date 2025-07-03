@@ -38,7 +38,23 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("Exit")
-                onTriggered: Qt.exit(0)
+                onTriggered: {
+                    const soundList = [];
+                    for (let i = 0; i < soundConfigModel.count; ++i) {
+
+                        // Cannot directly push sound, cause it also includes other keys
+                        const sound = soundConfigModel.get(i);
+                        soundList.push({
+                            name: sound.name,
+                            path: sound.path,
+                            sequence: sound.sequence,
+                        });
+                    }
+
+                    AppSettings.sounds = JSON.stringify(soundList);
+                    console.info(`Config written to: ${AppSettings.location}`);
+                    Qt.exit(0);
+                }
             }
         }
     }
@@ -53,8 +69,22 @@ ApplicationWindow {
     ListModel {
         id: soundConfigModel
         Component.onCompleted: {
-            append({ name: "Sound 1", path: "E:\\test-sounds\\1.mp3", sequence: "Ctrl+Num1" });
-            append({ name: "Sound 2", path: "E:\\test-sounds\\2.wav", sequence: "Ctrl+Num2" });
+            try {
+                const sounds = JSON.parse(AppSettings.sounds);
+                if (!Array.isArray(sounds)) {
+                    return console.error("Error: corrupted sounds list in config file.");
+                }
+
+                for (const sound of sounds) {
+                    if (Object.keys(sound).toString() !== "name,path,sequence") {
+                        console.error("Error: corruted sound detected in config file.", JSON.stringify(sound));
+                        continue;
+                    }
+                    append(sound);
+                }
+            } catch (error) {
+                console.error("Failed parsing config file: ", error);
+            }
         }
     }
 
@@ -78,6 +108,7 @@ ApplicationWindow {
     Component.onCompleted: {
         deviceComboBox.currentIndex = 0;
         soundPlayer.setDevice(mediaDevices.audioOutputs[0]);
+        soundPlayer.setVolume(AppSettings.mainVolume);
         updateAudioDevices();
     }
 
@@ -100,11 +131,14 @@ ApplicationWindow {
                 id: volumeSlider
                 from: 0.0
                 to: 1.0
-                value: 1.0
+                value: AppSettings.mainVolume
                 stepSize: 0.01
                 Layout.preferredWidth: 150
 
-                onMoved: soundPlayer.setVolume(value)
+                onMoved: {
+                    AppSettings.mainVolume = value;
+                    soundPlayer.setVolume(value);
+                }
             }
 
             Label {
@@ -154,7 +188,7 @@ ApplicationWindow {
             "WAV (*.wav)",
         ]
         onAccepted: {
-            for (const file of selectedFiles) {
+            for (const file of files) {
                 let filePath = file.toString().replace("file://", "")
                 if (Qt.platform.os === "windows") {
                     filePath = filePath.substring(1);

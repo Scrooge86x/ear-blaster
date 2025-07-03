@@ -19,6 +19,10 @@ qt_add_executable(${PROJECT_NAME}
     source/globalkeylistener.h source/globalkeylistener.cpp
 )
 
+set_source_files_properties(qml/AppSettings.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
+
 qt_add_qml_module(${PROJECT_NAME}
     URI ear-blaster
     VERSION 1.0
@@ -29,6 +33,7 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/SoundElement.qml
         qml/SoundList.qml
         qml/SequenceInput.qml
+        qml/AppSettings.qml
 )
 
 set_target_properties(${PROJECT_NAME}

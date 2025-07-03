@@ -90,10 +90,11 @@ Rectangle {
 
             DropArea {
                 anchors.fill: parent
-                onEntered: (drag) => listView.model.items.move(
+                onEntered: (drag) => listModel.move(
                     drag.source.DelegateModel.itemsIndex,
-                    dragArea.DelegateModel.itemsIndex
-                )
+                    dragArea.DelegateModel.itemsIndex,
+                    1
+                );
             }
         }
     }
