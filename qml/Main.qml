@@ -42,15 +42,15 @@ ApplicationWindow {
         tooltip: "Ear Blaster"
         Component.onCompleted: {
             if (AppSettings.closeBehavior === AppSettings.CloseBehavior.HideKeepTray) {
-                trayIcon.show()
+                trayIcon.safeShow()
             }
         }
         menu: Menu {
             id: trayMenu
 
             MenuItem {
+                id: trayMenuShow
                 text: qsTr("Show")
-                icon.source: "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico"
                 onTriggered: {
                     if (AppSettings.closeBehavior == AppSettings.CloseBehavior.HideToTray) {
                         trayIcon.safeHide();
@@ -68,16 +68,18 @@ ApplicationWindow {
         }
 
         // safeShow and safeHide functions are a workaround for the fact
-        // that trayIcon.hide() causes the menu to get destroyed
+        // that trayIcon.hide() causes the menu and icons to get destroyed
         function safeShow() {
             if (!trayIcon.visible) {
                 trayIcon.show();
                 trayIcon.menu = trayMenu;
+                trayMenuShow.icon.source = "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico";
             }
         }
 
         function safeHide() {
             if (trayIcon.visible) {
+                trayMenuShow.icon.source = undefined;
                 trayIcon.menu = null;
                 trayIcon.hide();
             }
