@@ -5,6 +5,7 @@
 
 #include "soundplayer.h"
 #include "globalkeylistener.h"
+#include "translator.h"
 
 int main(int argc, char *argv[])
 {
@@ -18,19 +19,25 @@ int main(int argc, char *argv[])
     // because of Qt Labs Platform, but this would disable the dark titlebar
     // on windows 10 so for now it will stay as QGuiApplication
     QGuiApplication app{ argc, argv };
+    using namespace Qt::Literals::StringLiterals;
 
     // The icon already set from the windows rc file, but in order for
     // ColorDialog to pick it up, it needs to also be set here
-    app.setWindowIcon(QIcon{ ":/qt/qml/ear-blaster/resources/ear-blaster.ico" });
-
-    QQmlApplicationEngine engine{};
+    app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
 
     SoundPlayer soundPlayer{};
-    engine.rootContext()->setContextProperty("soundPlayer", &soundPlayer);
-    engine.rootContext()->setContextProperty("globalKeyListener", &GlobalKeyListener::instance());
+    Translator translator{};
+    QQmlApplicationEngine engine{};
+    QObject::connect(
+        &translator, &Translator::currentLanguageChanged,
+        &engine, &QQmlApplicationEngine::retranslate
+    );
 
-    using namespace Qt::Literals::StringLiterals;
-    engine.load(QUrl(u"qrc:/qt/qml/ear-blaster/qml/Main.qml"_s));
+    engine.rootContext()->setContextProperty(u"soundPlayer"_s, &soundPlayer);
+    engine.rootContext()->setContextProperty(u"translator"_s, &translator);
+    engine.rootContext()->setContextProperty(u"globalKeyListener"_s, &GlobalKeyListener::instance());
+
+    engine.load(u"qrc:/qt/qml/ear-blaster/qml/Main.qml"_s);
     if (engine.rootObjects().isEmpty())
         return -1;
 
