@@ -28,6 +28,7 @@ qt_add_executable(${PROJECT_NAME}
     source/globalkeylistener.h source/globalkeylistener.cpp
     source/translator.h source/translator.cpp
     source/audiosystem/soundeffect.h source/audiosystem/soundeffect.cpp
+    source/audiosystem/audiosystem.h source/audiosystem/audiosystem.cpp
 )
 
 set_source_files_properties(qml/AppSettings.qml PROPERTIES

@@ -6,9 +6,10 @@
 #include "soundplayer.h"
 #include "globalkeylistener.h"
 #include "translator.h"
-#include "audiosystem/soundeffect.h"
+#include "audiosystem/audiosystem.h"
 
 #include <QMediaDevices>
+#include <QTimer>
 
 int main(int argc, char *argv[])
 {
@@ -29,18 +30,25 @@ int main(int argc, char *argv[])
     app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
 
     // THIS IS TEMPORARY AND ONLY FOR TESTING, use the main branch
-    SoundEffect* sf = new SoundEffect(&app);
-    sf->setOutputDevice(QMediaDevices::defaultAudioOutput());
-    sf->play(QUrl::fromLocalFile(u"E:/test-sounds/3.mp3"_s));
-    sf->setVolume(1.5f);
+    AudioSystem* audioSystem{ new AudioSystem{ &app } };
+    audioSystem->setOutputDevice(QMediaDevices::defaultAudioOutput());
+    audioSystem->play(1, QUrl::fromLocalFile(u"E:/test-sounds/1.mp3"_s));
+    audioSystem->play(2, QUrl::fromLocalFile(u"E:/test-sounds/2.wav"_s));
+    audioSystem->play(3, QUrl::fromLocalFile(u"E:/test-sounds/3.mp3"_s));
 
-    QObject::connect(sf, &SoundEffect::startedPlaying, []{
-        qDebug() << "playing";
+    QObject::connect(audioSystem, &AudioSystem::soundStarted, [](int id){ qDebug() << "sound started" << id; });
+    QObject::connect(audioSystem, &AudioSystem::soundStopped, [](int id){ qDebug() << "sound stopped" << id; });
+
+    QTimer::singleShot(2000, audioSystem, [&] {
+        audioSystem->setVolume(5.f);
+        audioSystem->stop(1);
     });
 
-    QObject::connect(sf, &SoundEffect::stoppedPlaying, []{
-        qDebug() << "stopped";
+    QTimer::singleShot(5000, audioSystem, [&] {
+        audioSystem->play(3, QUrl::fromLocalFile(u"E:/test-sounds/1.mp3"_s));
     });
+
+    return app.exec();
 
     SoundPlayer soundPlayer{};
     Translator translator{};
