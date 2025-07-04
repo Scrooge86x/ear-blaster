@@ -5,7 +5,7 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, 0.075))
+    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, isPlaying ? 0.15 : 0.075))
     radius: 10
 
     property string name
@@ -13,6 +13,7 @@ Rectangle {
     property string sequence
     property int initialIndex
     property bool disablePlayback: false
+    property bool isPlaying: false
 
     signal deleteRequested()
 
@@ -124,7 +125,6 @@ Rectangle {
         onSequenceChanged: root.sequence = sequenceInput.sequence
     }
 
-    property bool isPlaying: false
     Connections {
         target: audioSystem
         function onSoundStarted(id) {
