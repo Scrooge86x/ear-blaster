@@ -28,6 +28,8 @@ Settings {
     property string accentColor: getDefaults()["accentColor"]
     property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
     property string language: getDefaults()["language"]
+
+    onMainVolumeChanged: audioSystem.volume = mainVolume
     onLanguageChanged: translator.currentLanguage = language
 
     enum CloseBehavior {

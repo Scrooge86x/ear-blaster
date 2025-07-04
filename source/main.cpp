@@ -3,13 +3,9 @@
 #include <QQmlContext>
 #include <QIcon>
 
-#include "soundplayer.h"
 #include "globalkeylistener.h"
 #include "translator.h"
 #include "audiosystem/audiosystem.h"
-
-#include <QMediaDevices>
-#include <QTimer>
 
 int main(int argc, char *argv[])
 {
@@ -29,28 +25,7 @@ int main(int argc, char *argv[])
     // ColorDialog to pick it up, it needs to also be set here
     app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
 
-    // THIS IS TEMPORARY AND ONLY FOR TESTING, use the main branch
-    AudioSystem* audioSystem{ new AudioSystem{ &app } };
-    audioSystem->setOutputDevice(QMediaDevices::defaultAudioOutput());
-    audioSystem->play(1, QUrl::fromLocalFile(u"E:/test-sounds/1.mp3"_s));
-    audioSystem->play(2, QUrl::fromLocalFile(u"E:/test-sounds/2.wav"_s));
-    audioSystem->play(3, QUrl::fromLocalFile(u"E:/test-sounds/3.mp3"_s));
-
-    QObject::connect(audioSystem, &AudioSystem::soundStarted, [](int id){ qDebug() << "sound started" << id; });
-    QObject::connect(audioSystem, &AudioSystem::soundStopped, [](int id){ qDebug() << "sound stopped" << id; });
-
-    QTimer::singleShot(2000, audioSystem, [&] {
-        audioSystem->setVolume(5.f);
-        audioSystem->stop(1);
-    });
-
-    QTimer::singleShot(5000, audioSystem, [&] {
-        audioSystem->play(3, QUrl::fromLocalFile(u"E:/test-sounds/1.mp3"_s));
-    });
-
-    return app.exec();
-
-    SoundPlayer soundPlayer{};
+    AudioSystem audioSystem{ &app };
     Translator translator{};
     QQmlApplicationEngine engine{};
     QObject::connect(
@@ -58,7 +33,7 @@ int main(int argc, char *argv[])
         &engine, &QQmlApplicationEngine::retranslate
     );
 
-    engine.rootContext()->setContextProperty(u"soundPlayer"_s, &soundPlayer);
+    engine.rootContext()->setContextProperty(u"audioSystem"_s, &audioSystem);
     engine.rootContext()->setContextProperty(u"translator"_s, &translator);
     engine.rootContext()->setContextProperty(u"globalKeyListener"_s, &GlobalKeyListener::instance());
 

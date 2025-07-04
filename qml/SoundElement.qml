@@ -76,7 +76,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("play")
-        onClicked: soundPlayer.play(initialIndex, path)
+        onClicked: audioSystem.play(initialIndex, path)
     }
 
     RoundButton {
@@ -90,7 +90,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("stop")
-        onClicked: soundPlayer.stop(initialIndex)
+        onClicked: audioSystem.stop(initialIndex)
     }
 
     RoundButton {
@@ -105,7 +105,7 @@ Rectangle {
         radius: 7
         text: qsTr("delete")
         onClicked: {
-            soundPlayer.stop(initialIndex);
+            audioSystem.stop(initialIndex);
             deleteRequested();
         }
     }
@@ -124,20 +124,36 @@ Rectangle {
         onSequenceChanged: root.sequence = sequenceInput.sequence
     }
 
+    property bool isPlaying: false
+    Connections {
+        target: audioSystem
+        function onSoundStarted(id) {
+            if (id === initialIndex) {
+                root.isPlaying = true;
+            }
+        }
+        function onSoundStopped(id) {
+            if (id === initialIndex) {
+                root.isPlaying = false;
+            }
+        }
+    }
+
     Connections {
         enabled: sequence !== ""
         target: globalKeyListener
+
         function onCurrentSequenceChanged(hotkey) {
             if (!disablePlayback && hotkey === sequence) {
                 switch (AppSettings.secondPressBehavior) {
                 case AppSettings.SecondPressBehavior.StartOver:
-                    soundPlayer.play(initialIndex, path);
+                    audioSystem.play(initialIndex, path);
                     break;
                 case AppSettings.SecondPressBehavior.StopSound:
-                    if (soundPlayer.isStillPlaying(initialIndex)) {
-                        soundPlayer.stop(initialIndex);
+                    if (root.isPlaying) {
+                        audioSystem.stop(initialIndex);
                     } else {
-                        soundPlayer.play(initialIndex, path);
+                        audioSystem.play(initialIndex, path);
                     }
                     break;
                 default:

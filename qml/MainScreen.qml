@@ -11,8 +11,7 @@ Item {
 
     Component.onCompleted: {
         deviceComboBox.currentIndex = 0;
-        soundPlayer.setDevice(mediaDevices.audioOutputs[0]);
-        soundPlayer.setVolume(AppSettings.mainVolume);
+        audioSystem.outputDevice = mediaDevices.audioOutputs[0];
         updateAudioDevices();
     }
 
@@ -43,10 +42,7 @@ Item {
                 stepSize: 0.01
                 Layout.preferredWidth: 150
 
-                onMoved: {
-                    AppSettings.mainVolume = value;
-                    soundPlayer.setVolume(value);
-                }
+                onMoved: AppSettings.mainVolume = value
             }
 
             Label {
@@ -65,7 +61,7 @@ Item {
             textRole: "name"
             Layout.preferredWidth: 300
 
-            onActivated: (index) => soundPlayer.setDevice(mediaDevices.audioOutputs[index])
+            onActivated: (index) => audioSystem.outputDevice = mediaDevices.audioOutputs[index]
             delegate: ItemDelegate {
                 width: deviceComboBox.width
                 text: model.name
@@ -193,7 +189,7 @@ Item {
         for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
             const device = mediaDevices.audioOutputs[i];
             audioDevices.append({ name: device.description });
-            if (device.id.toString() === soundPlayer.getDevice().id.toString()) {
+            if (device.id.toString() === audioSystem.outputDevice.id.toString()) {
                 deviceComboBox.currentIndex = i
             }
         }

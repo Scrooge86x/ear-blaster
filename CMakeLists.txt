@@ -24,7 +24,6 @@ qt_add_translations(ear-blaster
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
     source/main.cpp
-    source/soundplayer.h source/soundplayer.cpp
     source/globalkeylistener.h source/globalkeylistener.cpp
     source/translator.h source/translator.cpp
     source/audiosystem/soundeffect.h source/audiosystem/soundeffect.cpp
