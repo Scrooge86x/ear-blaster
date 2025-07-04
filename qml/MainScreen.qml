@@ -9,9 +9,25 @@ Item {
 
     property ListModel audioDevices: ListModel {}
 
+    Connections {
+        target: audioSystem
+        function onOutputDeviceChanged(outputDevice) {
+            AppSettings.audioOutputDevice = outputDevice.id;
+        }
+    }
+
     Component.onCompleted: {
-        deviceComboBox.currentIndex = 0;
-        audioSystem.outputDevice = mediaDevices.audioOutputs[0];
+        let deviceFound = false;
+        for (const device of mediaDevices.audioOutputs) {
+            if (device.id.toString() === AppSettings.audioOutputDevice) {
+                audioSystem.outputDevice = device;
+                deviceFound = true;
+            }
+        }
+        if (!deviceFound) {
+            console.error("Warning: audio output device not found:", AppSettings.audioOutputDevice);
+            audioSystem.outputDevice = mediaDevices.audioOutputs[0];
+        }
         updateAudioDevices();
     }
 
@@ -189,7 +205,7 @@ Item {
         for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
             const device = mediaDevices.audioOutputs[i];
             audioDevices.append({ name: device.description });
-            if (device.id.toString() === audioSystem.outputDevice.id.toString()) {
+            if (device.id.toString() === AppSettings.audioOutputDevice) {
                 deviceComboBox.currentIndex = i
             }
         }
