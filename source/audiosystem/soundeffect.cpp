@@ -27,7 +27,7 @@ void SoundEffect::play(const QUrl& filePath)
     processBuffer();
 }
 
-void SoundEffect::stop()
+void SoundEffect::stop() const
 {
     m_decoder->stop();
     m_audioSink->stop();
@@ -43,6 +43,11 @@ void SoundEffect::setVolume(const float volume)
     m_volume = volume;
 }
 
+void SoundEffect::setVolume(const float* const volumePtr)
+{
+    m_volumePtr = volumePtr;
+}
+
 QAudioDevice SoundEffect::outputDevice() const
 {
     return m_outputDevice;
@@ -50,6 +55,9 @@ QAudioDevice SoundEffect::outputDevice() const
 
 void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
 {
+    if (m_outputDevice == outputDevice) {
+        return;
+    }
     m_outputDevice = outputDevice;
 
     if (m_audioSink) {
@@ -91,9 +99,10 @@ void SoundEffect::processBuffer()
         }
         m_currentBuffer = m_decoder->read();
 
+        const float volume{ m_volumePtr ? *m_volumePtr : m_volume };
         const auto data{ m_currentBuffer.data<char>() };
         for (int i{}; i < m_currentBuffer.byteCount(); ++i) {
-            data[i] *= m_volume;
+            data[i] *= volume;
         }
     }
 
@@ -103,7 +112,10 @@ void SoundEffect::processBuffer()
     }
 
     const auto offsetData{ m_currentBuffer.data<char>() + m_bytesWritten };
-    m_bytesWritten += m_ioDevice->write(offsetData, std::min(bytesLeft, m_audioSink->bytesFree()));
+    m_bytesWritten += m_ioDevice->write(offsetData, std::clamp(m_audioSink->bytesFree(), 0ll, bytesLeft));
+    if (m_audioSink->state() != QAudio::ActiveState) {
+        return;
+    }
 
     if (m_bytesWritten == m_currentBuffer.byteCount()) {
         m_bytesWritten = 0;

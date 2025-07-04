@@ -19,10 +19,11 @@ public:
     explicit SoundEffect(QObject* const parent = nullptr);
 
     void play(const QUrl& filePath);
-    void stop();
+    void stop() const;
 
     float volume() const;
     void setVolume(const float volume);
+    void setVolume(const float* const volumePtr);
 
     QAudioDevice outputDevice() const;
     void setOutputDevice(const QAudioDevice& outputDevice);
@@ -43,6 +44,7 @@ private:
 
     QAudioDevice m_outputDevice{};
     float m_volume{ 1.f };
+    const float* m_volumePtr{};
 };
 
 #endif // SOUNDEFFECT_H
