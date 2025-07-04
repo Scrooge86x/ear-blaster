@@ -188,6 +188,53 @@ Item {
         }
     }
 
+    DropArea {
+        id: fileDropArea
+        anchors.fill: parent
+        keys: ["text/uri-list"]
+
+        property bool isDragOver: false
+
+        onEntered: (drag) => {
+            if (drag.hasUrls) {
+                isDragOver = true;
+                drag.accept();
+            }
+        }
+
+        onExited: {
+            isDragOver = false;
+        }
+
+        onDropped: (drop) => {
+            isDragOver = false;
+            if (!drop.hasUrls) {
+                return;
+            }
+
+            for (let url of drop.urls) {
+                let filePath = url.toString().replace("file://", "");
+                if (Qt.platform.os === "windows") {
+                    filePath = filePath.substring(1);
+                }
+
+                const slashPos = filePath.lastIndexOf("/");
+                const dotPos = filePath.lastIndexOf(".");
+
+                if (dotPos <= slashPos) continue;
+
+                let ext = filePath.substring(dotPos + 1).toLowerCase();
+                if (ext !== "mp3" || ext !== "wav") continue;
+
+                soundConfigModel.append({
+                    name: filePath.substring(slashPos + 1, dotPos),
+                    path: filePath,
+                    sequence: "",
+                });
+            }
+        }
+    }
+
     function updateAudioDevices() {
         audioDevices.clear();
         for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
