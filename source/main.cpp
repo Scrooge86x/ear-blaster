@@ -6,6 +6,9 @@
 #include "soundplayer.h"
 #include "globalkeylistener.h"
 #include "translator.h"
+#include "audiosystem/soundeffect.h"
+
+#include <QMediaDevices>
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +27,20 @@ int main(int argc, char *argv[])
     // The icon already set from the windows rc file, but in order for
     // ColorDialog to pick it up, it needs to also be set here
     app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
+
+    // THIS IS TEMPORARY AND ONLY FOR TESTING, use the main branch
+    SoundEffect* sf = new SoundEffect(&app);
+    sf->setOutputDevice(QMediaDevices::defaultAudioOutput());
+    sf->play(QUrl::fromLocalFile(u"E:/test-sounds/3.mp3"_s));
+    sf->setVolume(1.5f);
+
+    QObject::connect(sf, &SoundEffect::startedPlaying, []{
+        qDebug() << "playing";
+    });
+
+    QObject::connect(sf, &SoundEffect::stoppedPlaying, []{
+        qDebug() << "stopped";
+    });
 
     SoundPlayer soundPlayer{};
     Translator translator{};

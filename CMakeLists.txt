@@ -8,6 +8,7 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
     Quick
     Multimedia
     LinguistTools
+    Core
 )
 
 qt_policy(SET QTP0001 NEW)
@@ -26,6 +27,7 @@ qt_add_executable(${PROJECT_NAME}
     source/soundplayer.h source/soundplayer.cpp
     source/globalkeylistener.h source/globalkeylistener.cpp
     source/translator.h source/translator.cpp
+    source/audiosystem/soundeffect.h source/audiosystem/soundeffect.cpp
 )
 
 set_source_files_properties(qml/AppSettings.qml PROPERTIES
@@ -54,6 +56,7 @@ set_target_properties(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        Qt::Quick
-        Qt::Multimedia
+        Qt6::Qml
+        Qt6::Multimedia
+        Qt6::Core
 )
