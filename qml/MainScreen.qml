@@ -221,10 +221,14 @@ Item {
                 const slashPos = filePath.lastIndexOf("/");
                 const dotPos = filePath.lastIndexOf(".");
 
-                if (dotPos <= slashPos) continue;
+                if (dotPos <= slashPos) {
+                    continue;
+                }
 
                 let ext = filePath.substring(dotPos + 1).toLowerCase();
-                if (ext !== "mp3" || ext !== "wav") continue;
+                if (ext !== "mp3" || ext !== "wav") {
+                    continue;
+                }
 
                 soundConfigModel.append({
                     name: filePath.substring(slashPos + 1, dotPos),
