@@ -69,6 +69,12 @@ Item {
             }
         }
 
+        RoundButton {
+            text: qsTr("Stop all")
+            radius: 7
+            onClicked: audioSystem.stopAll()
+        }
+
         Item { Layout.fillWidth: true }
 
         ComboBox  {

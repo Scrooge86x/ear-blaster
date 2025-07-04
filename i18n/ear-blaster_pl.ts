@@ -17,22 +17,27 @@
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="34"/>
+        <location filename="../qml/MainScreen.qml" line="49"/>
         <source>Volume:</source>
         <translation>Głośność:</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="77"/>
+        <location filename="../qml/MainScreen.qml" line="73"/>
+        <source>Stop all</source>
+        <translation>Zatrzymaj wszystkie</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainScreen.qml" line="95"/>
         <source>Settings</source>
         <translation>Ustawienia</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="164"/>
+        <location filename="../qml/MainScreen.qml" line="182"/>
         <source>Select</source>
         <translation>Wybierz</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="165"/>
+        <location filename="../qml/MainScreen.qml" line="183"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
@@ -50,7 +55,7 @@
     <message>
         <location filename="../qml/SettingsScreen.qml" line="11"/>
         <source>Back</source>
-        <translation>Cofnij</translation>
+        <translation>Wróć</translation>
     </message>
     <message>
         <location filename="../qml/SettingsScreen.qml" line="16"/>
@@ -126,17 +131,17 @@
 <context>
     <name>SoundElement</name>
     <message>
-        <location filename="../qml/SoundElement.qml" line="78"/>
+        <location filename="../qml/SoundElement.qml" line="79"/>
         <source>play</source>
         <translation>Odtwórz</translation>
     </message>
     <message>
-        <location filename="../qml/SoundElement.qml" line="92"/>
+        <location filename="../qml/SoundElement.qml" line="93"/>
         <source>stop</source>
         <translation>Zatrzymaj</translation>
     </message>
     <message>
-        <location filename="../qml/SoundElement.qml" line="106"/>
+        <location filename="../qml/SoundElement.qml" line="107"/>
         <source>delete</source>
         <translation>Usuń</translation>
     </message>
