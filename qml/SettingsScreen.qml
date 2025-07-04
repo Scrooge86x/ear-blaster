@@ -59,7 +59,7 @@ Item {
                 color: AppSettings.foregroundColor
             }
             Button {
-                text: qsTr("foreground")
+                text: qsTr("Foreground")
                 onClicked: foregroundColorDialog.open()
 
                 ColorDialog {
@@ -77,7 +77,7 @@ Item {
                 border.color: AppSettings.foregroundColor
             }
             Button {
-                text: qsTr("background")
+                text: qsTr("Background")
                 onClicked: backgroundColorDialog.open()
 
                 ColorDialog {
@@ -93,7 +93,7 @@ Item {
                 color: AppSettings.accentColor
             }
             Button {
-                text: qsTr("accent")
+                text: qsTr("Accent")
                 onClicked: accentColorDialog.open()
 
                 ColorDialog {
@@ -108,6 +108,23 @@ Item {
             text: qsTr("Save window geometry")
             checked: AppSettings.windowGeometry
             onToggled: AppSettings.windowGeometry = checked ? "{}" : ""  // Anything other than "" will get filled in during shutdown
+        }
+
+        Label {
+            text: qsTr("Language:")
+        }
+        ComboBox  {
+            model: translator.availableLanguages
+            Layout.preferredWidth: 100
+
+            currentIndex: model.indexOf(AppSettings.language)
+            displayText: translator.getLanguageFullName(AppSettings.language)
+            onActivated: (index) => AppSettings.language = model[index];
+            delegate: ItemDelegate {
+                width: parent.width
+                text: translator.getLanguageFullName(modelData)
+                highlighted: parent.highlightedIndex === index
+            }
         }
     }
 }

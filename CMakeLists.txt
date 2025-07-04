@@ -4,18 +4,28 @@ project(ear-blaster LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS Quick Multimedia)
+find_package(Qt6 6.9 REQUIRED COMPONENTS
+    Quick
+    Multimedia
+    LinguistTools
+)
 
 qt_policy(SET QTP0001 NEW)
 qt_policy(SET QTP0004 NEW)
 
-qt_standard_project_setup()
+qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES pl)
+
+qt_add_translations(ear-blaster
+    TS_FILE_DIR i18n
+    LUPDATE_OPTIONS -noobsolete
+)
 
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
     source/main.cpp
     source/soundplayer.h source/soundplayer.cpp
     source/globalkeylistener.h source/globalkeylistener.cpp
+    source/translator.h source/translator.cpp
 )
 
 set_source_files_properties(qml/AppSettings.qml PROPERTIES

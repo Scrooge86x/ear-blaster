@@ -17,6 +17,7 @@ Settings {
             closeBehavior: AppSettings.CloseBehavior.HideKeepTray,
             secondPressBehavior: AppSettings.SecondPressBehavior.StopSound,
             windowGeometry: "{}", // Anything other than "" will get filled in during shutdown
+            language: "en",
         };
     }
 
@@ -26,6 +27,8 @@ Settings {
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
     property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
+    property string language: getDefaults()["language"]
+    onLanguageChanged: translator.currentLanguage = language
 
     enum CloseBehavior {
         Quit,
