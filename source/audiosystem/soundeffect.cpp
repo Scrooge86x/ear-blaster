@@ -64,6 +64,7 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
 
     if (m_audioSink) {
         m_audioSink->stop();
+        m_ioDevice = nullptr;
         delete m_audioSink;
     }
 
