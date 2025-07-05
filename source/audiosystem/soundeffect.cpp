@@ -31,6 +31,7 @@ void SoundEffect::play(const QUrl& filePath)
 void SoundEffect::stop()
 {
     m_decoder->stop();
+    m_audioSink->reset();
     m_audioSink->stop();
     m_ioDevice = nullptr;
 }
@@ -63,6 +64,7 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
     m_outputDevice = outputDevice;
 
     if (m_audioSink) {
+        m_audioSink->reset();
         m_audioSink->stop();
         m_ioDevice = nullptr;
         delete m_audioSink;
@@ -85,6 +87,8 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
         case QAudio::SuspendedState:
         case QAudio::StoppedState:
         case QAudio::IdleState:
+            m_currentBuffer = {};
+            m_bytesWritten = 0;
             emit stoppedPlaying();
             break;
         default:
