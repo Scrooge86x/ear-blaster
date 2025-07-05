@@ -19,7 +19,7 @@ public:
     explicit SoundEffect(QObject* const parent = nullptr);
 
     void play(const QUrl& filePath);
-    void stop() const;
+    void stop();
 
     float volume() const;
     void setVolume(const float volume);

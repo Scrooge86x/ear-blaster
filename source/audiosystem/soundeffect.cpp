@@ -22,15 +22,17 @@ SoundEffect::SoundEffect(QObject* const parent)
 
 void SoundEffect::play(const QUrl& filePath)
 {
+    m_ioDevice = m_audioSink->start();
     m_decoder->setSource(filePath);
     m_decoder->start();
     processBuffer();
 }
 
-void SoundEffect::stop() const
+void SoundEffect::stop()
 {
     m_decoder->stop();
     m_audioSink->stop();
+    m_ioDevice = nullptr;
 }
 
 float SoundEffect::volume() const
@@ -73,7 +75,6 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
         * format.channelCount()
         * 2 // seconds of buffering
     );
-    m_ioDevice = m_audioSink->start();
 
     connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state){
         switch (state) {
@@ -111,11 +112,12 @@ void SoundEffect::processBuffer()
         return QTimer::singleShot(1000, this, [this]{ processBuffer(); });
     }
 
-    const auto offsetData{ m_currentBuffer.data<char>() + m_bytesWritten };
-    m_bytesWritten += m_ioDevice->write(offsetData, std::clamp(m_audioSink->bytesFree(), 0ll, bytesLeft));
-    if (m_audioSink->state() != QAudio::ActiveState) {
+    if (!m_ioDevice) {
         return;
     }
+
+    const auto offsetData{ m_currentBuffer.data<char>() + m_bytesWritten };
+    m_bytesWritten += m_ioDevice->write(offsetData, std::clamp(m_audioSink->bytesFree(), 0ll, bytesLeft));
 
     if (m_bytesWritten == m_currentBuffer.byteCount()) {
         m_bytesWritten = 0;

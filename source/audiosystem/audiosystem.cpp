@@ -23,7 +23,8 @@ void AudioSystem::play(const int id, const QUrl& path)
 {
     if (m_soundEffectMap.contains(id)) {
         m_soundEffectMap[id]->stop();
-        delete m_soundEffectMap[id];
+        m_soundEffectMap[id]->play(path);
+        return;
     }
 
     auto& soundEffect{ m_soundEffectMap[id] };
@@ -44,7 +45,7 @@ void AudioSystem::stop(const int id) const
 
 void AudioSystem::stopAll() const
 {
-    for (const auto* const soundEffect : std::as_const(m_soundEffectMap)) {
+    for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
         soundEffect->stop();
     }
 }
