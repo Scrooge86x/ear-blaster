@@ -76,7 +76,7 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
         format.sampleRate()
         * format.bytesPerSample()
         * format.channelCount()
-        * 2 // seconds of buffering
+        * 0.15 // seconds of buffering
     );
 
     connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state){
@@ -101,32 +101,35 @@ void SoundEffect::processBuffer()
 {
     if (!m_bytesWritten) {
         if (!m_decoder->bufferAvailable()) {
-            return QTimer::singleShot(1, this, [this]{ processBuffer(); });
+            return QTimer::singleShot(1, this, &SoundEffect::processBuffer);
         }
         m_currentBuffer = m_decoder->read();
-
-        const float volume{ m_volumePtr ? *m_volumePtr : m_volume };
-        const auto data{ m_currentBuffer.data<qint16>() };
-        const auto numSamples{ m_currentBuffer.byteCount() / sizeof(qint16) };
-        for (int i{}; i < numSamples; ++i) {
-            data[i] *= volume;
-        }
     }
 
-    const auto bytesLeft{ m_currentBuffer.byteCount() - m_bytesWritten };
+    static constexpr QAudioFormat format{ getAudioFormat() };
+
+    const float volume{ m_volumePtr ? *m_volumePtr : m_volume };
+
+    const auto samplesWritten{ m_bytesWritten / format.bytesPerSample() };
+    const auto sampleData{ m_currentBuffer.data<qint16>() + samplesWritten };
+
+    const auto bytesToWrite{ std::clamp(m_audioSink->bytesFree(), 0ll, m_currentBuffer.byteCount() - m_bytesWritten) };
+    const auto numSamples{ bytesToWrite / format.bytesPerSample() };
+    for (int i{}; i < numSamples; ++i) {
+        sampleData[i] *= volume;
+    }
+
     if (!m_audioSink->bytesFree()) {
-        return QTimer::singleShot(1000, this, [this]{ processBuffer(); });
+        return QTimer::singleShot(50, this, &SoundEffect::processBuffer);
     }
 
     if (!m_ioDevice) {
         return;
     }
-
-    const auto offsetData{ m_currentBuffer.data<char>() + m_bytesWritten };
-    m_bytesWritten += m_ioDevice->write(offsetData, std::clamp(m_audioSink->bytesFree(), 0ll, bytesLeft));
+    m_bytesWritten += m_ioDevice->write(m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite);
 
     if (m_bytesWritten == m_currentBuffer.byteCount()) {
         m_bytesWritten = 0;
     }
-    return QTimer::singleShot(1, this, [this]{ processBuffer(); });
+    return QTimer::singleShot(1, this, &SoundEffect::processBuffer);
 }
