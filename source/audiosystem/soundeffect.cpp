@@ -102,8 +102,9 @@ void SoundEffect::processBuffer()
         m_currentBuffer = m_decoder->read();
 
         const float volume{ m_volumePtr ? *m_volumePtr : m_volume };
-        const auto data{ m_currentBuffer.data<char>() };
-        for (int i{}; i < m_currentBuffer.byteCount(); ++i) {
+        const auto data{ m_currentBuffer.data<qint16>() };
+        const auto numSamples{ m_currentBuffer.byteCount() / sizeof(qint16) };
+        for (int i{}; i < numSamples; ++i) {
             data[i] *= volume;
         }
     }
