@@ -171,18 +171,7 @@ Item {
             ]
             onAccepted: {
                 for (const file of selectedFiles) {
-                    let filePath = file.toString().replace("file://", "")
-                    if (Qt.platform.os === "windows") {
-                        filePath = filePath.substring(1);
-                    }
-
-                    const slashPos = filePath.lastIndexOf("/");
-                    const dotPos = filePath.lastIndexOf(".");
-                    soundConfigModel.append({
-                        name: filePath.substring(slashPos + 1, dotPos),
-                        path: filePath,
-                        sequence: "",
-                    });
+                    addSoundFile(file);
                 }
             }
         }
@@ -213,28 +202,19 @@ Item {
             }
 
             for (let url of drop.urls) {
-                let filePath = url.toString().replace("file://", "");
-                if (Qt.platform.os === "windows") {
-                    filePath = filePath.substring(1);
-                }
+                url = url.toString();
+                const allowedExtensions = [
+                    "mp3",
+                    "wav",
+                ];
 
-                const slashPos = filePath.lastIndexOf("/");
-                const dotPos = filePath.lastIndexOf(".");
-
-                if (dotPos <= slashPos) {
+                const lastDotPos = url.lastIndexOf(".");
+                const extension = url.substring(lastDotPos + 1).toLowerCase();
+                if (!allowedExtensions.includes(extension)) {
                     continue;
                 }
 
-                let ext = filePath.substring(dotPos + 1).toLowerCase();
-                if (ext !== "mp3" && ext !== "wav") {
-                    continue;
-                }
-
-                soundConfigModel.append({
-                    name: filePath.substring(slashPos + 1, dotPos),
-                    path: filePath,
-                    sequence: "",
-                });
+                addSoundFile(url);
             }
         }
     }
@@ -248,5 +228,20 @@ Item {
                 deviceComboBox.currentIndex = i
             }
         }
+    }
+
+    function addSoundFile(fileUrl) {
+        let filePath = fileUrl.toString().replace("file://", "")
+        if (Qt.platform.os === "windows") {
+            filePath = filePath.substring(1);
+        }
+
+        const lastSlashPos = filePath.lastIndexOf("/");
+        const lastDotPos = filePath.lastIndexOf(".");
+        soundConfigModel.append({
+            name: filePath.substring(lastSlashPos + 1, lastDotPos),
+            path: filePath,
+            sequence: "",
+        });
     }
 }
