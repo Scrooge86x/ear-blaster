@@ -6,6 +6,13 @@ AudioSystem::AudioSystem(QObject *const parent)
     : QObject{ parent }
 {}
 
+AudioSystem::~AudioSystem()
+{
+    for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
+        delete soundEffect;
+    }
+}
+
 float AudioSystem::volume() const
 {
     return m_volume;
@@ -28,7 +35,7 @@ void AudioSystem::play(const int id, const QUrl& path)
     }
 
     auto& soundEffect{ m_soundEffectMap[id] };
-    soundEffect = new SoundEffect{ this };
+    soundEffect = new SoundEffect{};
     connect(soundEffect, &SoundEffect::startedPlaying, this, [this, id]{ emit soundStarted(id); });
     connect(soundEffect, &SoundEffect::stoppedPlaying, this, [this, id]{ emit soundStopped(id); });
     soundEffect->setOutputDevice(m_outputDevice);

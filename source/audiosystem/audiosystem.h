@@ -16,6 +16,7 @@ class AudioSystem : public QObject
 
 public:
     explicit AudioSystem(QObject* const parent = nullptr);
+    ~AudioSystem();
 
     float volume() const;
     void setVolume(const float volume);

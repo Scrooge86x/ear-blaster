@@ -13,27 +13,41 @@ static consteval QAudioFormat getAudioFormat() {
     return format;
 }
 
-SoundEffect::SoundEffect(QObject* const parent)
-    : QObject{ parent }
+SoundEffect::SoundEffect()
+    : QObject{ nullptr }
 {
-    m_decoder = new QAudioDecoder{ this };
-    m_decoder->setAudioFormat(getAudioFormat());
+    connect(&m_thread, &QThread::started, this, [this] {
+        m_decoder = new QAudioDecoder{ this };
+        m_decoder->setAudioFormat(getAudioFormat());
+    });
+    m_thread.start();
+    this->moveToThread(&m_thread);
+}
+
+SoundEffect::~SoundEffect()
+{
+    m_thread.quit();
+    m_thread.wait();
 }
 
 void SoundEffect::play(const QUrl& filePath)
 {
-    m_ioDevice = m_audioSink->start();
-    m_decoder->setSource(filePath);
-    m_decoder->start();
-    processBuffer();
+    QMetaObject::invokeMethod(this, [this, filePath]() {
+        m_ioDevice = m_audioSink->start();
+        m_decoder->setSource(filePath);
+        m_decoder->start();
+        processBuffer();
+    }, Qt::QueuedConnection);
 }
 
 void SoundEffect::stop()
 {
-    m_decoder->stop();
-    m_audioSink->reset();
-    m_audioSink->stop();
-    m_ioDevice = nullptr;
+    QMetaObject::invokeMethod(this, [this]() {
+        m_decoder->stop();
+        m_audioSink->reset();
+        m_audioSink->stop();
+        m_ioDevice = nullptr;
+    }, Qt::QueuedConnection);
 }
 
 float SoundEffect::volume() const
@@ -63,38 +77,40 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
     }
     m_outputDevice = outputDevice;
 
-    if (m_audioSink) {
-        m_audioSink->reset();
-        m_audioSink->stop();
-        m_ioDevice = nullptr;
-        delete m_audioSink;
-    }
-
-    constexpr QAudioFormat format{ getAudioFormat() };
-    m_audioSink = new QAudioSink{ m_outputDevice, format, this };
-    m_audioSink->setBufferSize(
-        format.sampleRate()
-        * format.bytesPerSample()
-        * format.channelCount()
-        * 0.15 // seconds of buffering
-    );
-
-    connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state){
-        switch (state) {
-        case QAudio::ActiveState:
-            emit startedPlaying();
-            break;
-        case QAudio::SuspendedState:
-        case QAudio::StoppedState:
-        case QAudio::IdleState:
-            m_currentBuffer = {};
-            m_bytesWritten = 0;
-            emit stoppedPlaying();
-            break;
-        default:
-            break;
+    QMetaObject::invokeMethod(this, [this]() {
+        if (m_audioSink) {
+            m_audioSink->reset();
+            m_audioSink->stop();
+            m_ioDevice = nullptr;
+            delete m_audioSink;
         }
-    });
+
+        constexpr QAudioFormat format{ getAudioFormat() };
+        m_audioSink = new QAudioSink{ m_outputDevice, format, this };
+        m_audioSink->setBufferSize(
+            format.sampleRate()
+            * format.bytesPerSample()
+            * format.channelCount()
+            * 0.15 // seconds of buffering
+        );
+
+        connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state){
+            switch (state) {
+            case QAudio::ActiveState:
+                emit startedPlaying();
+                break;
+            case QAudio::SuspendedState:
+            case QAudio::StoppedState:
+            case QAudio::IdleState:
+                m_currentBuffer = {};
+                m_bytesWritten = 0;
+                emit stoppedPlaying();
+                break;
+            default:
+                break;
+            }
+        });
+    }, Qt::QueuedConnection);
 }
 
 void SoundEffect::processBuffer()

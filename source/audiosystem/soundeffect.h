@@ -6,6 +6,7 @@
 #include <QAudioDevice>
 #include <QAudioBuffer>
 #include <QtTypes>
+#include <QThread>
 
 class QAudioDecoder;
 class QAudioSink;
@@ -16,7 +17,8 @@ class SoundEffect : public QObject
     Q_OBJECT
 
 public:
-    explicit SoundEffect(QObject* const parent = nullptr);
+    explicit SoundEffect();
+    ~SoundEffect();
 
     void play(const QUrl& filePath);
     void stop();
@@ -45,6 +47,8 @@ private:
     QAudioDevice m_outputDevice{};
     float m_volume{ 1.f };
     const float* m_volumePtr{};
+
+    QThread m_thread{};
 };
 
 #endif // SOUNDEFFECT_H
