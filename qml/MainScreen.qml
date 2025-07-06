@@ -177,31 +177,34 @@ Item {
         }
     }
 
+    Rectangle {
+        anchors.fill: parent
+        color: fileDropArea.draggedFilesCount ? Qt.rgba(0, 0, 0, 0.5) : "transparent"
+
+        Text {
+            property alias draggedFilesCount: fileDropArea.draggedFilesCount
+
+            anchors.centerIn: parent
+            font.pixelSize: 40
+            color: draggedFilesCount ? "#ddd" : "transparent"
+            text: draggedFilesCount > 1 ? `Drop ${draggedFilesCount} files.` : "Drop 1 file."
+        }
+    }
+
     DropArea {
         id: fileDropArea
         anchors.fill: parent
         keys: ["text/uri-list"]
 
-        property bool isDragOver: false
+        property int draggedFilesCount: 0
 
         onEntered: (drag) => {
-            if (drag.hasUrls) {
-                isDragOver = true;
-                drag.accept();
-            }
-        }
-
-        onExited: {
-            isDragOver = false;
-        }
-
-        onDropped: (drop) => {
-            isDragOver = false;
-            if (!drop.hasUrls) {
-                return;
+            if (!drag.hasUrls) {
+                return
             }
 
-            for (let url of drop.urls) {
+            let hasInvalidFile = false;
+            for (let url of drag.urls) {
                 url = url.toString();
                 const allowedExtensions = [
                     "mp3",
@@ -211,9 +214,27 @@ Item {
                 const lastDotPos = url.lastIndexOf(".");
                 const extension = url.substring(lastDotPos + 1).toLowerCase();
                 if (!allowedExtensions.includes(extension)) {
-                    continue;
+                    hasInvalidFile = true;
                 }
+            }
 
+            if (!hasInvalidFile) {
+                draggedFilesCount = drag.urls.length;
+                drag.accept();
+            }
+        }
+
+        onExited: {
+            draggedFilesCount = 0;
+        }
+
+        onDropped: (drop) => {
+            if (!draggedFilesCount) {
+                return;
+            }
+            draggedFilesCount = 0;
+
+            for (const url of drop.urls) {
                 addSoundFile(url);
             }
         }
