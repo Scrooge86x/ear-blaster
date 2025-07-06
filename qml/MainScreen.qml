@@ -226,7 +226,7 @@ Item {
                 }
 
                 let ext = filePath.substring(dotPos + 1).toLowerCase();
-                if (ext !== "mp3" || ext !== "wav") {
+                if (ext !== "mp3" && ext !== "wav") {
                     continue;
                 }
 
