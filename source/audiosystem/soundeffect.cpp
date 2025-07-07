@@ -24,6 +24,10 @@ using SampleType = SampleFormatType<getAudioFormat().sampleFormat()>::type;
 SoundEffect::SoundEffect()
     : QObject{ nullptr }
 {
+    connect(&m_thread, &QThread::started, this, [this] {
+        m_decoder = new QAudioDecoder{ this };
+        m_decoder->setAudioFormat(getAudioFormat());
+    });
     m_thread.start();
     this->moveToThread(&m_thread);
 }
@@ -42,9 +46,8 @@ void SoundEffect::play(const QUrl& filePath)
         }
 
         m_ioDevice = m_audioSink->start();
-        if (!m_decoder) {
-            m_decoder = new QAudioDecoder{ this };
-            m_decoder->setAudioFormat(getAudioFormat());
+        if (m_decoder->bufferAvailable()) {
+            static_cast<void>(m_decoder->read());
         }
         m_decoder->setSource(filePath);
         m_decoder->start();
@@ -60,7 +63,6 @@ void SoundEffect::stop()
         }
 
         m_decoder->stop();
-        m_decoder = nullptr;
         m_audioSink->reset();
         m_audioSink->stop();
         m_ioDevice = nullptr;
@@ -158,9 +160,6 @@ static void applyOverdrive(
 void SoundEffect::processBuffer()
 {
     if (!m_bytesWritten) {
-        if (!m_decoder) {
-            return;
-        }
         if (!m_decoder->bufferAvailable()) {
             return QTimer::singleShot(1, this, &SoundEffect::processBuffer);
         }
