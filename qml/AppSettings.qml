@@ -19,6 +19,7 @@ Settings {
             windowGeometry: "{}", // Anything other than "" will get filled in during shutdown
             language: "en",
             audioOutputDevice: "",
+            overdrive: 0.0,
         };
     }
 
@@ -30,9 +31,11 @@ Settings {
     property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
     property string language: getDefaults()["language"]
     property string audioOutputDevice: getDefaults()["audioOutputDevice"]
+    property real overdrive: getDefaults()["overdrive"]
 
     onMainVolumeChanged: audioSystem.volume = mainVolume
     onLanguageChanged: translator.currentLanguage = language
+    onOverdriveChanged: audioSystem.overdrive = overdrive
 
     enum CloseBehavior {
         Quit,

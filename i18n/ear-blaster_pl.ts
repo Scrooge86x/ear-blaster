@@ -22,22 +22,27 @@
         <translation>Głośność:</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="73"/>
+        <location filename="../qml/MainScreen.qml" line="74"/>
+        <source>Overdrive:</source>
+        <translation>Przestery:</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainScreen.qml" line="98"/>
         <source>Stop all</source>
         <translation>Zatrzymaj wszystkie</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="95"/>
+        <location filename="../qml/MainScreen.qml" line="120"/>
         <source>Settings</source>
         <translation>Ustawienia</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="182"/>
+        <location filename="../qml/MainScreen.qml" line="207"/>
         <source>Select</source>
         <translation>Wybierz</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="183"/>
+        <location filename="../qml/MainScreen.qml" line="208"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>

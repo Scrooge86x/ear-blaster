@@ -56,14 +56,39 @@ Item {
                 to: 1.0
                 value: AppSettings.mainVolume
                 stepSize: 0.01
-                Layout.preferredWidth: 150
+                Layout.preferredWidth: 100
 
-                onMoved: AppSettings.mainVolume = value
+                onValueChanged: AppSettings.mainVolume = value
             }
 
             Label {
                 Layout.preferredWidth: 35
                 text: `${Math.round(volumeSlider.value * 100)}%`
+                color: AppSettings.foregroundColor
+                font.pixelSize: 13
+            }
+        }
+
+        RowLayout {
+            Label {
+                text: qsTr("Overdrive:")
+                color: AppSettings.foregroundColor
+            }
+
+            Slider {
+                id: overdriveSlider
+                from: 0.0
+                to: 1.0
+                value: AppSettings.overdrive
+                stepSize: 0.01
+                Layout.preferredWidth: 75
+
+                onValueChanged: AppSettings.overdrive = value
+            }
+
+            Label {
+                Layout.preferredWidth: 35
+                text: `${Math.round(overdriveSlider.value * 100)}%`
                 color: AppSettings.foregroundColor
                 font.pixelSize: 13
             }
