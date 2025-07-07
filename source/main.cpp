@@ -9,9 +9,6 @@
 
 int main(int argc, char *argv[])
 {
-    // Sounds way better than the default
-    qputenv("QT_MEDIA_BACKEND", "windows");
-
     // Fix for resize causing flickering
     qputenv("QT_D3D_NO_FLIP", "1" );
 
