@@ -13,6 +13,14 @@ static consteval QAudioFormat getAudioFormat() {
     return format;
 }
 
+template <QAudioFormat::SampleFormat> struct SampleFormatType { using type = void; };
+template <> struct SampleFormatType<QAudioFormat::UInt8> { using type = quint8; };
+template <> struct SampleFormatType<QAudioFormat::Int16> { using type = qint16; };
+template <> struct SampleFormatType<QAudioFormat::Int32> { using type = qint32; };
+template <> struct SampleFormatType<QAudioFormat::Float> { using type = float; };
+
+using SampleType = SampleFormatType<getAudioFormat().sampleFormat()>::type;
+
 SoundEffect::SoundEffect()
     : QObject{ nullptr }
 {
@@ -122,16 +130,15 @@ void SoundEffect::processBuffer()
         m_currentBuffer = m_decoder->read();
     }
 
-    static constexpr QAudioFormat format{ getAudioFormat() };
-
     const float volume{ m_volumePtr ? *m_volumePtr : m_volume };
 
-    const auto samplesWritten{ m_bytesWritten / format.bytesPerSample() };
-    const auto sampleData{ m_currentBuffer.data<qint16>() + samplesWritten };
+    constexpr int bytesPerSample{ getAudioFormat().bytesPerSample() };
+    const auto samplesWritten{ m_bytesWritten / bytesPerSample };
+    const auto sampleData{ m_currentBuffer.data<SampleType>() + samplesWritten };
 
-    const auto bytesToWrite{ std::clamp(m_audioSink->bytesFree(), 0ll, m_currentBuffer.byteCount() - m_bytesWritten) };
-    const auto numSamples{ bytesToWrite / format.bytesPerSample() };
-    for (int i{}; i < numSamples; ++i) {
+    const qint64 bytesToWrite{ std::min(m_audioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten) };
+    const qint64 numSamples{ bytesToWrite / bytesPerSample };
+    for (qint64 i{}; i < numSamples; ++i) {
         sampleData[i] *= volume;
     }
 
