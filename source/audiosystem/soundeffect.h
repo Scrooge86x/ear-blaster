@@ -25,7 +25,9 @@ public:
 
     float volume() const;
     void setVolume(const float volume);
-    void setVolume(const float* const volumePtr);
+
+    float overdrive() const;
+    void setOverdrive(const float overdrive);
 
     QAudioDevice outputDevice() const;
     void setOutputDevice(const QAudioDevice& outputDevice);
@@ -46,7 +48,7 @@ private:
 
     QAudioDevice m_outputDevice{};
     float m_volume{ 1.f };
-    const float* m_volumePtr{};
+    float m_overdrive{};
 
     QThread m_thread{};
 };

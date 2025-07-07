@@ -74,11 +74,19 @@ float SoundEffect::volume() const
 void SoundEffect::setVolume(const float volume)
 {
     m_volume = volume;
+    if (m_audioSink) {
+        m_audioSink->setVolume(volume);
+    }
 }
 
-void SoundEffect::setVolume(const float* const volumePtr)
+float SoundEffect::overdrive() const
 {
-    m_volumePtr = volumePtr;
+    return m_overdrive;
+}
+
+void SoundEffect::setOverdrive(const float overdrive)
+{
+    m_overdrive = overdrive;
 }
 
 QAudioDevice SoundEffect::outputDevice() const
@@ -103,6 +111,7 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
 
         constexpr QAudioFormat format{ getAudioFormat() };
         m_audioSink = new QAudioSink{ m_outputDevice, format, this };
+        m_audioSink->setVolume(m_volume);
         m_audioSink->setBufferSize(
             format.sampleRate()
             * format.bytesPerSample()
@@ -129,6 +138,22 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
     }, Qt::QueuedConnection);
 }
 
+template <typename T>
+static void applyOverdrive(
+    T* samples,
+    const qint64 numSamples,
+    const float boostLevel
+) {
+    constexpr auto minVal{ std::numeric_limits<SampleType>::min() };
+    constexpr auto maxVal{ std::numeric_limits<SampleType>::max() };
+    const double gain{ boostLevel * 100.f };
+
+    for (qint64 i{}; i < numSamples; ++i) {
+        double boosted{ static_cast<double>(*samples) * gain };
+        *samples++ = std::clamp<double>(boosted, minVal, maxVal);
+    }
+}
+
 void SoundEffect::processBuffer()
 {
     if (!m_bytesWritten) {
@@ -138,16 +163,17 @@ void SoundEffect::processBuffer()
         m_currentBuffer = m_decoder->read();
     }
 
-    const float volume{ m_volumePtr ? *m_volumePtr : m_volume };
+    const qint64 bytesToWrite{ std::min(
+        m_audioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
+    ) };
 
-    constexpr int bytesPerSample{ getAudioFormat().bytesPerSample() };
-    const auto samplesWritten{ m_bytesWritten / bytesPerSample };
-    const auto sampleData{ m_currentBuffer.data<SampleType>() + samplesWritten };
+    if (m_overdrive) {
+        constexpr int bytesPerSample{ getAudioFormat().bytesPerSample() };
+        const auto samplesWritten{ m_bytesWritten / bytesPerSample };
 
-    const qint64 bytesToWrite{ std::min(m_audioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten) };
-    const qint64 numSamples{ bytesToWrite / bytesPerSample };
-    for (qint64 i{}; i < numSamples; ++i) {
-        sampleData[i] *= volume;
+        const auto currentSamples{ m_currentBuffer.data<SampleType>() + samplesWritten };
+        const qint64 numSamples{ bytesToWrite / bytesPerSample };
+        applyOverdrive(currentSamples, numSamples, m_overdrive);
     }
 
     if (!m_audioSink->bytesFree()) {

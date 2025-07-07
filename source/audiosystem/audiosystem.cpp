@@ -22,7 +22,26 @@ void AudioSystem::setVolume(const float volume)
 {
     if (volume != m_volume) {
         m_volume = volume;
+        for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
+            soundEffect->setVolume(m_volume);
+        }
         emit volumeChanged(volume);
+    }
+}
+
+float AudioSystem::overdrive() const
+{
+    return m_overdrive;
+}
+
+void AudioSystem::setOverdrive(const float overdrive)
+{
+    if (m_overdrive != overdrive) {
+        m_overdrive = overdrive;
+        for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
+            soundEffect->setOverdrive(m_overdrive);
+        }
+        emit overdriveChanged(m_overdrive);
     }
 }
 
@@ -39,7 +58,8 @@ void AudioSystem::play(const int id, const QUrl& path)
     connect(soundEffect, &SoundEffect::startedPlaying, this, [this, id]{ emit soundStarted(id); });
     connect(soundEffect, &SoundEffect::stoppedPlaying, this, [this, id]{ emit soundStopped(id); });
     soundEffect->setOutputDevice(m_outputDevice);
-    soundEffect->setVolume(&m_volume);
+    soundEffect->setOverdrive(m_overdrive);
+    soundEffect->setVolume(m_volume);
     soundEffect->play(path);
 }
 
