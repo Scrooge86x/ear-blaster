@@ -41,6 +41,10 @@ SoundEffect::~SoundEffect()
 void SoundEffect::play(const QUrl& filePath)
 {
     QMetaObject::invokeMethod(this, [this, filePath]() {
+        if (!m_audioSink) {
+            return;
+        }
+
         m_ioDevice = m_audioSink->start();
         m_decoder->setSource(filePath);
         m_decoder->start();
@@ -51,6 +55,10 @@ void SoundEffect::play(const QUrl& filePath)
 void SoundEffect::stop()
 {
     QMetaObject::invokeMethod(this, [this]() {
+        if (!m_audioSink) {
+            return;
+        }
+
         m_decoder->stop();
         m_audioSink->reset();
         m_audioSink->stop();
