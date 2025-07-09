@@ -45,8 +45,3 @@ void AudioSystem::stopAll() const
         soundEffect->stop();
     }
 }
-
-AudioDevice* AudioSystem::outputDevice() const
-{
-    return m_outputDevice;
-}

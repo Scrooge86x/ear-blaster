@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QUrl>
 #include <QMap>
-#include <QAudioDevice>
 
 class SoundEffect;
 class AudioDevice;
@@ -22,7 +21,7 @@ public:
     Q_INVOKABLE void stop(const int id) const;
     Q_INVOKABLE void stopAll() const;
 
-    AudioDevice* outputDevice() const;
+    AudioDevice* outputDevice() const { return m_outputDevice; }
 
 signals:
     void soundStarted(int id);

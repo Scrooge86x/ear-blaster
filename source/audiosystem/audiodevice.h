@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QAudioDevice>
-#include <qqmlintegration.h>
 
 class AudioDevice : public QObject {
     Q_OBJECT

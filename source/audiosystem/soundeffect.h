@@ -23,7 +23,7 @@ public:
     void play(const QUrl& filePath);
     void stop();
 
-    const AudioDevice* outputDevice() const;
+    const AudioDevice* outputDevice() const { return m_outputDevice; }
     void setOutputDevice(const AudioDevice* const outputDevice);
 
 signals:

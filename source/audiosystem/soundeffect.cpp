@@ -71,11 +71,6 @@ void SoundEffect::stop()
     }, Qt::QueuedConnection);
 }
 
-const AudioDevice* SoundEffect::outputDevice() const
-{
-    return m_outputDevice;
-}
-
 void SoundEffect::setOutputDevice(const AudioDevice* const outputDevice)
 {
     if (!outputDevice || m_outputDevice == outputDevice) {
