@@ -10,6 +10,7 @@
 
 #include <QMediaDevices>
 #include "audiosystem/microphonepassthrough.h"
+#include "audiosystem/audiodevice.h"
 
 int main(int argc, char *argv[])
 {
@@ -28,9 +29,14 @@ int main(int argc, char *argv[])
     // ColorDialog to pick it up, it needs to also be set here
     app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
 
+    AudioDevice inputAudioDevice{};
+    inputAudioDevice.setDevice(QMediaDevices::defaultAudioInput());
+    AudioDevice outputAudioDevice{};
+    outputAudioDevice.setDevice(QMediaDevices::defaultAudioOutput());
+
     MicrophonePassthrough micPassthrough{};
-    micPassthrough.setOutputDevice(QMediaDevices::defaultAudioOutput());
-    micPassthrough.setInputDevice(QMediaDevices::defaultAudioInput());
+    micPassthrough.setInputDevice(&inputAudioDevice);
+    micPassthrough.setOutputDevice(&outputAudioDevice);
     micPassthrough.start();
 
     AudioSystem audioSystem{ &app };

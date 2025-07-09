@@ -10,9 +10,9 @@ Item {
     property ListModel audioDevices: ListModel {}
 
     Connections {
-        target: audioSystem
-        function onOutputDeviceChanged(outputDevice) {
-            AppSettings.audioOutputDevice = outputDevice.id;
+        target: audioSystem.outputDevice
+        function onDeviceChanged() {
+            AppSettings.audioOutputDevice = audioSystem.outputDevice.device.id;
         }
     }
 
@@ -20,13 +20,13 @@ Item {
         let deviceFound = false;
         for (const device of mediaDevices.audioOutputs) {
             if (device.id.toString() === AppSettings.audioOutputDevice) {
-                audioSystem.outputDevice = device;
+                audioSystem.outputDevice.device = device;
                 deviceFound = true;
             }
         }
         if (!deviceFound) {
             console.error("Warning: audio output device not found:", AppSettings.audioOutputDevice);
-            audioSystem.outputDevice = mediaDevices.audioOutputs[0];
+            audioSystem.outputDevice.device = mediaDevices.audioOutputs[0];
         }
         updateAudioDevices();
     }
@@ -54,11 +54,11 @@ Item {
                 id: volumeSlider
                 from: 0.0
                 to: 1.0
-                value: AppSettings.mainVolume
+                value: AppSettings.outputVolume
                 stepSize: 0.01
                 Layout.preferredWidth: 100
 
-                onValueChanged: AppSettings.mainVolume = value
+                onValueChanged: AppSettings.outputVolume = value
             }
 
             Label {
@@ -108,7 +108,7 @@ Item {
             textRole: "name"
             Layout.preferredWidth: 300
 
-            onActivated: (index) => audioSystem.outputDevice = mediaDevices.audioOutputs[index]
+            onActivated: (index) => audioSystem.outputDevice.device = mediaDevices.audioOutputs[index]
             delegate: ItemDelegate {
                 width: deviceComboBox.width
                 text: model.name

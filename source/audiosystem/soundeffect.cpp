@@ -1,5 +1,7 @@
 #include "soundeffect.h"
 
+#include "audiodevice.h"
+
 #include <QAudioFormat>
 #include <QAudioDecoder>
 #include <QAudioSink>
@@ -69,42 +71,28 @@ void SoundEffect::stop()
     }, Qt::QueuedConnection);
 }
 
-float SoundEffect::volume() const
-{
-    return m_volume;
-}
-
-void SoundEffect::setVolume(const float volume)
-{
-    m_volume = volume;
-    if (m_audioSink) {
-        m_audioSink->setVolume(volume);
-    }
-}
-
-float SoundEffect::overdrive() const
-{
-    return m_overdrive;
-}
-
-void SoundEffect::setOverdrive(const float overdrive)
-{
-    m_overdrive = overdrive;
-}
-
-QAudioDevice SoundEffect::outputDevice() const
+const AudioDevice* SoundEffect::outputDevice() const
 {
     return m_outputDevice;
 }
 
-void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
+void SoundEffect::setOutputDevice(const AudioDevice* const outputDevice)
 {
-    if (m_outputDevice == outputDevice) {
+    if (!outputDevice || m_outputDevice == outputDevice) {
         return;
     }
-    m_outputDevice = outputDevice;
+    if (m_outputDevice) {
+        disconnect(m_outputDevice, &AudioDevice::volumeChanged, this, nullptr);
+    }
 
-    QMetaObject::invokeMethod(this, [this]() {
+    m_outputDevice = outputDevice;
+    connect(m_outputDevice, &AudioDevice::volumeChanged, this, [this] {
+        if (m_audioSink) {
+            m_audioSink->setVolume(m_outputDevice->volume());
+        }
+    });
+
+    const auto updateAudioSink{ [this]() {
         if (m_audioSink) {
             m_audioSink->reset();
             m_audioSink->stop();
@@ -113,8 +101,8 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
         }
 
         constexpr QAudioFormat format{ getAudioFormat() };
-        m_audioSink = new QAudioSink{ m_outputDevice, format, this };
-        m_audioSink->setVolume(m_volume);
+        m_audioSink = new QAudioSink{ m_outputDevice->device(), format, this };
+        m_audioSink->setVolume(m_outputDevice->volume());
         m_audioSink->setBufferSize(
             format.sampleRate()
             * format.bytesPerSample()
@@ -122,7 +110,7 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
             * 0.15 // seconds of buffering
         );
 
-        connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state){
+        connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state) {
             switch (state) {
             case QAudio::ActiveState:
                 emit startedPlaying();
@@ -138,7 +126,10 @@ void SoundEffect::setOutputDevice(const QAudioDevice& outputDevice)
                 break;
             }
         });
-    }, Qt::QueuedConnection);
+    } };
+
+    connect(m_outputDevice, &AudioDevice::deviceChanged, this, updateAudioSink);
+    QMetaObject::invokeMethod(this, updateAudioSink, Qt::QueuedConnection);
 }
 
 template <typename T>
@@ -170,13 +161,13 @@ void SoundEffect::processBuffer()
         m_audioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
     ) };
 
-    if (m_overdrive) {
+    if (m_outputDevice->overdrive()) {
         constexpr int bytesPerSample{ getAudioFormat().bytesPerSample() };
         const auto samplesWritten{ m_bytesWritten / bytesPerSample };
 
         const auto currentSamples{ m_currentBuffer.data<SampleType>() + samplesWritten };
         const qint64 numSamples{ bytesToWrite / bytesPerSample };
-        applyOverdrive(currentSamples, numSamples, m_overdrive);
+        applyOverdrive(currentSamples, numSamples, m_outputDevice->overdrive());
     }
 
     if (!m_audioSink->bytesFree()) {

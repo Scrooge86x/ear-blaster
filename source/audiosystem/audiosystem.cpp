@@ -1,47 +1,18 @@
 #include "audiosystem.h"
 
 #include "soundeffect.h"
+#include "audiodevice.h"
 
 AudioSystem::AudioSystem(QObject *const parent)
     : QObject{ parent }
-{}
+{
+    m_outputDevice = new AudioDevice{ this };
+}
 
 AudioSystem::~AudioSystem()
 {
     for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
         delete soundEffect;
-    }
-}
-
-float AudioSystem::volume() const
-{
-    return m_volume;
-}
-
-void AudioSystem::setVolume(const float volume)
-{
-    if (volume != m_volume) {
-        m_volume = volume;
-        for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
-            soundEffect->setVolume(m_volume);
-        }
-        emit volumeChanged(volume);
-    }
-}
-
-float AudioSystem::overdrive() const
-{
-    return m_overdrive;
-}
-
-void AudioSystem::setOverdrive(const float overdrive)
-{
-    if (m_overdrive != overdrive) {
-        m_overdrive = overdrive;
-        for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
-            soundEffect->setOverdrive(m_overdrive);
-        }
-        emit overdriveChanged(m_overdrive);
     }
 }
 
@@ -58,8 +29,6 @@ void AudioSystem::play(const int id, const QUrl& path)
     connect(soundEffect, &SoundEffect::startedPlaying, this, [this, id]{ emit soundStarted(id); });
     connect(soundEffect, &SoundEffect::stoppedPlaying, this, [this, id]{ emit soundStopped(id); });
     soundEffect->setOutputDevice(m_outputDevice);
-    soundEffect->setOverdrive(m_overdrive);
-    soundEffect->setVolume(m_volume);
     soundEffect->play(path);
 }
 
@@ -77,20 +46,7 @@ void AudioSystem::stopAll() const
     }
 }
 
-QAudioDevice AudioSystem::outputDevice() const
+AudioDevice* AudioSystem::outputDevice() const
 {
     return m_outputDevice;
-}
-
-void AudioSystem::setOutputDevice(const QAudioDevice& outputDevice)
-{
-    if (m_outputDevice == outputDevice) {
-        return;
-    }
-
-    m_outputDevice = outputDevice;
-    for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
-        soundEffect->setOutputDevice(m_outputDevice);
-    }
-    emit outputDeviceChanged(m_outputDevice);
 }

@@ -10,7 +10,7 @@ Settings {
     // in the config file
     function getDefaults() {
         return {
-            mainVolume: 1.0,
+            outputVolume: 1.0,
             foregroundColor: "#ddd",
             backgroundColor: "#0f0f0f",
             accentColor: "#fa6800",
@@ -24,7 +24,7 @@ Settings {
     }
 
     property string sounds: "[]" // { "name": "", "path": "", "sequence": "" }
-    property real mainVolume: getDefaults()["mainVolume"]
+    property real outputVolume: getDefaults()["outputVolume"]
     property string foregroundColor: getDefaults()["foregroundColor"]
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
@@ -33,9 +33,9 @@ Settings {
     property string audioOutputDevice: getDefaults()["audioOutputDevice"]
     property real overdrive: getDefaults()["overdrive"]
 
-    onMainVolumeChanged: audioSystem.volume = mainVolume
+    onOutputVolumeChanged: audioSystem.outputDevice.volume = outputVolume
     onLanguageChanged: translator.currentLanguage = language
-    onOverdriveChanged: audioSystem.overdrive = overdrive
+    onOverdriveChanged: audioSystem.outputDevice.overdrive = overdrive
 
     enum CloseBehavior {
         Quit,

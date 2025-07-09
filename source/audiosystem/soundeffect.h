@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QUrl>
-#include <QAudioDevice>
 #include <QAudioBuffer>
 #include <QtTypes>
 #include <QThread>
@@ -11,6 +10,7 @@
 class QAudioDecoder;
 class QAudioSink;
 class QIODevice;
+class AudioDevice;
 
 class SoundEffect : public QObject
 {
@@ -23,14 +23,8 @@ public:
     void play(const QUrl& filePath);
     void stop();
 
-    float volume() const;
-    void setVolume(const float volume);
-
-    float overdrive() const;
-    void setOverdrive(const float overdrive);
-
-    QAudioDevice outputDevice() const;
-    void setOutputDevice(const QAudioDevice& outputDevice);
+    const AudioDevice* outputDevice() const;
+    void setOutputDevice(const AudioDevice* const outputDevice);
 
 signals:
     void startedPlaying();
@@ -46,9 +40,7 @@ private:
     QAudioBuffer m_currentBuffer{};
     qint64 m_bytesWritten{};
 
-    QAudioDevice m_outputDevice{};
-    float m_volume{ 1.f };
-    float m_overdrive{};
+    const AudioDevice* m_outputDevice{};
 
     QThread m_thread{};
 };
