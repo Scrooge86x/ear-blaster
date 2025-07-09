@@ -8,6 +8,9 @@
 #include "translator.h"
 #include "audiosystem/audiosystem.h"
 
+#include <QMediaDevices>
+#include "audiosystem/microphonepassthrough.h"
+
 int main(int argc, char *argv[])
 {
     // Fix for resize causing flickering
@@ -24,6 +27,11 @@ int main(int argc, char *argv[])
     // The icon already set from the windows rc file, but in order for
     // ColorDialog to pick it up, it needs to also be set here
     app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
+
+    MicrophonePassthrough micPassthrough{};
+    micPassthrough.setOutputDevice(QMediaDevices::defaultAudioOutput());
+    micPassthrough.setInputDevice(QMediaDevices::defaultAudioInput());
+    micPassthrough.start();
 
     AudioSystem audioSystem{ &app };
     Translator translator{};
