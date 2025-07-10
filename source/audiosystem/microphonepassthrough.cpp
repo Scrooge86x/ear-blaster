@@ -6,9 +6,6 @@
 #include <QAudioSource>
 #include <QAudioSink>
 
-#include <QDebug>
-#include <QCoreApplication>
-
 static consteval QAudioFormat getAudioFormat() {
     QAudioFormat format{};
     format.setChannelCount(2);
@@ -42,34 +39,14 @@ MicrophonePassthrough::~MicrophonePassthrough()
     m_thread.wait();
 }
 
-void MicrophonePassthrough::start()
+void MicrophonePassthrough::setEnabled(const bool enabled)
 {
-    QMetaObject::invokeMethod(this, [this]() {
-        if (!m_audioSource || !m_audioSink) {
-            return;
-        }
-
-        m_inputDevice = m_audioSource->start();
-        m_outputDevice = m_audioSink->start();
-        connect(m_inputDevice, &QIODevice::readyRead, this, &MicrophonePassthrough::processBuffer);
-    }, Qt::QueuedConnection);
-}
-
-void MicrophonePassthrough::stop()
-{
-    QMetaObject::invokeMethod(this, [this]() {
-        if (!m_audioSource || !m_audioSink) {
-            return;
-        }
-
-        m_audioSource->reset();
-        m_audioSource->stop();
-        m_inputDevice = nullptr;
-
-        m_audioSink->reset();
-        m_audioSink->stop();
-        m_outputDevice = nullptr;
-    }, Qt::QueuedConnection);
+    if (m_enabled == enabled) {
+        return;
+    }
+    m_enabled = enabled;
+    m_enabled ? start() : stop();
+    emit enabledChanged(m_enabled);
 }
 
 void MicrophonePassthrough::setInputDevice(const AudioDevice* const inputAudioDevice)
@@ -83,7 +60,7 @@ void MicrophonePassthrough::setInputDevice(const AudioDevice* const inputAudioDe
 
     m_inputAudioDevice = inputAudioDevice;
 
-    const auto updateAudioSource{ [this, inputAudioDevice]() {
+    connect(m_inputAudioDevice, &AudioDevice::deviceChanged, this, [this]() {
         if (m_audioSource) {
             m_audioSource->reset();
             m_audioSource->stop();
@@ -91,10 +68,11 @@ void MicrophonePassthrough::setInputDevice(const AudioDevice* const inputAudioDe
             delete m_audioSource;
         }
 
-        m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), getAudioFormat(), this };
-    } };
-    connect(m_inputAudioDevice, &AudioDevice::deviceChanged, this, updateAudioSource);
-    QMetaObject::invokeMethod(this, updateAudioSource, Qt::QueuedConnection);
+        m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), getAudioFormat() };
+        if (!m_inputDevice && m_enabled) {
+            start();
+        }
+    });
 }
 
 void MicrophonePassthrough::setOutputDevice(const AudioDevice* const outputAudioDevice)
@@ -114,7 +92,7 @@ void MicrophonePassthrough::setOutputDevice(const AudioDevice* const outputAudio
         }
     });
 
-    const auto updateAudioSink{ [this, outputAudioDevice]() {
+    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this]() {
         if (m_audioSink) {
             m_audioSink->reset();
             m_audioSink->stop();
@@ -124,12 +102,49 @@ void MicrophonePassthrough::setOutputDevice(const AudioDevice* const outputAudio
 
         m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), getAudioFormat(), this };
         m_audioSink->setVolume(m_outputAudioDevice->volume());
-    } };
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, updateAudioSink);
-    QMetaObject::invokeMethod(this, updateAudioSink, Qt::QueuedConnection);
+        if (!m_outputDevice && m_enabled) {
+            start();
+        }
+    });
+}
+
+void MicrophonePassthrough::start()
+{
+    QMetaObject::invokeMethod(this, [this]() {
+        if (!m_audioSource || !m_audioSink) {
+            return;
+        }
+
+        if (!m_inputDevice) {
+            m_inputDevice = m_audioSource->start();
+            connect(m_inputDevice, &QIODevice::readyRead, this, &MicrophonePassthrough::processBuffer);
+        }
+        if (!m_outputDevice) {
+            m_outputDevice = m_audioSink->start();
+        }
+    }, Qt::QueuedConnection);
+}
+
+void MicrophonePassthrough::stop()
+{
+    QMetaObject::invokeMethod(this, [this]() {
+        if (m_audioSource) {
+            m_audioSource->reset();
+            m_audioSource->stop();
+            m_inputDevice = nullptr;
+        }
+        if (m_audioSink) {
+            m_audioSink->reset();
+            m_audioSink->stop();
+            m_outputDevice = nullptr;
+        }
+    }, Qt::QueuedConnection);
 }
 
 void MicrophonePassthrough::processBuffer()
 {
+    if (!m_outputDevice || !m_inputDevice) {
+        return;
+    }
     m_outputDevice->write(m_inputDevice->readAll());
 }

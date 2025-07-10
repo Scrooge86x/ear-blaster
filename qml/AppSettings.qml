@@ -20,6 +20,7 @@ Settings {
             language: "en",
             audioOutputDevice: "",
             overdrive: 0.0,
+            micPassthrough: false,
         };
     }
 
@@ -32,10 +33,12 @@ Settings {
     property string language: getDefaults()["language"]
     property string audioOutputDevice: getDefaults()["audioOutputDevice"]
     property real overdrive: getDefaults()["overdrive"]
+    property real micPassthrough: getDefaults()["micPassthrough"]
 
     onOutputVolumeChanged: audioSystem.outputDevice.volume = outputVolume
     onLanguageChanged: translator.currentLanguage = language
     onOverdriveChanged: audioSystem.outputDevice.overdrive = overdrive
+    onMicPassthroughChanged: audioSystem.micPassthrough.enabled = micPassthrough
 
     enum CloseBehavior {
         Quit,

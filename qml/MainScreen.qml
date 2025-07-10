@@ -29,6 +29,8 @@ Item {
             audioSystem.outputDevice.device = mediaDevices.audioOutputs[0];
         }
         updateAudioDevices();
+
+        audioSystem.inputDevice.device = mediaDevices.defaultAudioInput;
     }
 
     MediaDevices {
@@ -94,6 +96,12 @@ Item {
             }
         }
 
+        CheckBox {
+            text: qsTr("Mic")
+            checked: AppSettings.micPassthrough
+            onToggled: AppSettings.micPassthrough = checked
+        }
+
         RoundButton {
             text: qsTr("Stop all")
             radius: 7
@@ -106,7 +114,7 @@ Item {
             id: deviceComboBox
             model: audioDevices
             textRole: "name"
-            Layout.preferredWidth: 300
+            Layout.preferredWidth: 250
 
             onActivated: (index) => audioSystem.outputDevice.device = mediaDevices.audioOutputs[index]
             delegate: ItemDelegate {
