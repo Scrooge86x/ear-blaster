@@ -102,13 +102,13 @@ Item {
             onToggled: AppSettings.micPassthrough = checked
         }
 
+        Item { Layout.fillWidth: true }
+
         RoundButton {
             text: qsTr("Stop all")
             radius: 7
             onClicked: audioSystem.stopAll()
         }
-
-        Item { Layout.fillWidth: true }
 
         ComboBox  {
             id: deviceComboBox
