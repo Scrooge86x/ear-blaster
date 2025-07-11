@@ -1,14 +1,15 @@
 #ifndef AUDIOSYSTEM_H
 #define AUDIOSYSTEM_H
 
-#include "microphonepassthrough.h"
-
 #include <QObject>
 #include <QUrl>
 #include <QMap>
 
+Q_MOC_INCLUDE("source/audiosystem/microphonepassthrough.h")
+
 class SoundEffect;
 class AudioDevice;
+class MicrophonePassthrough;
 
 class AudioSystem : public QObject
 {

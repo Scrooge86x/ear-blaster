@@ -2,6 +2,7 @@
 
 #include "soundeffect.h"
 #include "audiodevice.h"
+#include "microphonepassthrough.h"
 
 AudioSystem::AudioSystem(QObject *const parent)
     : QObject{ parent }
