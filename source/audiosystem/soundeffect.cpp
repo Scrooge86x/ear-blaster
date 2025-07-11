@@ -135,7 +135,9 @@ static void applyOverdrive(
 ) {
     constexpr auto minVal{ std::numeric_limits<SampleType>::min() };
     constexpr auto maxVal{ std::numeric_limits<SampleType>::max() };
-    const double gain{ boostLevel * 100.f };
+    const double gain{ 1.0 + QtAudio::convertVolume(
+        boostLevel, QtAudio::LogarithmicVolumeScale, QtAudio::LinearVolumeScale
+    ) * 150.0 };
 
     for (qint64 i{}; i < numSamples; ++i) {
         double boosted{ static_cast<double>(*samples) * gain };
