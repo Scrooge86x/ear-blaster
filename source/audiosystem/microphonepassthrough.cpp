@@ -5,6 +5,7 @@
 #include <QAudioDevice>
 #include <QAudioSource>
 #include <QAudioSink>
+#include <QtTypes>
 
 static consteval QAudioFormat getAudioFormat() {
     QAudioFormat format{};

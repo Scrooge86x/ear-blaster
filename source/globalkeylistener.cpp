@@ -5,7 +5,9 @@
 #include <Windows.h>
 
 #include <QKeySequence>
-#include <QDebug>
+#include <QLoggingCategory>
+
+Q_STATIC_LOGGING_CATEGORY(gklLog, "ear-blaster-globalkeylistener")
 
 [[nodiscard]] static inline Qt::Key win32KeyToQtKey(
     const ::UINT vkCode,
@@ -461,13 +463,13 @@ GlobalKeyListener::GlobalKeyListener(QObject* parent)
         reinterpret_cast<::LPTSTR>(win32KeyboardHook),
         &hookModule
     )) {
-        qWarning() << "Couldn't get the handle to module containing win32KeyboardHook.";
+        qCWarning(gklLog) << "Couldn't get the handle to module containing win32KeyboardHook.";
         return;
     }
 
     g_keyboardHook = ::SetWindowsHookEx(WH_KEYBOARD_LL, win32KeyboardHook, hookModule, NULL);
     if (!g_keyboardHook) {
-        qWarning() << "Couldn't create WH_KEYBOARD_LL hook.";
+        qCWarning(gklLog) << "Couldn't create WH_KEYBOARD_LL hook.";
         return;
     }
 

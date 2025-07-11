@@ -2,7 +2,6 @@
 #define MICROPHONEPASSTHROUGH_H
 
 #include <QObject>
-#include <QtTypes>
 #include <QThread>
 
 class QAudioDevice;

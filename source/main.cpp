@@ -8,8 +8,6 @@
 #include "translator.h"
 #include "audiosystem/audiosystem.h"
 
-#include <QMediaDevices>
-
 int main(int argc, char *argv[])
 {
     // Fix for resize causing flickering
