@@ -2,17 +2,15 @@
 
 #include "soundeffect.h"
 #include "audiodevice.h"
-#include "microphonepassthrough.h"
 
 AudioSystem::AudioSystem(QObject *const parent)
     : QObject{ parent }
 {
-    m_outputDevice = new AudioDevice{ this };
-    m_inputDevice  = new AudioDevice{ this };
-
+    m_outputDevice   = new AudioDevice{ this };
     m_micPassthrough = new MicrophonePassthrough{};
-    m_micPassthrough->setOutputDevice(m_outputDevice);
-    m_micPassthrough->setInputDevice(m_inputDevice);
+    connect(m_outputDevice, &AudioDevice::deviceChanged, this, [this] {
+        m_micPassthrough->outputDevice()->setDevice(m_outputDevice->device());
+    });
 }
 
 AudioSystem::~AudioSystem()

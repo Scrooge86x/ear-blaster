@@ -30,7 +30,7 @@ Item {
         }
         updateAudioDevices();
 
-        audioSystem.inputDevice.device = mediaDevices.defaultAudioInput;
+        audioSystem.micPassthrough.inputDevice.device = mediaDevices.defaultAudioInput;
     }
 
     MediaDevices {
