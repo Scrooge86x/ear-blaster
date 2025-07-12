@@ -59,6 +59,20 @@ void MicrophonePassthrough::setEnabled(const bool enabled)
     emit enabledChanged(m_enabled);
 }
 
+void MicrophonePassthrough::forceStopOutput()
+{
+    QMetaObject::invokeMethod(this, [this]() {
+        if (!m_audioSink) {
+            return;
+        }
+
+        m_outputDevice = nullptr;
+        m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
+        delete m_audioSink;
+        m_audioSink = nullptr;
+    }, Qt::QueuedConnection);
+}
+
 void MicrophonePassthrough::start()
 {
     QMetaObject::invokeMethod(this, [this]() {
@@ -87,7 +101,13 @@ void MicrophonePassthrough::initAudioSink()
             m_audioSink, &QAudioSink::setVolume);
     m_outputDevice = m_audioSink->start();
 
+    // Reject last buffer so QIODevice::readyRead gets emmited again with new data
+    if (m_inputDevice) {
+        static_cast<void>(m_inputDevice->readAll());
+    }
+
     if (oldAudioSink) {
+        oldAudioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
         delete oldAudioSink;
     }
 }
@@ -95,6 +115,7 @@ void MicrophonePassthrough::initAudioSink()
 void MicrophonePassthrough::initAudioSource()
 {
     QAudioSource* oldAudioSource{ m_audioSource };
+
     m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), getAudioFormat() };
     m_inputDevice = m_audioSource->start();
     if (!m_enabled) {

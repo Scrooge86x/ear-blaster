@@ -14,6 +14,14 @@ AudioSystem::AudioSystem(QObject *const parent)
     connect(m_outputDevice, &AudioDevice::deviceChanged, this, [this] {
         m_micPassthrough->outputDevice()->setDevice(m_outputDevice->device());
     });
+
+    const auto mediaDevices{ new QMediaDevices{ this } };
+    connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
+        if (!QMediaDevices::audioOutputs().contains(m_outputDevice->device())) {
+            stopAll();
+            m_micPassthrough->forceStopOutput();
+        }
+    });
 }
 
 AudioSystem::~AudioSystem()
