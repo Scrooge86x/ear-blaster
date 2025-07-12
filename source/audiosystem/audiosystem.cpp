@@ -4,6 +4,8 @@
 #include "audiodevice.h"
 #include "microphonepassthrough.h"
 
+#include <QMediaDevices>
+
 AudioSystem::AudioSystem(QObject *const parent)
     : QObject{ parent }
 {
@@ -50,4 +52,50 @@ void AudioSystem::stopAll() const
     for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
         soundEffect->stop();
     }
+}
+
+QAudioDevice AudioSystem::getInputDeviceById(const QString& id)
+{
+    const auto inputDevices{ QMediaDevices::audioInputs() };
+    for (const auto& device : inputDevices) {
+        if (device.id() == id) {
+            return device;
+        }
+    }
+    return {};
+}
+
+QAudioDevice AudioSystem::getOutputDeviceById(const QString& id)
+{
+    const auto outputDevices{ QMediaDevices::audioOutputs() };
+    for (const auto& device : outputDevices) {
+        if (device.id() == id) {
+            return device;
+        }
+    }
+    return {};
+}
+
+qsizetype AudioSystem::getInputDeviceIndexById(const QString& id)
+{
+    const auto inputDevices{ QMediaDevices::audioInputs() };
+    const auto numDevices{ inputDevices.length() };
+    for (qsizetype i{}; i < numDevices; ++i) {
+        if (inputDevices[i].id() == id) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+qsizetype AudioSystem::getOutputDeviceIndexById(const QString& id)
+{
+    const auto outputDevices{ QMediaDevices::audioOutputs() };
+    const auto numDevices{ outputDevices.length() };
+    for (qsizetype i{}; i < numDevices; ++i) {
+        if (outputDevices[i].id() == id) {
+            return i;
+        }
+    }
+    return -1;
 }

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QUrl>
 #include <QMap>
+#include <QAudioDevice>
 
 Q_MOC_INCLUDE("source/audiosystem/microphonepassthrough.h")
 
@@ -27,6 +28,12 @@ public:
 
     MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
     AudioDevice* outputDevice() const { return m_outputDevice; }
+
+    Q_INVOKABLE static QAudioDevice getInputDeviceById(const QString& id);
+    Q_INVOKABLE static QAudioDevice getOutputDeviceById(const QString& id);
+
+    Q_INVOKABLE static qsizetype getInputDeviceIndexById(const QString& id);
+    Q_INVOKABLE static qsizetype getOutputDeviceIndexById(const QString& id);
 
 signals:
     void soundStarted(int id);

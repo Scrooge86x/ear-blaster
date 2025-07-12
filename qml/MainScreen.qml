@@ -9,33 +9,21 @@ Item {
 
     property ListModel audioDevices: ListModel {}
 
-    Connections {
-        target: audioSystem.outputDevice
-        function onDeviceChanged() {
-            AppSettings.audioOutputDevice = audioSystem.outputDevice.device.id;
-        }
-    }
-
     Component.onCompleted: {
-        let deviceFound = false;
-        for (const device of mediaDevices.audioOutputs) {
-            if (device.id.toString() === AppSettings.audioOutputDevice) {
-                audioSystem.outputDevice.device = device;
-                deviceFound = true;
-            }
-        }
-        if (!deviceFound) {
+        const outputDevice = audioSystem.getOutputDeviceById(AppSettings.audioOutputDevice);
+        if (outputDevice.mode === AudioDevice.Null) {
             console.error("Warning: audio output device not found:", AppSettings.audioOutputDevice);
-            audioSystem.outputDevice.device = mediaDevices.audioOutputs[0];
+            audioSystem.outputDevice.device = mediaDevices.defaultAudioOutput;
+        } else {
+            audioSystem.outputDevice.device = outputDevice;
         }
-        updateAudioDevices();
 
         audioSystem.micPassthrough.inputDevice.device = mediaDevices.defaultAudioInput;
     }
 
     MediaDevices {
         id: mediaDevices
-        onAudioOutputsChanged: updateAudioDevices()
+        onAudioOutputsChanged: deviceComboBox.currentIndex = audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice)
     }
 
     RowLayout {
@@ -112,16 +100,13 @@ Item {
 
         ComboBox  {
             id: deviceComboBox
-            model: audioDevices
-            textRole: "name"
+            model: mediaDevices.audioOutputs
+            currentIndex: audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice)
+            valueRole: "id"
+            textRole: "description"
             Layout.preferredWidth: 250
 
-            onActivated: (index) => audioSystem.outputDevice.device = mediaDevices.audioOutputs[index]
-            delegate: ItemDelegate {
-                width: deviceComboBox.width
-                text: model.name
-                highlighted: deviceComboBox.highlightedIndex === index
-            }
+            onActivated: AppSettings.audioOutputDevice = currentValue
         }
 
         Button {
@@ -235,17 +220,6 @@ Item {
                         sequence: "",
                     });
                 }
-            }
-        }
-    }
-
-    function updateAudioDevices() {
-        audioDevices.clear();
-        for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
-            const device = mediaDevices.audioOutputs[i];
-            audioDevices.append({ name: device.description });
-            if (device.id.toString() === AppSettings.audioOutputDevice) {
-                deviceComboBox.currentIndex = i
             }
         }
     }

@@ -39,6 +39,7 @@ Settings {
     onLanguageChanged: translator.currentLanguage = language
     onOverdriveChanged: audioSystem.outputDevice.overdrive = overdrive
     onMicPassthroughChanged: audioSystem.micPassthrough.enabled = micPassthrough
+    onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
 
     enum CloseBehavior {
         Quit,
