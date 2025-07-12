@@ -93,6 +93,11 @@ void SoundEffect::setOutputDevice(const AudioDevice* const outputDevice)
             m_audioSink->stop();
             m_ioDevice = nullptr;
             delete m_audioSink;
+            m_audioSink = nullptr;
+        }
+
+        if (m_outputDevice->device().isNull()) {
+            return;
         }
 
         constexpr QAudioFormat format{ getAudioFormat() };
@@ -154,6 +159,9 @@ void SoundEffect::processBuffer()
         m_currentBuffer = m_decoder->read();
     }
 
+    if (!m_audioSink) {
+        return;
+    }
     const qint64 bytesToWrite{ std::min(
         m_audioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
     ) };

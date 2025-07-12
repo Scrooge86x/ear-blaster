@@ -10,20 +10,11 @@ Item {
     property ListModel audioDevices: ListModel {}
 
     Component.onCompleted: {
-        const outputDevice = audioSystem.getOutputDeviceById(AppSettings.audioOutputDevice);
-        if (outputDevice.mode === AudioDevice.Null) {
-            console.error("Warning: audio output device not found:", AppSettings.audioOutputDevice);
-            audioSystem.outputDevice.device = mediaDevices.defaultAudioOutput;
-        } else {
-            audioSystem.outputDevice.device = outputDevice;
-        }
-
         audioSystem.micPassthrough.inputDevice.device = mediaDevices.defaultAudioInput;
     }
 
     MediaDevices {
         id: mediaDevices
-        onAudioOutputsChanged: deviceComboBox.currentIndex = audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice)
     }
 
     RowLayout {
@@ -100,13 +91,29 @@ Item {
 
         ComboBox  {
             id: deviceComboBox
-            model: mediaDevices.audioOutputs
-            currentIndex: audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice)
+            model: audioSystem.audioOutputs
             valueRole: "id"
             textRole: "description"
             Layout.preferredWidth: 250
+            displayText: currentText.length ? currentText : qsTr("No device selected.")
 
-            onActivated: AppSettings.audioOutputDevice = currentValue
+            delegate: ItemDelegate {
+                width: ListView.view.width
+                text: modelData.description.length ? modelData.description : qsTr("No device selected.")
+                font.weight: deviceComboBox.currentIndex === index ? Font.DemiBold : Font.Normal
+                highlighted: deviceComboBox.highlightedIndex === index
+                hoverEnabled: deviceComboBox.hoverEnabled
+            }
+
+            onCurrentIndexChanged: {
+                const wasDeviceDisconnected = currentIndex === 0 && highlightedIndex === -1;
+                if (wasDeviceDisconnected) {
+                    currentIndex = audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice);
+                    AppSettings.audioOutputDevice = audioSystem.audioOutputs[currentIndex].id;
+                }
+            }
+            onActivated: (index) => AppSettings.audioOutputDevice = audioSystem.audioOutputs[index].id
+            Component.onCompleted: currentIndex = audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice)
         }
 
         Button {

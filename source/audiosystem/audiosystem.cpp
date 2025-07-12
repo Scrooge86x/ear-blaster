@@ -21,7 +21,9 @@ AudioSystem::AudioSystem(QObject *const parent)
             stopAll();
             m_micPassthrough->forceStopOutput();
         }
+        emit audioOutputsChanged();
     });
+    connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, &AudioSystem::audioInputsChanged);
 }
 
 AudioSystem::~AudioSystem()
@@ -62,6 +64,20 @@ void AudioSystem::stopAll() const
     }
 }
 
+QList<QAudioDevice> AudioSystem::audioInputs() const
+{
+    auto audioInputs{ QMediaDevices::audioInputs() };
+    audioInputs.push_front({});
+    return audioInputs;
+}
+
+QList<QAudioDevice> AudioSystem::audioOutputs() const
+{
+    auto audioOutputs{ QMediaDevices::audioOutputs() };
+    audioOutputs.push_front({});
+    return audioOutputs;
+}
+
 QAudioDevice AudioSystem::getInputDeviceById(const QString& id)
 {
     const auto inputDevices{ QMediaDevices::audioInputs() };
@@ -90,10 +106,10 @@ qsizetype AudioSystem::getInputDeviceIndexById(const QString& id)
     const auto numDevices{ inputDevices.length() };
     for (qsizetype i{}; i < numDevices; ++i) {
         if (inputDevices[i].id() == id) {
-            return i;
+            return i + 1;
         }
     }
-    return -1;
+    return 0;
 }
 
 qsizetype AudioSystem::getOutputDeviceIndexById(const QString& id)
@@ -102,8 +118,8 @@ qsizetype AudioSystem::getOutputDeviceIndexById(const QString& id)
     const auto numDevices{ outputDevices.length() };
     for (qsizetype i{}; i < numDevices; ++i) {
         if (outputDevices[i].id() == id) {
-            return i;
+            return i + 1;
         }
     }
-    return -1;
+    return 0;
 }

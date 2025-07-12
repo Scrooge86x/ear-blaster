@@ -95,6 +95,10 @@ void MicrophonePassthrough::initAudioSink()
 {
     QAudioSink* oldAudioSink{ m_audioSink };
 
+    if (m_outputAudioDevice->device().isNull()) {
+        return forceStopOutput();
+    }
+
     m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), getAudioFormat(), this };
     m_audioSink->setVolume(m_outputAudioDevice->volume());
     connect(m_outputAudioDevice, &AudioDevice::volumeChanged,

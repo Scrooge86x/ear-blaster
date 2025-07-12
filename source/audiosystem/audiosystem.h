@@ -17,6 +17,8 @@ class AudioSystem : public QObject
     Q_OBJECT
     Q_PROPERTY(AudioDevice* outputDevice READ outputDevice CONSTANT FINAL)
     Q_PROPERTY(MicrophonePassthrough* micPassthrough READ micPassthrough CONSTANT FINAL)
+    Q_PROPERTY(QList<QAudioDevice> audioInputs READ audioInputs NOTIFY audioInputsChanged)
+    Q_PROPERTY(QList<QAudioDevice> audioOutputs READ audioOutputs NOTIFY audioOutputsChanged)
 
 public:
     explicit AudioSystem(QObject* const parent = nullptr);
@@ -29,6 +31,9 @@ public:
     MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
     AudioDevice* outputDevice() const { return m_outputDevice; }
 
+    QList<QAudioDevice> audioInputs() const;
+    QList<QAudioDevice> audioOutputs() const;
+
     Q_INVOKABLE static QAudioDevice getInputDeviceById(const QString& id);
     Q_INVOKABLE static QAudioDevice getOutputDeviceById(const QString& id);
 
@@ -38,6 +43,8 @@ public:
 signals:
     void soundStarted(int id);
     void soundStopped(int id);
+    void audioInputsChanged();
+    void audioOutputsChanged();
 
 private:
     QMap<int, SoundEffect*> m_soundEffectMap{};
