@@ -146,33 +146,10 @@ Item {
                 sliderWidth: 100
             }
 
-            ComboBox {
-                id: inputDevicesComboBox
-                model: audioSystem.audioInputs
-                valueRole: "id"
-                textRole: "description"
+            AudioDeviceSelect {
                 Layout.preferredWidth: 250
-                displayText: currentText.length ? currentText : qsTr("No device selected.")
-
-                delegate: ItemDelegate {
-                    width: ListView.view.width
-                    text: modelData.description.length ? modelData.description : qsTr("No device selected.")
-                    font.weight: inputDevicesComboBox.currentIndex === index ? Font.DemiBold : Font.Normal
-                    highlighted: inputDevicesComboBox.highlightedIndex === index
-                    hoverEnabled: inputDevicesComboBox.hoverEnabled
-                }
-
-                onCurrentIndexChanged: {
-                    const wasDeviceDisconnected = currentIndex === 0 && highlightedIndex === -1;
-                    if (wasDeviceDisconnected) {
-                        currentIndex = audioSystem.getInputDeviceIndexById(AppSettings.audioInputDevice);
-                        AppSettings.audioInputDevice = valueAt(currentIndex);
-                    }
-                }
-                onActivated: (index) => AppSettings.audioInputDevice = valueAt(index)
-
-                // Cannot use indexOfValue here
-                Component.onCompleted: currentIndex = audioSystem.getInputDeviceIndexById(AppSettings.audioInputDevice)
+                appSettingsPropName: "audioInputDevice"
+                deviceType: AudioDeviceSelect.DeviceType.Input
             }
         }
     }

@@ -51,6 +51,7 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/SequenceInput.qml
         qml/AppSettings.qml
         qml/VolumeInput.qml
+        qml/AudioDeviceSelect.qml
 )
 
 set_target_properties(${PROJECT_NAME}
