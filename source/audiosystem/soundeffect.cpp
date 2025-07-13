@@ -15,6 +15,14 @@ SoundEffect::SoundEffect(const AudioDevice& outputAudioDevice)
         m_decoder = new QAudioDecoder{ this };
         m_decoder->setAudioFormat(AudioShared::getAudioFormat());
 
+        connect(this, &SoundEffect::stopRequested,
+                this, &SoundEffect::stop);
+        connect(&m_outputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+            if (!enabled) {
+                stop();
+            }
+        });
+
         connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
                 this, &SoundEffect::initAudioSink);
         initAudioSink();
@@ -34,7 +42,7 @@ SoundEffect::~SoundEffect()
 void SoundEffect::play(const QUrl& filePath)
 {
     QMetaObject::invokeMethod(this, [this, filePath]() {
-        if (!m_audioSink) {
+        if (!m_audioSink || !m_outputAudioDevice.enabled()) {
             return;
         }
 
@@ -53,16 +61,14 @@ void SoundEffect::play(const QUrl& filePath)
 
 void SoundEffect::stop()
 {
-    QMetaObject::invokeMethod(this, [this]() {
-        if (!m_audioSink) {
-            return;
-        }
+    if (!m_audioSink || !m_outputIODevice) {
+        return;
+    }
 
-        m_decoder->stop();
-        m_audioSink->reset();
-        m_audioSink->stop();
-        m_outputIODevice = nullptr;
-    }, Qt::QueuedConnection);
+    m_decoder->stop();
+    m_audioSink->reset();
+    m_audioSink->stop();
+    m_outputIODevice = nullptr;
 }
 
 void SoundEffect::invalidateAudioSink()

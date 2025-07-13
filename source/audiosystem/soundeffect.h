@@ -21,16 +21,17 @@ public:
     ~SoundEffect();
 
     void play(const QUrl& filePath);
-    void stop();
 
     const AudioDevice& outputDevice() const { return m_outputAudioDevice; }
 
 signals:
+    void stopRequested();
     void startedPlaying();
     void stoppedPlaying();
 
 private:
     void processBuffer();
+    void stop();
 
     void initAudioSink();
     void invalidateAudioSink();
