@@ -26,7 +26,8 @@ public:
     AudioDevice* inputDevice() const { return m_inputAudioDevice; }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
 
-    void forceStopOutput();
+    void invalidateInputDevice();
+    void invalidateOutputDevice();
 
 signals:
     void enabledChanged(bool enabled);

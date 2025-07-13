@@ -9,14 +9,6 @@ Item {
 
     property ListModel audioDevices: ListModel {}
 
-    Component.onCompleted: {
-        audioSystem.micPassthrough.inputDevice.device = mediaDevices.defaultAudioInput;
-    }
-
-    MediaDevices {
-        id: mediaDevices
-    }
-
     RowLayout {
         id: topBar
         anchors {
@@ -25,54 +17,18 @@ Item {
             right: parent.right
         }
 
-        RowLayout {
-            Label {
-                text: qsTr("Volume:")
-                color: AppSettings.foregroundColor
-            }
-
-            Slider {
-                id: volumeSlider
-                from: 0.0
-                to: 1.0
-                value: AppSettings.outputVolume
-                stepSize: 0.01
-                Layout.preferredWidth: 100
-
-                onValueChanged: AppSettings.outputVolume = value
-            }
-
-            Label {
-                Layout.preferredWidth: 35
-                text: `${Math.round(volumeSlider.value * 100)}%`
-                color: AppSettings.foregroundColor
-                font.pixelSize: 13
-            }
+        VolumeInput {
+            text: qsTr("Volume:")
+            value: AppSettings.outputVolume
+            onValueChanged: AppSettings.outputVolume = value
+            sliderWidth: 100
         }
 
-        RowLayout {
-            Label {
-                text: qsTr("Overdrive:")
-                color: AppSettings.foregroundColor
-            }
-
-            Slider {
-                id: overdriveSlider
-                from: 0.0
-                to: 1.0
-                value: AppSettings.overdrive
-                stepSize: 0.01
-                Layout.preferredWidth: 75
-
-                onValueChanged: AppSettings.overdrive = value
-            }
-
-            Label {
-                Layout.preferredWidth: 35
-                text: `${Math.round(overdriveSlider.value * 100)}%`
-                color: AppSettings.foregroundColor
-                font.pixelSize: 13
-            }
+        VolumeInput {
+            text: qsTr("Overdrive:")
+            value: AppSettings.overdrive
+            onValueChanged: AppSettings.overdrive = value
+            sliderWidth: 75
         }
 
         CheckBox {
@@ -109,10 +65,12 @@ Item {
                 const wasDeviceDisconnected = currentIndex === 0 && highlightedIndex === -1;
                 if (wasDeviceDisconnected) {
                     currentIndex = audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice);
-                    AppSettings.audioOutputDevice = audioSystem.audioOutputs[currentIndex].id;
+                    AppSettings.audioOutputDevice = valueAt(currentIndex);
                 }
             }
-            onActivated: (index) => AppSettings.audioOutputDevice = audioSystem.audioOutputs[index].id
+            onActivated: (index) => AppSettings.audioOutputDevice = valueAt(index)
+
+            // Cannot use indexOfValue here
             Component.onCompleted: currentIndex = audioSystem.getOutputDeviceIndexById(AppSettings.audioOutputDevice)
         }
 

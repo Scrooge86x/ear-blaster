@@ -11,6 +11,7 @@ Settings {
     function getDefaults() {
         return {
             outputVolume: 1.0,
+            inputVolume: 1.0,
             foregroundColor: "#ddd",
             backgroundColor: "#0f0f0f",
             accentColor: "#fa6800",
@@ -19,6 +20,7 @@ Settings {
             windowGeometry: "{}", // Anything other than "" will get filled in during shutdown
             language: "en",
             audioOutputDevice: "",
+            audioInputDevice: "",
             overdrive: 0.0,
             micPassthrough: false,
         };
@@ -26,20 +28,24 @@ Settings {
 
     property string sounds: "[]" // { "name": "", "path": "", "sequence": "" }
     property real outputVolume: getDefaults()["outputVolume"]
+    property real inputVolume: getDefaults()["inputVolume"]
     property string foregroundColor: getDefaults()["foregroundColor"]
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
     property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
     property string language: getDefaults()["language"]
     property string audioOutputDevice: getDefaults()["audioOutputDevice"]
+    property string audioInputDevice: getDefaults()["audioInputDevice"]
     property real overdrive: getDefaults()["overdrive"]
     property real micPassthrough: getDefaults()["micPassthrough"]
 
     onOutputVolumeChanged: audioSystem.outputDevice.volume = outputVolume
+    onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
     onLanguageChanged: translator.currentLanguage = language
     onOverdriveChanged: audioSystem.outputDevice.overdrive = overdrive
     onMicPassthroughChanged: audioSystem.micPassthrough.enabled = micPassthrough
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
+    onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)
 
     enum CloseBehavior {
         Quit,
