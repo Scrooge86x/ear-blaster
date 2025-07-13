@@ -19,24 +19,10 @@ AudioSystem::AudioSystem(QObject *const parent)
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
         if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
             stopAll();
-            QMetaObject::invokeMethod(
-                m_micPassthrough,
-                &MicrophonePassthrough::invalidateOutputDevice,
-                Qt::QueuedConnection
-            );
         }
         emit audioOutputsChanged();
     });
-    connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, [this] {
-        if (!QMediaDevices::audioInputs().contains(m_micPassthrough->inputDevice()->device())) {
-            QMetaObject::invokeMethod(
-                m_micPassthrough,
-                &MicrophonePassthrough::invalidateInputDevice,
-                Qt::QueuedConnection
-            );
-        }
-        emit audioInputsChanged();
-    });
+    connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, &AudioSystem::audioInputsChanged);
 }
 
 AudioSystem::~AudioSystem()

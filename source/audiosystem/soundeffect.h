@@ -25,15 +25,15 @@ public:
 
     const AudioDevice& outputDevice() const { return m_outputAudioDevice; }
 
-    void invalidateAudioSink();
-
 signals:
     void startedPlaying();
     void stoppedPlaying();
 
 private:
     void processBuffer();
+
     void initAudioSink();
+    void invalidateAudioSink();
 
     QAudioDecoder* m_decoder{};
     QAudioSink* m_audioSink{};

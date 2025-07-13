@@ -7,6 +7,7 @@
 #include <QAudioSource>
 #include <QAudioSink>
 #include <QtTypes>
+#include <QMediaDevices>
 
 MicrophonePassthrough::MicrophonePassthrough()
     : QObject{ nullptr }
@@ -19,6 +20,18 @@ MicrophonePassthrough::MicrophonePassthrough()
         m_outputAudioDevice = new AudioDevice{ this };
         connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
                 this, &MicrophonePassthrough::initAudioSink);
+
+        const auto mediaDevices{ new QMediaDevices{ this } };
+        connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
+            if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
+                invalidateAudioSink();
+            }
+        });
+        connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, [this] {
+            if (!QMediaDevices::audioInputs().contains(m_inputAudioDevice->device())) {
+                invalidateAudioSource();
+            }
+        });
     });
     m_thread.start();
     this->moveToThread(&m_thread);
@@ -46,7 +59,7 @@ void MicrophonePassthrough::setEnabled(const bool enabled)
     emit enabledChanged(m_enabled);
 }
 
-void MicrophonePassthrough::invalidateInputDevice()
+void MicrophonePassthrough::invalidateAudioSource()
 {
     if (!m_audioSource) {
         return;
@@ -63,7 +76,7 @@ void MicrophonePassthrough::invalidateInputDevice()
     m_audioSource = nullptr;
 }
 
-void MicrophonePassthrough::invalidateOutputDevice()
+void MicrophonePassthrough::invalidateAudioSink()
 {
     if (!m_audioSink) {
         return;
@@ -97,7 +110,7 @@ void MicrophonePassthrough::stop()
 
 void MicrophonePassthrough::initAudioSink()
 {
-    invalidateOutputDevice();
+    invalidateAudioSink();
     if (m_outputAudioDevice->device().isNull()) {
         return;
     }
@@ -116,7 +129,7 @@ void MicrophonePassthrough::initAudioSink()
 
 void MicrophonePassthrough::initAudioSource()
 {
-    invalidateInputDevice();
+    invalidateAudioSource();
     if (m_inputAudioDevice->device().isNull()) {
         return;
     }

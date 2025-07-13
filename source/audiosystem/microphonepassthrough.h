@@ -26,9 +26,6 @@ public:
     AudioDevice* inputDevice() const { return m_inputAudioDevice; }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
 
-    void invalidateInputDevice();
-    void invalidateOutputDevice();
-
 signals:
     void enabledChanged(bool enabled);
 
@@ -37,7 +34,9 @@ private:
     void stop();
 
     void initAudioSink();
+    void invalidateAudioSink();
     void initAudioSource();
+    void invalidateAudioSource();
 
     void processBuffer();
 
