@@ -12,6 +12,8 @@ Settings {
         return {
             outputVolume: 1.0,
             inputVolume: 1.0,
+            outputOverdrive: 0.0,
+            inputOverdrive: 0.0,
             foregroundColor: "#ddd",
             backgroundColor: "#0f0f0f",
             accentColor: "#fa6800",
@@ -21,8 +23,6 @@ Settings {
             language: "en",
             audioOutputDevice: "",
             audioInputDevice: "",
-            outputOverdrive: 0.0,
-            inputOverdrive: 0.0,
             micPassthroughEnabled: false,
         };
     }
@@ -30,6 +30,8 @@ Settings {
     property string sounds: "[]" // { "name": "", "path": "", "sequence": "" }
     property real outputVolume: getDefaults()["outputVolume"]
     property real inputVolume: getDefaults()["inputVolume"]
+    property real outputOverdrive: getDefaults()["outputOverdrive"]
+    property real inputOverdrive: getDefaults()["inputOverdrive"]
     property string foregroundColor: getDefaults()["foregroundColor"]
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
@@ -37,15 +39,13 @@ Settings {
     property string language: getDefaults()["language"]
     property string audioOutputDevice: getDefaults()["audioOutputDevice"]
     property string audioInputDevice: getDefaults()["audioInputDevice"]
-    property real outputOverdrive: getDefaults()["outputOverdrive"]
-    property real inputOverdrive: getDefaults()["inputOverdrive"]
     property real micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
 
     onOutputVolumeChanged: audioSystem.outputDevice.volume = outputVolume
     onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
-    onLanguageChanged: translator.currentLanguage = language
     onOutputOverdriveChanged: audioSystem.outputDevice.overdrive = outputOverdrive
     onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
+    onLanguageChanged: translator.currentLanguage = language
     onMicPassthroughEnabledChanged: audioSystem.micPassthrough.inputDevice.enabled = micPassthroughEnabled
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
     onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)
