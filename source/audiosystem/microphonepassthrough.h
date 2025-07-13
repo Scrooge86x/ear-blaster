@@ -44,8 +44,8 @@ private:
     bool m_enabled{};
     QThread m_thread{};
 
-    QIODevice* m_inputDevice{};
-    QIODevice* m_outputDevice{};
+    QIODevice* m_inputIODevice{};
+    QIODevice* m_outputIODevice{};
 
     QAudioSource* m_audioSource{};
     QAudioSink* m_audioSink{};

@@ -23,7 +23,7 @@ public:
     void play(const QUrl& filePath);
     void stop();
 
-    const AudioDevice* outputDevice() const { return m_outputDevice; }
+    const AudioDevice* outputDevice() const { return m_outputAudioDevice; }
     void setOutputDevice(const AudioDevice* const outputDevice);
 
 signals:
@@ -35,12 +35,12 @@ private:
 
     QAudioDecoder* m_decoder{};
     QAudioSink* m_audioSink{};
-    QIODevice* m_ioDevice{};
+    QIODevice* m_outputIODevice{};
 
     QAudioBuffer m_currentBuffer{};
     qint64 m_bytesWritten{};
 
-    const AudioDevice* m_outputDevice{};
+    const AudioDevice* m_outputAudioDevice{};
 
     QThread m_thread{};
 };

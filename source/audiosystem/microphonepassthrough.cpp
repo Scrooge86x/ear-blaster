@@ -50,7 +50,7 @@ void MicrophonePassthrough::invalidateInputDevice()
         return;
     }
 
-    m_inputDevice = nullptr;
+    m_inputIODevice = nullptr;
 
     // If the source is not resumed before deletion it will block
     // the next audio source for some reason
@@ -67,7 +67,7 @@ void MicrophonePassthrough::invalidateOutputDevice()
         return;
     }
 
-    m_outputDevice = nullptr;
+    m_outputIODevice = nullptr;
     m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
     delete m_audioSink;
     m_audioSink = nullptr;
@@ -104,11 +104,11 @@ void MicrophonePassthrough::initAudioSink()
     m_audioSink->setVolume(m_outputAudioDevice->volume());
     connect(m_outputAudioDevice, &AudioDevice::volumeChanged,
             m_audioSink, &QAudioSink::setVolume);
-    m_outputDevice = m_audioSink->start();
+    m_outputIODevice = m_audioSink->start();
 
     // Reject last buffer so QIODevice::readyRead gets emmited again with new data
-    if (m_inputDevice) {
-        static_cast<void>(m_inputDevice->readAll());
+    if (m_inputIODevice) {
+        static_cast<void>(m_inputIODevice->readAll());
     }
 }
 
@@ -120,24 +120,24 @@ void MicrophonePassthrough::initAudioSource()
     }
 
     m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), AudioShared::getAudioFormat() };
-    m_inputDevice = m_audioSource->start();
+    m_inputIODevice = m_audioSource->start();
     if (!m_enabled) {
         m_audioSource->suspend();
     }
-    connect(m_inputDevice, &QIODevice::readyRead,
+    connect(m_inputIODevice, &QIODevice::readyRead,
             this, &MicrophonePassthrough::processBuffer);
 }
 
 void MicrophonePassthrough::processBuffer()
 {
-    if (!m_outputDevice || !m_inputDevice) {
+    if (!m_outputIODevice || !m_inputIODevice) {
         return;
     }
-    QByteArray buffer{ m_inputDevice->readAll() };
+    QByteArray buffer{ m_inputIODevice->readAll() };
     AudioShared::addOverdrive(
         reinterpret_cast<AudioShared::SampleType*>(buffer.data()),
         buffer.length(),
         m_outputAudioDevice->overdrive()
     );
-    m_outputDevice->write(buffer);
+    m_outputIODevice->write(buffer);
 }
