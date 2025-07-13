@@ -29,7 +29,7 @@ public:
     Q_INVOKABLE void stopAll() const;
 
     MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
-    AudioDevice* outputDevice() const { return m_outputDevice; }
+    AudioDevice* outputDevice() const { return m_outputAudioDevice; }
 
     QList<QAudioDevice> audioInputs() const;
     QList<QAudioDevice> audioOutputs() const;
@@ -49,7 +49,7 @@ signals:
 private:
     QMap<int, SoundEffect*> m_soundEffectMap{};
     MicrophonePassthrough* m_micPassthrough{};
-    AudioDevice* m_outputDevice{};
+    AudioDevice* m_outputAudioDevice{};
 };
 
 #endif // AUDIOSYSTEM_H

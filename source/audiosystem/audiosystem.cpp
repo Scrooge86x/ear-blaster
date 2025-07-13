@@ -9,15 +9,15 @@
 AudioSystem::AudioSystem(QObject *const parent)
     : QObject{ parent }
 {
-    m_outputDevice   = new AudioDevice{ this };
-    m_micPassthrough = new MicrophonePassthrough{};
-    connect(m_outputDevice, &AudioDevice::deviceChanged, this, [this] {
-        m_micPassthrough->outputDevice()->setDevice(m_outputDevice->device());
+    m_outputAudioDevice = new AudioDevice{ this };
+    m_micPassthrough    = new MicrophonePassthrough{};
+    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this] {
+        m_micPassthrough->outputDevice()->setDevice(m_outputAudioDevice->device());
     });
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
-        if (!QMediaDevices::audioOutputs().contains(m_outputDevice->device())) {
+        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
             stopAll();
             QMetaObject::invokeMethod(
                 m_micPassthrough,
@@ -42,8 +42,9 @@ AudioSystem::AudioSystem(QObject *const parent)
 AudioSystem::~AudioSystem()
 {
     for (const auto soundEffect : std::as_const(m_soundEffectMap)) {
-        delete soundEffect;
+        soundEffect->deleteLater();
     }
+    m_soundEffectMap.clear();
     delete m_micPassthrough;
 }
 
@@ -59,7 +60,7 @@ void AudioSystem::play(const int id, const QUrl& path)
     soundEffect = new SoundEffect{};
     connect(soundEffect, &SoundEffect::startedPlaying, this, [this, id]{ emit soundStarted(id); });
     connect(soundEffect, &SoundEffect::stoppedPlaying, this, [this, id]{ emit soundStopped(id); });
-    soundEffect->setOutputDevice(m_outputDevice);
+    soundEffect->setOutputDevice(m_outputAudioDevice);
     soundEffect->play(path);
 }
 
