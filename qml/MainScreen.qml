@@ -33,8 +33,8 @@ Item {
 
         CheckBox {
             text: qsTr("Mic")
-            checked: AppSettings.micPassthrough
-            onToggled: AppSettings.micPassthrough = checked
+            checked: AppSettings.micPassthroughEnabled
+            onToggled: AppSettings.micPassthroughEnabled = checked
         }
 
         Item { Layout.fillWidth: true }
