@@ -57,10 +57,9 @@ void AudioSystem::play(const int id, const QUrl& path)
     }
 
     auto& soundEffect{ m_soundEffectMap[id] };
-    soundEffect = new SoundEffect{};
+    soundEffect = new SoundEffect{ *m_outputAudioDevice };
     connect(soundEffect, &SoundEffect::startedPlaying, this, [this, id]{ emit soundStarted(id); });
     connect(soundEffect, &SoundEffect::stoppedPlaying, this, [this, id]{ emit soundStopped(id); });
-    soundEffect->setOutputDevice(m_outputAudioDevice);
     soundEffect->play(path);
 }
 

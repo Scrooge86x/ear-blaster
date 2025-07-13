@@ -8,12 +8,16 @@
 #include <QAudioSink>
 #include <QTimer>
 
-SoundEffect::SoundEffect()
-    : QObject{ nullptr }
+SoundEffect::SoundEffect(const AudioDevice& outputAudioDevice)
+    : QObject{ nullptr }, m_outputAudioDevice{ outputAudioDevice }
 {
     connect(&m_thread, &QThread::started, this, [this] {
         m_decoder = new QAudioDecoder{ this };
         m_decoder->setAudioFormat(AudioShared::getAudioFormat());
+
+        connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
+                this, &SoundEffect::initAudioSink);
+        initAudioSink();
     });
     m_thread.start();
     this->moveToThread(&m_thread);
@@ -21,8 +25,10 @@ SoundEffect::SoundEffect()
 
 SoundEffect::~SoundEffect()
 {
-    m_thread.quit();
-    m_thread.wait();
+    if (m_thread.isRunning()) {
+        m_thread.quit();
+        m_thread.wait();
+    }
 }
 
 void SoundEffect::play(const QUrl& filePath)
@@ -32,12 +38,15 @@ void SoundEffect::play(const QUrl& filePath)
             return;
         }
 
-        m_outputIODevice = m_audioSink->start();
+        // Reject last decoder buffer to prevent ASSERT: "!m_audioRenderer->isStepForced()"
+        // that happens when using the ffmpeg backend
         if (m_decoder->bufferAvailable()) {
             static_cast<void>(m_decoder->read());
         }
         m_decoder->setSource(filePath);
         m_decoder->start();
+
+        m_outputIODevice = m_audioSink->start();
         processBuffer();
     }, Qt::QueuedConnection);
 }
@@ -56,65 +65,16 @@ void SoundEffect::stop()
     }, Qt::QueuedConnection);
 }
 
-void SoundEffect::setOutputDevice(const AudioDevice* const outputAudioDevice)
+void SoundEffect::invalidateAudioSink()
 {
-    if (!outputAudioDevice || m_outputAudioDevice == outputAudioDevice) {
+    if (!m_audioSink) {
         return;
     }
-    if (m_outputAudioDevice) {
-        disconnect(m_outputAudioDevice, &AudioDevice::volumeChanged, this, nullptr);
-    }
 
-    m_outputAudioDevice = outputAudioDevice;
-    connect(m_outputAudioDevice, &AudioDevice::volumeChanged, this, [this] {
-        if (m_audioSink) {
-            m_audioSink->setVolume(m_outputAudioDevice->volume());
-        }
-    });
-
-    const auto updateAudioSink{ [this]() {
-        if (m_audioSink) {
-            m_audioSink->reset();
-            m_audioSink->stop();
-            m_outputIODevice = nullptr;
-            delete m_audioSink;
-            m_audioSink = nullptr;
-        }
-
-        if (m_outputAudioDevice->device().isNull()) {
-            return;
-        }
-
-        constexpr QAudioFormat format{ AudioShared::getAudioFormat() };
-        m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), format, this };
-        m_audioSink->setVolume(m_outputAudioDevice->volume());
-        m_audioSink->setBufferSize(
-            format.sampleRate()
-            * format.bytesPerSample()
-            * format.channelCount()
-            * 0.15 // seconds of buffering
-        );
-
-        connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state) {
-            switch (state) {
-            case QAudio::ActiveState:
-                emit startedPlaying();
-                break;
-            case QAudio::SuspendedState:
-            case QAudio::StoppedState:
-            case QAudio::IdleState:
-                m_currentBuffer = {};
-                m_bytesWritten = 0;
-                emit stoppedPlaying();
-                break;
-            default:
-                break;
-            }
-        });
-    } };
-
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, updateAudioSink);
-    QMetaObject::invokeMethod(this, updateAudioSink, Qt::QueuedConnection);
+    m_outputIODevice = nullptr;
+    m_audioSink->reset();
+    delete m_audioSink;
+    m_audioSink = nullptr;
 }
 
 void SoundEffect::processBuffer()
@@ -133,13 +93,13 @@ void SoundEffect::processBuffer()
         m_audioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
     ) };
 
-    if (m_outputAudioDevice->overdrive()) {
+    if (m_outputAudioDevice.overdrive()) {
         constexpr int bytesPerSample{ AudioShared::getAudioFormat().bytesPerSample() };
         const auto samplesWritten{ m_bytesWritten / bytesPerSample };
 
         const auto currentSamples{ m_currentBuffer.data<AudioShared::SampleType>() + samplesWritten };
         const qint64 numSamples{ bytesToWrite / bytesPerSample };
-        AudioShared::addOverdrive(currentSamples, numSamples, m_outputAudioDevice->overdrive());
+        AudioShared::addOverdrive(currentSamples, numSamples, m_outputAudioDevice.overdrive());
     }
 
     if (!m_audioSink->bytesFree()) {
@@ -155,4 +115,42 @@ void SoundEffect::processBuffer()
         m_bytesWritten = 0;
     }
     return QTimer::singleShot(1, this, &SoundEffect::processBuffer);
+}
+
+void SoundEffect::initAudioSink()
+{
+    invalidateAudioSink();
+    if (m_outputAudioDevice.device().isNull()) {
+        return;
+    }
+
+    constexpr QAudioFormat format{ AudioShared::getAudioFormat() };
+    m_audioSink = new QAudioSink{ m_outputAudioDevice.device(), format, this };
+    m_audioSink->setVolume(m_outputAudioDevice.volume());
+    m_audioSink->setBufferSize(
+        format.sampleRate()
+        * format.bytesPerSample()
+        * format.channelCount()
+        * 0.15 // seconds of buffering
+    );
+
+    connect(&m_outputAudioDevice, &AudioDevice::volumeChanged,
+            m_audioSink, &QAudioSink::setVolume);
+
+    connect(m_audioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state) {
+        switch (state) {
+        case QAudio::ActiveState:
+            emit startedPlaying();
+            break;
+        case QAudio::SuspendedState:
+        case QAudio::StoppedState:
+        case QAudio::IdleState:
+            m_currentBuffer = {};
+            m_bytesWritten = 0;
+            emit stoppedPlaying();
+            break;
+        default:
+            break;
+        }
+    });
 }

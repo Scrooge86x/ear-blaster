@@ -30,8 +30,10 @@ MicrophonePassthrough::~MicrophonePassthrough()
     if (m_audioSource) {
         QMetaObject::invokeMethod(m_audioSource, &QObject::deleteLater, Qt::BlockingQueuedConnection);
     }
-    m_thread.quit();
-    m_thread.wait();
+    if (m_thread.isRunning()) {
+        m_thread.quit();
+        m_thread.wait();
+    }
 }
 
 void MicrophonePassthrough::setEnabled(const bool enabled)
