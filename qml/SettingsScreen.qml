@@ -136,6 +136,14 @@ Item {
                 value: AppSettings.inputVolume
                 onValueChanged: AppSettings.inputVolume = value
                 sliderWidth: 100
+                Layout.rightMargin: 15
+            }
+
+            VolumeInput {
+                text: qsTr("Overdrive:")
+                value: AppSettings.inputOverdrive
+                onValueChanged: AppSettings.inputOverdrive = value
+                sliderWidth: 100
             }
 
             ComboBox {

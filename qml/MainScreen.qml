@@ -26,8 +26,8 @@ Item {
 
         VolumeInput {
             text: qsTr("Overdrive:")
-            value: AppSettings.overdrive
-            onValueChanged: AppSettings.overdrive = value
+            value: AppSettings.outputOverdrive
+            onValueChanged: AppSettings.outputOverdrive = value
             sliderWidth: 75
         }
 

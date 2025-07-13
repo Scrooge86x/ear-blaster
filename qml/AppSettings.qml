@@ -21,7 +21,8 @@ Settings {
             language: "en",
             audioOutputDevice: "",
             audioInputDevice: "",
-            overdrive: 0.0,
+            outputOverdrive: 0.0,
+            inputOverdrive: 0.0,
             micPassthrough: false,
         };
     }
@@ -36,13 +37,15 @@ Settings {
     property string language: getDefaults()["language"]
     property string audioOutputDevice: getDefaults()["audioOutputDevice"]
     property string audioInputDevice: getDefaults()["audioInputDevice"]
-    property real overdrive: getDefaults()["overdrive"]
+    property real outputOverdrive: getDefaults()["outputOverdrive"]
+    property real inputOverdrive: getDefaults()["inputOverdrive"]
     property real micPassthrough: getDefaults()["micPassthrough"]
 
     onOutputVolumeChanged: audioSystem.outputDevice.volume = outputVolume
     onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
     onLanguageChanged: translator.currentLanguage = language
-    onOverdriveChanged: audioSystem.outputDevice.overdrive = overdrive
+    onOutputOverdriveChanged: audioSystem.outputDevice.overdrive = outputOverdrive
+    onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
     onMicPassthroughChanged: audioSystem.micPassthrough.enabled = micPassthrough
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
     onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)

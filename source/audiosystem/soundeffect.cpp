@@ -1,34 +1,19 @@
 #include "soundeffect.h"
 
 #include "audiodevice.h"
+#include "audioshared.h"
 
 #include <QAudioFormat>
 #include <QAudioDecoder>
 #include <QAudioSink>
 #include <QTimer>
 
-static consteval QAudioFormat getAudioFormat() {
-    QAudioFormat format{};
-    format.setChannelCount(2);
-    format.setSampleFormat(QAudioFormat::Int16);
-    format.setSampleRate(48'000);
-    return format;
-}
-
-template <QAudioFormat::SampleFormat> struct SampleFormatType { using type = void; };
-template <> struct SampleFormatType<QAudioFormat::UInt8> { using type = quint8; };
-template <> struct SampleFormatType<QAudioFormat::Int16> { using type = qint16; };
-template <> struct SampleFormatType<QAudioFormat::Int32> { using type = qint32; };
-template <> struct SampleFormatType<QAudioFormat::Float> { using type = float; };
-
-using SampleType = SampleFormatType<getAudioFormat().sampleFormat()>::type;
-
 SoundEffect::SoundEffect()
     : QObject{ nullptr }
 {
     connect(&m_thread, &QThread::started, this, [this] {
         m_decoder = new QAudioDecoder{ this };
-        m_decoder->setAudioFormat(getAudioFormat());
+        m_decoder->setAudioFormat(AudioShared::getAudioFormat());
     });
     m_thread.start();
     this->moveToThread(&m_thread);
@@ -100,7 +85,7 @@ void SoundEffect::setOutputDevice(const AudioDevice* const outputDevice)
             return;
         }
 
-        constexpr QAudioFormat format{ getAudioFormat() };
+        constexpr QAudioFormat format{ AudioShared::getAudioFormat() };
         m_audioSink = new QAudioSink{ m_outputDevice->device(), format, this };
         m_audioSink->setVolume(m_outputDevice->volume());
         m_audioSink->setBufferSize(
@@ -132,24 +117,6 @@ void SoundEffect::setOutputDevice(const AudioDevice* const outputDevice)
     QMetaObject::invokeMethod(this, updateAudioSink, Qt::QueuedConnection);
 }
 
-template <typename T>
-static void applyOverdrive(
-    T* samples,
-    const qint64 numSamples,
-    const float boostLevel
-) {
-    constexpr auto minVal{ std::numeric_limits<SampleType>::min() };
-    constexpr auto maxVal{ std::numeric_limits<SampleType>::max() };
-    const double gain{ 1.0 + QtAudio::convertVolume(
-        boostLevel, QtAudio::LogarithmicVolumeScale, QtAudio::LinearVolumeScale
-    ) * 150.0 };
-
-    for (qint64 i{}; i < numSamples; ++i) {
-        double boosted{ static_cast<double>(*samples) * gain };
-        *samples++ = std::clamp<double>(boosted, minVal, maxVal);
-    }
-}
-
 void SoundEffect::processBuffer()
 {
     if (!m_bytesWritten) {
@@ -167,12 +134,12 @@ void SoundEffect::processBuffer()
     ) };
 
     if (m_outputDevice->overdrive()) {
-        constexpr int bytesPerSample{ getAudioFormat().bytesPerSample() };
+        constexpr int bytesPerSample{ AudioShared::getAudioFormat().bytesPerSample() };
         const auto samplesWritten{ m_bytesWritten / bytesPerSample };
 
-        const auto currentSamples{ m_currentBuffer.data<SampleType>() + samplesWritten };
+        const auto currentSamples{ m_currentBuffer.data<AudioShared::SampleType>() + samplesWritten };
         const qint64 numSamples{ bytesToWrite / bytesPerSample };
-        applyOverdrive(currentSamples, numSamples, m_outputDevice->overdrive());
+        AudioShared::addOverdrive(currentSamples, numSamples, m_outputDevice->overdrive());
     }
 
     if (!m_audioSink->bytesFree()) {

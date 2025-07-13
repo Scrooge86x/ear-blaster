@@ -1,27 +1,12 @@
 #include "microphonepassthrough.h"
 
 #include "audiodevice.h"
+#include "audioshared.h"
 
 #include <QAudioDevice>
 #include <QAudioSource>
 #include <QAudioSink>
 #include <QtTypes>
-
-static consteval QAudioFormat getAudioFormat() {
-    QAudioFormat format{};
-    format.setChannelCount(2);
-    format.setSampleFormat(QAudioFormat::Int16);
-    format.setSampleRate(48'000);
-    return format;
-}
-
-template <QAudioFormat::SampleFormat> struct SampleFormatType { using type = void; };
-template <> struct SampleFormatType<QAudioFormat::UInt8> { using type = quint8; };
-template <> struct SampleFormatType<QAudioFormat::Int16> { using type = qint16; };
-template <> struct SampleFormatType<QAudioFormat::Int32> { using type = qint32; };
-template <> struct SampleFormatType<QAudioFormat::Float> { using type = float; };
-
-using SampleType = SampleFormatType<getAudioFormat().sampleFormat()>::type;
 
 MicrophonePassthrough::MicrophonePassthrough()
     : QObject{ nullptr }
@@ -115,7 +100,7 @@ void MicrophonePassthrough::initAudioSink()
         return;
     }
 
-    m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), getAudioFormat(), this };
+    m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), AudioShared::getAudioFormat(), this };
     m_audioSink->setVolume(m_outputAudioDevice->volume());
     connect(m_outputAudioDevice, &AudioDevice::volumeChanged,
             m_audioSink, &QAudioSink::setVolume);
@@ -134,7 +119,7 @@ void MicrophonePassthrough::initAudioSource()
         return;
     }
 
-    m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), getAudioFormat() };
+    m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), AudioShared::getAudioFormat() };
     m_inputDevice = m_audioSource->start();
     if (!m_enabled) {
         m_audioSource->suspend();
@@ -148,5 +133,11 @@ void MicrophonePassthrough::processBuffer()
     if (!m_outputDevice || !m_inputDevice) {
         return;
     }
-    m_outputDevice->write(m_inputDevice->readAll());
+    QByteArray buffer{ m_inputDevice->readAll() };
+    AudioShared::addOverdrive(
+        reinterpret_cast<AudioShared::SampleType*>(buffer.data()),
+        buffer.length(),
+        m_outputAudioDevice->overdrive()
+    );
+    m_outputDevice->write(buffer);
 }

@@ -30,6 +30,7 @@ qt_add_executable(${PROJECT_NAME}
     source/audiosystem/audiosystem.h source/audiosystem/audiosystem.cpp
     source/audiosystem/microphonepassthrough.h source/audiosystem/microphonepassthrough.cpp
     source/audiosystem/audiodevice.h source/audiosystem/audiodevice.cpp
+    source/audiosystem/audioshared.h
 )
 
 set_source_files_properties(qml/AppSettings.qml PROPERTIES
