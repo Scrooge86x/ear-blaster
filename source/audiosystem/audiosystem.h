@@ -31,8 +31,8 @@ public:
     MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
 
-    QList<QAudioDevice> audioInputs() const;
-    QList<QAudioDevice> audioOutputs() const;
+    static QList<QAudioDevice> audioInputs();
+    static QList<QAudioDevice> audioOutputs();
 
     Q_INVOKABLE static QAudioDevice getInputDeviceById(const QString& id);
     Q_INVOKABLE static QAudioDevice getOutputDeviceById(const QString& id);

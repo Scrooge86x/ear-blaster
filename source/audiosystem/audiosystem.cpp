@@ -63,14 +63,14 @@ void AudioSystem::stopAll() const
     }
 }
 
-QList<QAudioDevice> AudioSystem::audioInputs() const
+QList<QAudioDevice> AudioSystem::audioInputs()
 {
     auto audioInputs{ QMediaDevices::audioInputs() };
     audioInputs.push_front({});
     return audioInputs;
 }
 
-QList<QAudioDevice> AudioSystem::audioOutputs() const
+QList<QAudioDevice> AudioSystem::audioOutputs()
 {
     auto audioOutputs{ QMediaDevices::audioOutputs() };
     audioOutputs.push_front({});
