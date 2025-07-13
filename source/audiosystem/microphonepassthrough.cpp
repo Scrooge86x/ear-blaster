@@ -16,10 +16,13 @@ MicrophonePassthrough::MicrophonePassthrough()
         m_inputAudioDevice = new AudioDevice{ this };
         connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
                 this, &MicrophonePassthrough::initAudioSource);
+        connect(m_inputAudioDevice, &AudioDevice::enabledChanged,
+                this, &MicrophonePassthrough::onInputEnabledChanged);
 
         m_outputAudioDevice = new AudioDevice{ this };
         connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
                 this, &MicrophonePassthrough::initAudioSink);
+        // Output device is always enabled as of now
 
         const auto mediaDevices{ new QMediaDevices{ this } };
         connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
@@ -49,14 +52,21 @@ MicrophonePassthrough::~MicrophonePassthrough()
     }
 }
 
-void MicrophonePassthrough::setEnabled(const bool enabled)
+void MicrophonePassthrough::onInputEnabledChanged(const bool enabled)
 {
-    if (m_enabled == enabled) {
+    if (!m_audioSource) {
         return;
     }
-    m_enabled = enabled;
-    m_enabled ? start() : stop();
-    emit enabledChanged(m_enabled);
+
+    if (!enabled) {
+        return m_audioSource->suspend();
+    }
+
+    // Calling resume on audio source that is not suspended
+    // causes IAudioClient3::Start failed "AUDCLNT_E_NOT_STOPPED"
+    if (m_audioSource->state() == QtAudio::SuspendedState) {
+        m_audioSource->resume();
+    }
 }
 
 void MicrophonePassthrough::invalidateAudioSource()
@@ -88,26 +98,6 @@ void MicrophonePassthrough::invalidateAudioSink()
     m_audioSink = nullptr;
 }
 
-void MicrophonePassthrough::start()
-{
-    QMetaObject::invokeMethod(this, [this]() {
-        // Calling resume on audio source that is not suspended
-        // causes IAudioClient3::Start failed "AUDCLNT_E_NOT_STOPPED"
-        if (m_audioSource && m_audioSource->state() == QtAudio::SuspendedState) {
-            m_audioSource->resume();
-        }
-    }, Qt::QueuedConnection);
-}
-
-void MicrophonePassthrough::stop()
-{
-    QMetaObject::invokeMethod(this, [this]() {
-        if (m_audioSource) {
-            m_audioSource->suspend();
-        }
-    }, Qt::QueuedConnection);
-}
-
 void MicrophonePassthrough::initAudioSink()
 {
     invalidateAudioSink();
@@ -136,7 +126,7 @@ void MicrophonePassthrough::initAudioSource()
 
     m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), AudioShared::getAudioFormat() };
     m_inputIODevice = m_audioSource->start();
-    if (!m_enabled) {
+    if (!m_inputAudioDevice->enabled()) {
         m_audioSource->suspend();
     }
     connect(m_inputIODevice, &QIODevice::readyRead,
