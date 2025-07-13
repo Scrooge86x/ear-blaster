@@ -37,6 +37,12 @@ Item {
             onToggled: AppSettings.micPassthroughEnabled = checked
         }
 
+        CheckBox {
+            text: qsTr("Monitor")
+            checked: AppSettings.audioMonitorEnabled
+            onToggled: AppSettings.audioMonitorEnabled = checked
+        }
+
         Item { Layout.fillWidth: true }
 
         RoundButton {

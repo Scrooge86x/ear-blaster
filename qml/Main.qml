@@ -14,8 +14,8 @@ ApplicationWindow {
     Universal.accent: AppSettings.accentColor
 
     visible: true
-    minimumWidth: 900
-    minimumHeight: 650
+    minimumWidth: 950
+    minimumHeight: 700
     title: "Ear Blaster"
     color: AppSettings.backgroundColor
 

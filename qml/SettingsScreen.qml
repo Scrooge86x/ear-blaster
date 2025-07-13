@@ -152,5 +152,31 @@ Item {
                 deviceType: AudioDeviceSelect.DeviceType.Input
             }
         }
+
+        Label {
+            text: qsTr("Monitor device:")
+        }
+        RowLayout {
+            VolumeInput {
+                text: qsTr("Volume:")
+                value: AppSettings.monitorVolume
+                onValueChanged: AppSettings.monitorVolume = value
+                sliderWidth: 100
+                Layout.rightMargin: 15
+            }
+
+            VolumeInput {
+                text: qsTr("Overdrive:")
+                value: AppSettings.monitorOverdrive
+                onValueChanged: AppSettings.monitorOverdrive = value
+                sliderWidth: 100
+            }
+
+            AudioDeviceSelect {
+                Layout.preferredWidth: 250
+                appSettingsPropName: "audioMonitorDevice"
+                deviceType: AudioDeviceSelect.DeviceType.Output
+            }
+        }
     }
 }
