@@ -61,35 +61,39 @@ void MicrophonePassthrough::setEnabled(const bool enabled)
 
 void MicrophonePassthrough::invalidateInputDevice()
 {
-    QMetaObject::invokeMethod(this, [this]() {
-        if (!m_audioSource) {
-            return;
-        }
+    if (!m_audioSource) {
+        return;
+    }
 
-        m_inputDevice = nullptr;
-        delete m_audioSource;
-        m_audioSource = nullptr;
-    }, Qt::QueuedConnection);
+    m_inputDevice = nullptr;
+
+    // If the source is not resumed before deletion it will block
+    // the next audio source for some reason
+    if (m_audioSource->state() == QtAudio::SuspendedState) {
+        m_audioSource->resume();
+    }
+    delete m_audioSource;
+    m_audioSource = nullptr;
 }
 
 void MicrophonePassthrough::invalidateOutputDevice()
 {
-    QMetaObject::invokeMethod(this, [this]() {
-        if (!m_audioSink) {
-            return;
-        }
+    if (!m_audioSink) {
+        return;
+    }
 
-        m_outputDevice = nullptr;
-        m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
-        delete m_audioSink;
-        m_audioSink = nullptr;
-    }, Qt::QueuedConnection);
+    m_outputDevice = nullptr;
+    m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
+    delete m_audioSink;
+    m_audioSink = nullptr;
 }
 
 void MicrophonePassthrough::start()
 {
     QMetaObject::invokeMethod(this, [this]() {
-        if (m_audioSource) {
+        // Calling resume on audio source that is not suspended
+        // causes IAudioClient3::Start failed "AUDCLNT_E_NOT_STOPPED"
+        if (m_audioSource && m_audioSource->state() == QtAudio::SuspendedState) {
             m_audioSource->resume();
         }
     }, Qt::QueuedConnection);
@@ -106,10 +110,9 @@ void MicrophonePassthrough::stop()
 
 void MicrophonePassthrough::initAudioSink()
 {
-    QAudioSink* oldAudioSink{ m_audioSink };
-
+    invalidateOutputDevice();
     if (m_outputAudioDevice->device().isNull()) {
-        return invalidateOutputDevice();
+        return;
     }
 
     m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), getAudioFormat(), this };
@@ -122,19 +125,13 @@ void MicrophonePassthrough::initAudioSink()
     if (m_inputDevice) {
         static_cast<void>(m_inputDevice->readAll());
     }
-
-    if (oldAudioSink) {
-        oldAudioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
-        delete oldAudioSink;
-    }
 }
 
 void MicrophonePassthrough::initAudioSource()
 {
-    QAudioSource* oldAudioSource{ m_audioSource };
-
+    invalidateInputDevice();
     if (m_inputAudioDevice->device().isNull()) {
-        return invalidateInputDevice();
+        return;
     }
 
     m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), getAudioFormat() };
@@ -144,11 +141,6 @@ void MicrophonePassthrough::initAudioSource()
     }
     connect(m_inputDevice, &QIODevice::readyRead,
             this, &MicrophonePassthrough::processBuffer);
-
-    // This also deletes m_inputDevice so no need to disconnect manually
-    if (oldAudioSource) {
-        delete oldAudioSource;
-    }
 }
 
 void MicrophonePassthrough::processBuffer()
