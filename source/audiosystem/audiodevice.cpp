@@ -25,3 +25,11 @@ void AudioDevice::setOverdrive(const float overdrive)
         emit overdriveChanged(overdrive);
     }
 }
+
+void AudioDevice::setEnabled(const bool enabled)
+{
+    if (m_enabled != enabled) {
+        m_enabled = enabled;
+        emit enabledChanged(m_enabled);
+    }
+}
