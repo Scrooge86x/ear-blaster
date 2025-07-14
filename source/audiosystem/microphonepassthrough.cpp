@@ -12,30 +12,29 @@
 MicrophonePassthrough::MicrophonePassthrough()
     : QObject{ nullptr }
 {
-    connect(&m_thread, &QThread::started, this, [this] {
-        m_inputAudioDevice = new AudioDevice{ this };
-        connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
-                this, &MicrophonePassthrough::initAudioSource);
-        connect(m_inputAudioDevice, &AudioDevice::enabledChanged,
-                this, &MicrophonePassthrough::onInputEnabledChanged);
+    m_inputAudioDevice = new AudioDevice{ this };
+    connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
+            this, &MicrophonePassthrough::initAudioSource);
+    connect(m_inputAudioDevice, &AudioDevice::enabledChanged,
+            this, &MicrophonePassthrough::onInputEnabledChanged);
 
-        m_outputAudioDevice = new AudioDevice{ this };
-        connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
-                this, &MicrophonePassthrough::initAudioSink);
-        // Output device is always enabled as of now
+    m_outputAudioDevice = new AudioDevice{ this };
+    connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
+            this, &MicrophonePassthrough::initAudioSink);
+    // Output device is suspended in onInputEnabledChanged
 
-        const auto mediaDevices{ new QMediaDevices{ this } };
-        connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
-            if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
-                invalidateAudioSink();
-            }
-        });
-        connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, [this] {
-            if (!QMediaDevices::audioInputs().contains(m_inputAudioDevice->device())) {
-                invalidateAudioSource();
-            }
-        });
+    const auto mediaDevices{ new QMediaDevices{ this } };
+    connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
+        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
+            invalidateAudioSink();
+        }
     });
+    connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, [this] {
+        if (!QMediaDevices::audioInputs().contains(m_inputAudioDevice->device())) {
+            invalidateAudioSource();
+        }
+    });
+
     m_thread.start();
     this->moveToThread(&m_thread);
 }
@@ -59,12 +58,14 @@ void MicrophonePassthrough::onInputEnabledChanged(const bool enabled)
     }
 
     if (!enabled) {
+        m_audioSink->suspend();
         return m_audioSource->suspend();
     }
 
     // Calling resume on audio source that is not suspended
     // causes IAudioClient3::Start failed "AUDCLNT_E_NOT_STOPPED"
     if (m_audioSource->state() == QtAudio::SuspendedState) {
+        m_audioSink->resume();
         m_audioSource->resume();
     }
 }
@@ -110,6 +111,9 @@ void MicrophonePassthrough::initAudioSink()
     connect(m_outputAudioDevice, &AudioDevice::volumeChanged,
             m_audioSink, &QAudioSink::setVolume);
     m_outputIODevice = m_audioSink->start();
+    if (!m_inputAudioDevice->enabled()) {
+        m_audioSink->suspend();
+    }
 
     // Reject last buffer so QIODevice::readyRead gets emmited again with new data
     if (m_inputIODevice) {

@@ -17,47 +17,46 @@ SoundEffect::SoundEffect(
     , m_outputAudioDevice{ outputAudioDevice }
     , m_monitorAudioDevice{ monitorAudioDevice }
 {
-    connect(&m_thread, &QThread::started, this, [this] {
-        m_decoder = new QAudioDecoder{ this };
-        m_decoder->setAudioFormat(AudioShared::getAudioFormat());
+    m_decoder = new QAudioDecoder{ this };
+    m_decoder->setAudioFormat(AudioShared::getAudioFormat());
 
-        connect(this, &SoundEffect::stopRequested,
-                this, &SoundEffect::stop);
+    connect(this, &SoundEffect::stopRequested,
+            this, &SoundEffect::stop);
 
-        connect(&m_outputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
-            if (!enabled) {
-                stop();
-            }
-        });
-        connect(&m_monitorAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
-            if (!m_monitorAudioSink) {
-                return;
-            }
-
-            if (enabled) {
-                m_monitorIODevice = m_monitorAudioSink->start();
-            } else {
-                m_monitorAudioSink->reset();
-            }
-        });
-
-        const auto mediaDevices{ new QMediaDevices{ this } };
-        connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
-            if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice.device())) {
-                invalidateAudioOutputSink();
-            }
-            if (!QMediaDevices::audioOutputs().contains(m_monitorAudioDevice.device())) {
-                invalidateAudioMonitorSink();
-            }
-        });
-
-        connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
-                this, &SoundEffect::initAudioOutputSink);
-        connect(&m_monitorAudioDevice, &AudioDevice::deviceChanged,
-                this, &SoundEffect::initAudioMonitorSink);
-        initAudioOutputSink();
-        initAudioMonitorSink();
+    connect(&m_outputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+        if (!enabled) {
+            stop();
+        }
     });
+    connect(&m_monitorAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+        if (!m_monitorAudioSink) {
+            return;
+        }
+
+        if (enabled) {
+            m_monitorIODevice = m_monitorAudioSink->start();
+        } else {
+            m_monitorAudioSink->reset();
+        }
+    });
+
+    const auto mediaDevices{ new QMediaDevices{ this } };
+    connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
+        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice.device())) {
+            invalidateAudioOutputSink();
+        }
+        if (!QMediaDevices::audioOutputs().contains(m_monitorAudioDevice.device())) {
+            invalidateAudioMonitorSink();
+        }
+    });
+
+    connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
+            this, &SoundEffect::initAudioOutputSink);
+    connect(&m_monitorAudioDevice, &AudioDevice::deviceChanged,
+            this, &SoundEffect::initAudioMonitorSink);
+    initAudioOutputSink();
+    initAudioMonitorSink();
+
     m_thread.start();
     this->moveToThread(&m_thread);
 }
