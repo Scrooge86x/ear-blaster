@@ -99,6 +99,16 @@ ApplicationWindow {
             MenuSeparator {}
 
             MenuItem {
+                id: trayMenuMicPassthrough
+                text: qsTr("Mic Passthrough")
+                checkable: true
+                checked: AppSettings.micPassthroughEnabled
+                onTriggered: AppSettings.micPassthroughEnabled = checked
+            }
+
+            MenuSeparator {}
+
+            MenuItem {
                 text: qsTr("Exit")
                 onTriggered: exitApp()
             }
