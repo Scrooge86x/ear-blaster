@@ -130,12 +130,19 @@ void SoundEffect::processBuffer()
     const qint64 numSamples{ bytesToWrite / bytesPerSample };
 
     if (m_monitorIODevice && m_monitorAudioDevice.enabled()) {
+
+        // Synchronize devices if m_monitorAudioSink was just started
+        if (m_monitorAudioSink->bytesFree() == m_monitorAudioSink->bufferSize()) {
+            QByteArray padding{ m_outputAudioSink->bufferSize() - m_outputAudioSink->bytesFree(), '\0' };
+            m_monitorIODevice->write(padding);
+        }
+
         QByteArray samplesCopy{ m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite };
         if (m_monitorAudioDevice.overdrive()) {
             auto currentSamples{ reinterpret_cast<AudioShared::SampleType*>(samplesCopy.data()) };
             AudioShared::addOverdrive(currentSamples, numSamples, m_monitorAudioDevice.overdrive());
         }
-        m_monitorIODevice->write(samplesCopy.data(), bytesToWrite);
+        m_monitorIODevice->write(samplesCopy);
     }
 
     if (m_outputAudioDevice.overdrive()) {
