@@ -22,9 +22,6 @@ public:
     AudioDevice* inputDevice() const { return m_inputAudioDevice; }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
 
-public slots:
-    void onInputEnabledChanged(const bool enabled);
-
 private:
     void initAudioSink();
     void invalidateAudioSink();

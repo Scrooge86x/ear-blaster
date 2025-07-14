@@ -15,13 +15,20 @@ MicrophonePassthrough::MicrophonePassthrough()
     m_inputAudioDevice = new AudioDevice{ this };
     connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSource);
-    connect(m_inputAudioDevice, &AudioDevice::enabledChanged,
-            this, &MicrophonePassthrough::onInputEnabledChanged);
 
     m_outputAudioDevice = new AudioDevice{ this };
     connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSink);
-    // Output device is suspended in onInputEnabledChanged
+
+    connect(m_inputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+        if (enabled) {
+            initAudioSink();
+            initAudioSource();
+        } else {
+            invalidateAudioSource();
+            invalidateAudioSink();
+        }
+    });
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
@@ -51,58 +58,29 @@ MicrophonePassthrough::~MicrophonePassthrough()
     }
 }
 
-void MicrophonePassthrough::onInputEnabledChanged(const bool enabled)
-{
-    if (!m_audioSource) {
-        return;
-    }
-
-    if (!enabled) {
-        m_audioSink->suspend();
-        return m_audioSource->suspend();
-    }
-
-    // Calling resume on audio source that is not suspended
-    // causes IAudioClient3::Start failed "AUDCLNT_E_NOT_STOPPED"
-    if (m_audioSource->state() == QtAudio::SuspendedState) {
-        m_audioSink->resume();
-        m_audioSource->resume();
-    }
-}
-
 void MicrophonePassthrough::invalidateAudioSource()
 {
-    if (!m_audioSource) {
-        return;
+    if (m_audioSource && m_inputIODevice) {
+        m_inputIODevice = nullptr;
+        delete m_audioSource;
+        m_audioSource = nullptr;
     }
-
-    m_inputIODevice = nullptr;
-
-    // If the source is not resumed before deletion it will block
-    // the next audio source for some reason
-    if (m_audioSource->state() == QtAudio::SuspendedState) {
-        m_audioSource->resume();
-    }
-    delete m_audioSource;
-    m_audioSource = nullptr;
 }
 
 void MicrophonePassthrough::invalidateAudioSink()
 {
-    if (!m_audioSink) {
-        return;
+    if (m_audioSink && m_outputIODevice) {
+        m_outputIODevice = nullptr;
+        m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
+        delete m_audioSink;
+        m_audioSink = nullptr;
     }
-
-    m_outputIODevice = nullptr;
-    m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
-    delete m_audioSink;
-    m_audioSink = nullptr;
 }
 
 void MicrophonePassthrough::initAudioSink()
 {
     invalidateAudioSink();
-    if (m_outputAudioDevice->device().isNull()) {
+    if (m_outputAudioDevice->device().isNull() || !m_outputAudioDevice->enabled()) {
         return;
     }
 
@@ -111,28 +89,17 @@ void MicrophonePassthrough::initAudioSink()
     connect(m_outputAudioDevice, &AudioDevice::volumeChanged,
             m_audioSink, &QAudioSink::setVolume);
     m_outputIODevice = m_audioSink->start();
-    if (!m_inputAudioDevice->enabled()) {
-        m_audioSink->suspend();
-    }
-
-    // Reject last buffer so QIODevice::readyRead gets emmited again with new data
-    if (m_inputIODevice) {
-        static_cast<void>(m_inputIODevice->readAll());
-    }
 }
 
 void MicrophonePassthrough::initAudioSource()
 {
     invalidateAudioSource();
-    if (m_inputAudioDevice->device().isNull()) {
+    if (m_inputAudioDevice->device().isNull() || !m_inputAudioDevice->enabled()) {
         return;
     }
 
     m_audioSource = new QAudioSource{ m_inputAudioDevice->device(), AudioShared::getAudioFormat() };
     m_inputIODevice = m_audioSource->start();
-    if (!m_inputAudioDevice->enabled()) {
-        m_audioSource->suspend();
-    }
     connect(m_inputIODevice, &QIODevice::readyRead,
             this, &MicrophonePassthrough::processBuffer);
 }
@@ -142,6 +109,7 @@ void MicrophonePassthrough::processBuffer()
     if (!m_outputIODevice || !m_inputIODevice) {
         return;
     }
+
     QByteArray buffer{ m_inputIODevice->readAll() };
     AudioShared::addOverdrive(
         reinterpret_cast<AudioShared::SampleType*>(buffer.data()),
