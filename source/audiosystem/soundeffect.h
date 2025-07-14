@@ -17,7 +17,10 @@ class SoundEffect : public QObject
     Q_OBJECT
 
 public:
-    explicit SoundEffect(const AudioDevice& outputAudioDevice);
+    explicit SoundEffect(
+        const AudioDevice& outputAudioDevice,
+        const AudioDevice& mmonitorAudioDevice
+    );
     ~SoundEffect();
 
     void play(const QUrl& filePath);
@@ -30,20 +33,27 @@ signals:
     void stoppedPlaying();
 
 private:
-    void processBuffer();
     void stop();
+    void processBuffer();
 
-    void initAudioSink();
-    void invalidateAudioSink();
+    void initAudioOutputSink();
+    void invalidateAudioOutputSink();
+    void initAudioMonitorSink();
+    void invalidateAudioMonitorSink();
 
     QAudioDecoder* m_decoder{};
-    QAudioSink* m_audioSink{};
+
+    QAudioSink* m_outputAudioSink{};
+    QAudioSink* m_monitorAudioSink{};
+
     QIODevice* m_outputIODevice{};
+    QIODevice* m_monitorIODevice{};
 
     QAudioBuffer m_currentBuffer{};
     qint64 m_bytesWritten{};
 
     const AudioDevice& m_outputAudioDevice;
+    const AudioDevice& m_monitorAudioDevice;
 
     QThread m_thread{};
 };

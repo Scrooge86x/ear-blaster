@@ -5,7 +5,6 @@
 #include <QUrl>
 #include <QMap>
 #include <QAudioDevice>
-#include <utility>
 
 Q_MOC_INCLUDE("source/audiosystem/microphonepassthrough.h")
 
@@ -50,7 +49,7 @@ signals:
     void audioOutputsChanged();
 
 private:
-    QMap<int, std::pair<SoundEffect*, SoundEffect*>> m_soundEffectMap{};
+    QMap<int, SoundEffect*> m_soundEffectMap{};
     MicrophonePassthrough* m_micPassthrough{};
     AudioDevice* m_outputAudioDevice{};
     AudioDevice* m_monitorAudioDevice{};

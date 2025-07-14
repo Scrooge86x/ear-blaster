@@ -16,21 +16,19 @@ AudioSystem::AudioSystem(QObject *const parent)
         m_micPassthrough->outputDevice()->setDevice(m_outputAudioDevice->device());
     });
 
+    m_monitorAudioDevice->setEnabled(false);
+
     const auto mediaDevices{ new QMediaDevices{ this } };
-    connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
-        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
-            stopAll();
-        }
-        emit audioOutputsChanged();
-    });
-    connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, &AudioSystem::audioInputsChanged);
+    connect(mediaDevices, &QMediaDevices::audioOutputsChanged,
+            this, &AudioSystem::audioOutputsChanged);
+    connect(mediaDevices, &QMediaDevices::audioInputsChanged,
+            this, &AudioSystem::audioInputsChanged);
 }
 
 AudioSystem::~AudioSystem()
 {
     for (const auto& soundEffect : std::as_const(m_soundEffectMap)) {
-        soundEffect.first->deleteLater();
-        soundEffect.second->deleteLater();
+        soundEffect->deleteLater();
     }
     m_soundEffectMap.clear();
     delete m_micPassthrough;
@@ -39,38 +37,29 @@ AudioSystem::~AudioSystem()
 void AudioSystem::play(const int id, const QUrl& path)
 {
     if (m_soundEffectMap.contains(id)) {
-        const auto [soundEffect, auxSoundEffect] = m_soundEffectMap[id];
-        emit soundEffect->stopRequested();
-        emit auxSoundEffect->stopRequested();
-        soundEffect->play(path);
-        auxSoundEffect->play(path);
+        emit m_soundEffectMap[id]->stopRequested();
+        m_soundEffectMap[id]->play(path);
         return;
     }
 
-    auto& [soundEffect, auxSoundEffect] = m_soundEffectMap[id];
-    soundEffect = new SoundEffect{ *m_outputAudioDevice };
-    auxSoundEffect = new SoundEffect{ *m_monitorAudioDevice };
-
+    auto& soundEffect = m_soundEffectMap[id];
+    soundEffect = new SoundEffect{ *m_outputAudioDevice, *m_monitorAudioDevice };
     connect(soundEffect, &SoundEffect::startedPlaying, this, [this, id]{ emit soundStarted(id); });
     connect(soundEffect, &SoundEffect::stoppedPlaying, this, [this, id]{ emit soundStopped(id); });
-
     soundEffect->play(path);
-    auxSoundEffect->play(path);
 }
 
 void AudioSystem::stop(const int id) const
 {
     if (m_soundEffectMap.contains(id)) {
-        emit m_soundEffectMap[id].first->stopRequested();
-        emit m_soundEffectMap[id].second->stopRequested();
+        emit m_soundEffectMap[id]->stopRequested();
     }
 }
 
 void AudioSystem::stopAll() const
 {
     for (const auto& soundEffect : std::as_const(m_soundEffectMap)) {
-        emit soundEffect.first->stopRequested();
-        emit soundEffect.second->stopRequested();
+        emit soundEffect->stopRequested();
     }
 }
 
