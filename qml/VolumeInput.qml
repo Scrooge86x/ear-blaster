@@ -7,7 +7,7 @@ RowLayout {
 
     property alias text: label.text
     property alias value: slider.value
-    property double sliderWidth: 75
+    property real sliderWidth: 75
 
     Label {
         id: label
