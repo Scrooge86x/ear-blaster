@@ -163,6 +163,7 @@ Item {
                 onValueChanged: AppSettings.monitorVolume = value
                 sliderWidth: 100
                 Layout.rightMargin: 15
+                enabled: !AppSettings.audioMonitorMatchOutput
             }
 
             VolumeInput {
@@ -170,6 +171,13 @@ Item {
                 value: AppSettings.monitorOverdrive
                 onValueChanged: AppSettings.monitorOverdrive = value
                 sliderWidth: 100
+                enabled: !AppSettings.audioMonitorMatchOutput
+            }
+
+            CheckBox {
+                text: qsTr("Match main output")
+                checked: AppSettings.audioMonitorMatchOutput
+                onToggled: AppSettings.audioMonitorMatchOutput = checked
             }
 
             AudioDeviceSelect {

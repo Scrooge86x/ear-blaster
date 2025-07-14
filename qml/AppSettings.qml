@@ -28,6 +28,7 @@ Settings {
             audioMonitorDevice: "",
             micPassthroughEnabled: false,
             audioMonitorEnabled: false,
+            audioMonitorMatchOutput: true,
         };
     }
 
@@ -48,19 +49,39 @@ Settings {
     property string audioMonitorDevice: getDefaults()["audioMonitorDevice"]
     property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
     property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
+    property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
 
-    onOutputVolumeChanged: audioSystem.outputDevice.volume = outputVolume
+    onOutputVolumeChanged: {
+        audioSystem.outputDevice.volume = outputVolume
+        if (audioMonitorMatchOutput) {
+            audioSystem.monitorDevice.volume = outputVolume
+        }
+    }
     onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
-    onMonitorVolumeChanged: audioSystem.monitorDevice.volume = monitorVolume
-    onOutputOverdriveChanged: audioSystem.outputDevice.overdrive = outputOverdrive
+    onMonitorVolumeChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.volume = monitorVolume
+    onOutputOverdriveChanged: {
+        audioSystem.outputDevice.overdrive = outputOverdrive
+        if (audioMonitorMatchOutput) {
+            audioSystem.monitorDevice.overdrive = outputOverdrive
+        }
+    }
     onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
-    onMonitorOverdriveChanged: audioSystem.monitorDevice.overdrive = monitorOverdrive
+    onMonitorOverdriveChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.overdrive = monitorOverdrive
     onLanguageChanged: translator.currentLanguage = language
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
     onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)
     onAudioMonitorDeviceChanged: audioSystem.monitorDevice.device = audioSystem.getOutputDeviceById(audioMonitorDevice)
     onMicPassthroughEnabledChanged: audioSystem.micPassthrough.inputDevice.enabled = micPassthroughEnabled
     onAudioMonitorEnabledChanged: audioSystem.monitorDevice.enabled = audioMonitorEnabled
+    onAudioMonitorMatchOutputChanged: {
+        if (audioMonitorMatchOutput) {
+            audioSystem.monitorDevice.volume = outputVolume
+            audioSystem.monitorDevice.overdrive = outputOverdrive
+        } else {
+            audioSystem.monitorDevice.volume = monitorVolume
+            audioSystem.monitorDevice.overdrive = monitorOverdrive
+        }
+    }
 
     enum CloseBehavior {
         Quit,
