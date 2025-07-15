@@ -13,6 +13,7 @@ MicrophonePassthrough::MicrophonePassthrough()
     : QObject{ nullptr }
 {
     m_inputAudioDevice = new AudioDevice{ this };
+    m_inputAudioDevice->setEnabled(false);
     connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSource);
 
