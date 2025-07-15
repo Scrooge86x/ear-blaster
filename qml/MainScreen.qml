@@ -179,15 +179,15 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: fileDropArea.draggedFilesCount ? Qt.rgba(0, 0, 0, 0.5) : "transparent"
+        color: fileDropArea.acceptedUrls.length ? Qt.rgba(0, 0, 0, 0.5) : "transparent"
 
         Text {
-            property alias draggedFilesCount: fileDropArea.draggedFilesCount
+            property alias acceptedUrls: fileDropArea.acceptedUrls
 
             anchors.centerIn: parent
             font.pixelSize: 40
-            color: draggedFilesCount ? "#ddd" : "transparent"
-            text: draggedFilesCount > 1 ? `Drop ${draggedFilesCount} files.` : "Drop 1 file."
+            color: acceptedUrls.length ? "#ddd" : "transparent"
+            text: acceptedUrls.length > 1 ? `Drop ${acceptedUrls.length} files.` : "Drop 1 file."
         }
     }
 
@@ -196,49 +196,45 @@ Item {
         anchors.fill: parent
         keys: ["text/uri-list"]
 
-        property int draggedFilesCount: 0
+        property list<string> acceptedUrls: []
 
         onEntered: (drag) => {
             if (!drag.hasUrls) {
-                return
+                acceptedUrls = [];
+                return;
             }
 
-            let hasInvalidFile = false;
+            const allowedExtensions = ["mp3", "wav"];
+
             for (let url of drag.urls) {
                 url = url.toString();
-                const allowedExtensions = [
-                    "mp3",
-                    "wav",
-                ];
-
                 const lastDotPos = url.lastIndexOf(".");
                 const extension = url.substring(lastDotPos + 1).toLowerCase();
-                if (!allowedExtensions.includes(extension)) {
-                    hasInvalidFile = true;
+                if (allowedExtensions.includes(extension)) {
+                    acceptedUrls.push(url);
                 }
             }
 
-            if (!hasInvalidFile) {
-                draggedFilesCount = drag.urls.length;
+            if (acceptedUrls.length > 0) {
                 drag.accept();
+            } else {
+                acceptedUrls = [];
             }
         }
 
         onExited: {
-            draggedFilesCount = 0;
+            acceptedUrls = [];
         }
 
         onDropped: (drop) => {
-            if (!draggedFilesCount) {
-                return;
-            }
-            draggedFilesCount = 0;
-
-            for (const url of drop.urls) {
+            for (const url of acceptedUrls) {
                 addSoundFile(url);
             }
+
+            acceptedUrls = [];
         }
     }
+
 
     function updateAudioDevices() {
         audioDevices.clear();
