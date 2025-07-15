@@ -58,9 +58,8 @@ void AudioSystem::stop(const int id) const
 
 void AudioSystem::stopAll() const
 {
-    for (const auto& soundEffect : std::as_const(m_soundEffectMap)) {
-        emit soundEffect->stopRequested();
-    }
+    m_outputAudioDevice->setEnabled(false);
+    m_outputAudioDevice->setEnabled(true);
 }
 
 QList<QAudioDevice> AudioSystem::audioInputs()
