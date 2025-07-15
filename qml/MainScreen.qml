@@ -1,5 +1,4 @@
 import QtQuick
-import QtMultimedia
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs

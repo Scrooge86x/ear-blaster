@@ -1,8 +1,5 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls.Universal
-import QtQuick.Dialogs
-import QtMultimedia
 import Qt.labs.platform
 
 ApplicationWindow {
