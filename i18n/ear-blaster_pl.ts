@@ -2,14 +2,28 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="pl_PL" sourcelanguage="en_US">
 <context>
+    <name>AudioDeviceSelect</name>
+    <message>
+        <location filename="../qml/AudioDeviceSelect.qml" line="41"/>
+        <location filename="../qml/AudioDeviceSelect.qml" line="45"/>
+        <source>No device selected.</source>
+        <translation>Brak wybranego urządzenia.</translation>
+    </message>
+</context>
+<context>
     <name>Main</name>
     <message>
-        <location filename="../qml/Main.qml" line="92"/>
+        <location filename="../qml/Main.qml" line="90"/>
         <source>Show</source>
         <translation>Pokaż</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="104"/>
+        <location filename="../qml/Main.qml" line="103"/>
+        <source>Mic Passthrough</source>
+        <translation>Przekazywanie mikrofonu</translation>
+    </message>
+    <message>
+        <location filename="../qml/Main.qml" line="112"/>
         <source>Exit</source>
         <translation>Wyjdź</translation>
     </message>
@@ -17,32 +31,42 @@
 <context>
     <name>MainScreen</name>
     <message>
-        <location filename="../qml/MainScreen.qml" line="49"/>
+        <location filename="../qml/MainScreen.qml" line="21"/>
         <source>Volume:</source>
         <translation>Głośność:</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="74"/>
+        <location filename="../qml/MainScreen.qml" line="28"/>
         <source>Overdrive:</source>
         <translation>Przestery:</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="98"/>
+        <location filename="../qml/MainScreen.qml" line="35"/>
+        <source>Mic</source>
+        <translation>Mikrofon</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainScreen.qml" line="41"/>
+        <source>Monitor</source>
+        <translation>Monitor</translation>
+    </message>
+    <message>
+        <location filename="../qml/MainScreen.qml" line="49"/>
         <source>Stop all</source>
         <translation>Zatrzymaj wszystkie</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="120"/>
+        <location filename="../qml/MainScreen.qml" line="61"/>
         <source>Settings</source>
         <translation>Ustawienia</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="207"/>
+        <location filename="../qml/MainScreen.qml" line="148"/>
         <source>Select</source>
         <translation>Wybierz</translation>
     </message>
     <message>
-        <location filename="../qml/MainScreen.qml" line="208"/>
+        <location filename="../qml/MainScreen.qml" line="149"/>
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
@@ -131,6 +155,33 @@
         <location filename="../qml/SettingsScreen.qml" line="114"/>
         <source>Language:</source>
         <translation>Język:</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsScreen.qml" line="131"/>
+        <source>Input device:</source>
+        <translation>Urządzenie wejściowe:</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsScreen.qml" line="135"/>
+        <location filename="../qml/SettingsScreen.qml" line="161"/>
+        <source>Volume:</source>
+        <translation>Głośność:</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsScreen.qml" line="143"/>
+        <location filename="../qml/SettingsScreen.qml" line="170"/>
+        <source>Overdrive:</source>
+        <translation>Przestery:</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsScreen.qml" line="157"/>
+        <source>Monitor device:</source>
+        <translation>Urządzenie monitorujące:</translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsScreen.qml" line="178"/>
+        <source>Match main output</source>
+        <translation>Używaj głównych ustawień</translation>
     </message>
 </context>
 <context>
