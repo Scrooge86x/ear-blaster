@@ -37,6 +37,7 @@ SoundEffect::SoundEffect(
             m_monitorIODevice = m_monitorAudioSink->start();
         } else {
             m_monitorAudioSink->reset();
+            m_monitorIODevice = nullptr;
         }
     });
 
@@ -87,6 +88,9 @@ void SoundEffect::play(const QUrl& filePath)
         m_decoder->start();
 
         m_outputIODevice = m_outputAudioSink->start();
+        if (!m_monitorIODevice && m_monitorAudioSink && m_monitorAudioDevice.enabled()) {
+            m_monitorIODevice = m_monitorAudioSink->start();
+        }
         processBuffer();
     }, Qt::QueuedConnection);
 }
@@ -99,8 +103,9 @@ void SoundEffect::stop()
 
     m_decoder->stop();
     m_outputAudioSink->reset();
-    m_outputAudioSink->stop();
     m_outputIODevice = nullptr;
+    m_monitorAudioSink->reset();
+    m_monitorIODevice = nullptr;
 }
 
 void SoundEffect::processBuffer()
