@@ -54,9 +54,11 @@ SoundEffect::SoundEffect(
             this, &SoundEffect::initAudioOutputSink);
     connect(&m_monitorAudioDevice, &AudioDevice::deviceChanged,
             this, &SoundEffect::initAudioMonitorSink);
-    initAudioOutputSink();
-    initAudioMonitorSink();
 
+    connect(&m_thread, &QThread::started, this, [this] {
+        initAudioOutputSink();
+        initAudioMonitorSink();
+    });
     m_thread.start();
     this->moveToThread(&m_thread);
 }
