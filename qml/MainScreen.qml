@@ -244,6 +244,8 @@ Item {
 
     function addSoundFile(fileUrl) {
         let filePath = fileUrl.toString().replace("file://", "")
+
+        // Remove leading slash on windows so the paths are [A-Z]:/* instead of /[A-Z]:/*
         if (Qt.platform.os === "windows") {
             filePath = filePath.substring(1);
         }
