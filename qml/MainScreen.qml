@@ -200,7 +200,6 @@ Item {
 
         onEntered: (drag) => {
             if (!drag.hasUrls) {
-                acceptedUrls = [];
                 return;
             }
 
