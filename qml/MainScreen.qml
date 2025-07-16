@@ -187,7 +187,7 @@ Item {
             anchors.centerIn: parent
             font.pixelSize: 40
             color: acceptedUrls.length ? "#ddd" : "transparent"
-            text: acceptedUrls.length > 1 ? `Drop ${acceptedUrls.length} files.` : "Drop 1 file."
+            text: qsTr("Drop %n file(s).", "", acceptedUrls.length)
         }
     }
 

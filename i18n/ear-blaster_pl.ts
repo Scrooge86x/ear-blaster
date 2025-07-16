@@ -36,6 +36,15 @@
         <source>Cancel</source>
         <translation>Anuluj</translation>
     </message>
+    <message numerus="yes">
+        <location filename="../qml/MainScreen.qml" line="190"/>
+        <source>Drop %n file(s).</source>
+        <translation>
+            <numerusform>Upuść %n plik.</numerusform>
+            <numerusform>Upuść %n pliki.</numerusform>
+            <numerusform>Upuść %n plików.</numerusform>
+        </translation>
+    </message>
 </context>
 <context>
     <name>SequenceInput</name>
