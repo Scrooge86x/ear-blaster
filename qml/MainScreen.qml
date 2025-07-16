@@ -217,8 +217,6 @@ Item {
 
             if (acceptedUrls.length > 0) {
                 drag.accept();
-            } else {
-                acceptedUrls = [];
             }
         }
 
@@ -230,11 +228,9 @@ Item {
             for (const url of acceptedUrls) {
                 addSoundFile(url);
             }
-
             acceptedUrls = [];
         }
     }
-
 
     function updateAudioDevices() {
         audioDevices.clear();
