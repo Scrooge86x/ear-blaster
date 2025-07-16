@@ -61,6 +61,7 @@ Rectangle {
                 Drag.source: dragArea
                 Drag.hotSpot.x: width / 2
                 Drag.hotSpot.y: height / 2
+                Drag.keys: ["sound-list"]
 
                 states: State {
                     when: dragArea.held
@@ -89,6 +90,7 @@ Rectangle {
             }
 
             DropArea {
+                keys: ["sound-list"]
                 anchors.fill: parent
                 onEntered: (drag) => listModel.move(
                     drag.source.DelegateModel.itemsIndex,

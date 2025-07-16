@@ -171,20 +171,63 @@ Item {
             ]
             onAccepted: {
                 for (const file of selectedFiles) {
-                    let filePath = file.toString().replace("file://", "")
-                    if (Qt.platform.os === "windows") {
-                        filePath = filePath.substring(1);
-                    }
-
-                    const slashPos = filePath.lastIndexOf("/");
-                    const dotPos = filePath.lastIndexOf(".");
-                    soundConfigModel.append({
-                        name: filePath.substring(slashPos + 1, dotPos),
-                        path: filePath,
-                        sequence: "",
-                    });
+                    addSoundFile(file);
                 }
             }
+        }
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: fileDropArea.acceptedUrls.length ? Qt.rgba(0, 0, 0, 0.5) : "transparent"
+
+        Text {
+            property alias acceptedUrls: fileDropArea.acceptedUrls
+
+            anchors.centerIn: parent
+            font.pixelSize: 40
+            color: acceptedUrls.length ? "#ddd" : "transparent"
+            text: qsTr("Drop %n file(s).", "", acceptedUrls.length)
+        }
+    }
+
+    DropArea {
+        id: fileDropArea
+        anchors.fill: parent
+        keys: ["text/uri-list"]
+
+        property list<string> acceptedUrls: []
+
+        onEntered: (drag) => {
+            if (!drag.hasUrls) {
+                return;
+            }
+
+            const allowedExtensions = ["mp3", "wav"];
+
+            for (let url of drag.urls) {
+                url = url.toString();
+                const lastDotPos = url.lastIndexOf(".");
+                const extension = url.substring(lastDotPos + 1).toLowerCase();
+                if (allowedExtensions.includes(extension)) {
+                    acceptedUrls.push(url);
+                }
+            }
+
+            if (acceptedUrls.length > 0) {
+                drag.accept();
+            }
+        }
+
+        onExited: {
+            acceptedUrls = [];
+        }
+
+        onDropped: (drop) => {
+            for (const url of acceptedUrls) {
+                addSoundFile(url);
+            }
+            acceptedUrls = [];
         }
     }
 
@@ -197,5 +240,20 @@ Item {
                 deviceComboBox.currentIndex = i
             }
         }
+    }
+
+    function addSoundFile(fileUrl) {
+        let filePath = fileUrl.toString().replace("file://", "")
+        if (Qt.platform.os === "windows") {
+            filePath = filePath.substring(1);
+        }
+
+        const lastSlashPos = filePath.lastIndexOf("/");
+        const lastDotPos = filePath.lastIndexOf(".");
+        soundConfigModel.append({
+            name: filePath.substring(lastSlashPos + 1, lastDotPos),
+            path: filePath,
+            sequence: "",
+        });
     }
 }
