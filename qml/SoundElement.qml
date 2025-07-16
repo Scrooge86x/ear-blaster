@@ -5,7 +5,7 @@ Rectangle {
     id: root
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
-    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, 0.075))
+    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, isPlaying ? 0.15 : 0.075))
     radius: 10
 
     property string name
@@ -13,6 +13,7 @@ Rectangle {
     property string sequence
     property int initialIndex
     property bool disablePlayback: false
+    property bool isPlaying: false
 
     signal deleteRequested()
 
@@ -76,7 +77,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("play")
-        onClicked: soundPlayer.play(initialIndex, path)
+        onClicked: audioSystem.play(initialIndex, path)
     }
 
     RoundButton {
@@ -90,7 +91,7 @@ Rectangle {
 
         radius: 7
         text: qsTr("stop")
-        onClicked: soundPlayer.stop(initialIndex)
+        onClicked: audioSystem.stop(initialIndex)
     }
 
     RoundButton {
@@ -105,7 +106,7 @@ Rectangle {
         radius: 7
         text: qsTr("delete")
         onClicked: {
-            soundPlayer.stop(initialIndex);
+            audioSystem.stop(initialIndex);
             deleteRequested();
         }
     }
@@ -125,19 +126,34 @@ Rectangle {
     }
 
     Connections {
+        target: audioSystem
+        function onSoundStarted(id) {
+            if (id === initialIndex) {
+                root.isPlaying = true;
+            }
+        }
+        function onSoundStopped(id) {
+            if (id === initialIndex) {
+                root.isPlaying = false;
+            }
+        }
+    }
+
+    Connections {
         enabled: sequence !== ""
         target: globalKeyListener
+
         function onCurrentSequenceChanged(hotkey) {
             if (!disablePlayback && hotkey === sequence) {
                 switch (AppSettings.secondPressBehavior) {
                 case AppSettings.SecondPressBehavior.StartOver:
-                    soundPlayer.play(initialIndex, path);
+                    audioSystem.play(initialIndex, path);
                     break;
                 case AppSettings.SecondPressBehavior.StopSound:
-                    if (soundPlayer.isStillPlaying(initialIndex)) {
-                        soundPlayer.stop(initialIndex);
+                    if (root.isPlaying) {
+                        audioSystem.stop(initialIndex);
                     } else {
-                        soundPlayer.play(initialIndex, path);
+                        audioSystem.play(initialIndex, path);
                     }
                     break;
                 default:

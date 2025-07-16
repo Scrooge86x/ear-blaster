@@ -1,8 +1,5 @@
 import QtQuick
-import QtQuick.Layouts
 import QtQuick.Controls.Universal
-import QtQuick.Dialogs
-import QtMultimedia
 import Qt.labs.platform
 
 ApplicationWindow {
@@ -14,10 +11,8 @@ ApplicationWindow {
     Universal.accent: AppSettings.accentColor
 
     visible: true
-    width: 900
-    minimumWidth: 600
-    height: 650
-    minimumHeight: 400
+    minimumWidth: 975
+    minimumHeight: 700
     title: "Ear Blaster"
     color: AppSettings.backgroundColor
 
@@ -96,6 +91,16 @@ ApplicationWindow {
                     }
                     root.show();
                 }
+            }
+
+            MenuSeparator {}
+
+            MenuItem {
+                id: trayMenuMicPassthrough
+                text: qsTr("Mic Passthrough")
+                checkable: true
+                checked: AppSettings.micPassthroughEnabled
+                onTriggered: AppSettings.micPassthroughEnabled = checked
             }
 
             MenuSeparator {}

@@ -10,7 +10,12 @@ Settings {
     // in the config file
     function getDefaults() {
         return {
-            mainVolume: 1.0,
+            outputVolume: 1.0,
+            inputVolume: 1.0,
+            monitorVolume: 1.0,
+            outputOverdrive: 0.0,
+            inputOverdrive: 0.0,
+            monitorOverdrive: 0.0,
             foregroundColor: "#ddd",
             backgroundColor: "#0f0f0f",
             accentColor: "#fa6800",
@@ -18,17 +23,65 @@ Settings {
             secondPressBehavior: AppSettings.SecondPressBehavior.StopSound,
             windowGeometry: "{}", // Anything other than "" will get filled in during shutdown
             language: "en",
+            audioOutputDevice: "",
+            audioInputDevice: "",
+            audioMonitorDevice: "",
+            micPassthroughEnabled: false,
+            audioMonitorEnabled: false,
+            audioMonitorMatchOutput: true,
         };
     }
 
     property string sounds: "[]" // { "name": "", "path": "", "sequence": "" }
-    property real mainVolume: getDefaults()["mainVolume"]
+    property real outputVolume: getDefaults()["outputVolume"]
+    property real inputVolume: getDefaults()["inputVolume"]
+    property real monitorVolume: getDefaults()["monitorVolume"]
+    property real outputOverdrive: getDefaults()["outputOverdrive"]
+    property real inputOverdrive: getDefaults()["inputOverdrive"]
+    property real monitorOverdrive: getDefaults()["monitorOverdrive"]
     property string foregroundColor: getDefaults()["foregroundColor"]
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
     property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
     property string language: getDefaults()["language"]
+    property string audioOutputDevice: getDefaults()["audioOutputDevice"]
+    property string audioInputDevice: getDefaults()["audioInputDevice"]
+    property string audioMonitorDevice: getDefaults()["audioMonitorDevice"]
+    property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
+    property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
+    property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
+
+    onOutputVolumeChanged: {
+        audioSystem.outputDevice.volume = outputVolume
+        if (audioMonitorMatchOutput) {
+            audioSystem.monitorDevice.volume = outputVolume
+        }
+    }
+    onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
+    onMonitorVolumeChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.volume = monitorVolume
+    onOutputOverdriveChanged: {
+        audioSystem.outputDevice.overdrive = outputOverdrive
+        if (audioMonitorMatchOutput) {
+            audioSystem.monitorDevice.overdrive = outputOverdrive
+        }
+    }
+    onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
+    onMonitorOverdriveChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.overdrive = monitorOverdrive
     onLanguageChanged: translator.currentLanguage = language
+    onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
+    onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)
+    onAudioMonitorDeviceChanged: audioSystem.monitorDevice.device = audioSystem.getOutputDeviceById(audioMonitorDevice)
+    onMicPassthroughEnabledChanged: audioSystem.micPassthrough.inputDevice.enabled = micPassthroughEnabled
+    onAudioMonitorEnabledChanged: audioSystem.monitorDevice.enabled = audioMonitorEnabled
+    onAudioMonitorMatchOutputChanged: {
+        if (audioMonitorMatchOutput) {
+            audioSystem.monitorDevice.volume = outputVolume
+            audioSystem.monitorDevice.overdrive = outputOverdrive
+        } else {
+            audioSystem.monitorDevice.volume = monitorVolume
+            audioSystem.monitorDevice.overdrive = monitorOverdrive
+        }
+    }
 
     enum CloseBehavior {
         Quit,
