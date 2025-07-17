@@ -4,7 +4,6 @@
 <context>
     <name>MainScreen</name>
     <message numerus="yes">
-        <location filename="../../../qml/MainScreen.qml" line="190"/>
         <source>Drop %n file(s).</source>
         <translation>
             <numerusform>Drop %n file.</numerusform>

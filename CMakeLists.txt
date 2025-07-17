@@ -17,7 +17,9 @@ qt_standard_project_setup(
 
 qt_add_translations(ear-blaster
     TS_FILE_DIR i18n
-    LUPDATE_OPTIONS -noobsolete
+    LUPDATE_OPTIONS
+        -noobsolete
+        -locations none
 )
 
 qt_add_executable(${PROJECT_NAME}
