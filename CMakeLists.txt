@@ -15,7 +15,7 @@ qt_standard_project_setup(
     I18N_TRANSLATED_LANGUAGES pl
 )
 
-qt_add_translations(ear-blaster
+qt_add_translations(${PROJECT_NAME}
     TS_FILE_DIR i18n
     LUPDATE_OPTIONS
         -noobsolete
