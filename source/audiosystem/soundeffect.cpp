@@ -97,15 +97,17 @@ void SoundEffect::play(const QUrl& filePath)
 
 void SoundEffect::stop()
 {
-    if (!m_outputAudioSink || !m_outputIODevice) {
-        return;
+    if (m_decoder->isDecoding()) {
+        m_decoder->stop();
     }
-
-    m_decoder->stop();
-    m_outputAudioSink->reset();
-    m_outputIODevice = nullptr;
-    m_monitorAudioSink->reset();
-    m_monitorIODevice = nullptr;
+    if (m_outputAudioSink && m_outputIODevice) {
+        m_outputAudioSink->reset();
+        m_outputIODevice = nullptr;
+    }
+    if (m_monitorAudioSink && m_monitorIODevice) {
+        m_monitorAudioSink->reset();
+        m_monitorIODevice = nullptr;
+    }
 }
 
 void SoundEffect::processBuffer()
