@@ -10,10 +10,10 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
     LinguistTools
 )
 
-qt_policy(SET QTP0001 NEW)
-qt_policy(SET QTP0004 NEW)
-
-qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES pl)
+qt_standard_project_setup(
+    REQUIRES 6.9
+    I18N_TRANSLATED_LANGUAGES pl
+)
 
 qt_add_translations(ear-blaster
     TS_FILE_DIR i18n
