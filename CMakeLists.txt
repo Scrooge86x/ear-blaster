@@ -8,6 +8,7 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
     Quick
     Multimedia
     LinguistTools
+    Core
 )
 
 qt_standard_project_setup(
@@ -25,9 +26,13 @@ qt_add_translations(${PROJECT_NAME}
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
     source/main.cpp
-    source/soundplayer.h source/soundplayer.cpp
     source/globalkeylistener.h source/globalkeylistener.cpp
     source/translator.h source/translator.cpp
+    source/audiosystem/soundeffect.h source/audiosystem/soundeffect.cpp
+    source/audiosystem/audiosystem.h source/audiosystem/audiosystem.cpp
+    source/audiosystem/microphonepassthrough.h source/audiosystem/microphonepassthrough.cpp
+    source/audiosystem/audiodevice.h source/audiosystem/audiodevice.cpp
+    source/audiosystem/audioshared.h
 )
 
 set_source_files_properties(qml/AppSettings.qml PROPERTIES
@@ -47,6 +52,8 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/SoundList.qml
         qml/SequenceInput.qml
         qml/AppSettings.qml
+        qml/VolumeInput.qml
+        qml/AudioDeviceSelect.qml
 )
 
 set_target_properties(${PROJECT_NAME}
@@ -56,6 +63,7 @@ set_target_properties(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-        Qt::Quick
-        Qt::Multimedia
+        Qt6::Qml
+        Qt6::Multimedia
+        Qt6::Core
 )

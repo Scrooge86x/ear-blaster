@@ -1,5 +1,4 @@
 import QtQuick
-import QtMultimedia
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs
@@ -9,18 +8,6 @@ Item {
 
     property ListModel audioDevices: ListModel {}
 
-    Component.onCompleted: {
-        deviceComboBox.currentIndex = 0;
-        soundPlayer.setDevice(mediaDevices.audioOutputs[0]);
-        soundPlayer.setVolume(AppSettings.mainVolume);
-        updateAudioDevices();
-    }
-
-    MediaDevices {
-        id: mediaDevices
-        onAudioOutputsChanged: updateAudioDevices()
-    }
-
     RowLayout {
         id: topBar
         anchors {
@@ -29,48 +16,44 @@ Item {
             right: parent.right
         }
 
-        RowLayout {
-            Label {
-                text: qsTr("Volume:")
-                color: AppSettings.foregroundColor
-            }
+        VolumeInput {
+            text: qsTr("Volume:")
+            value: AppSettings.outputVolume
+            onValueChanged: AppSettings.outputVolume = value
+            sliderWidth: 100
+        }
 
-            Slider {
-                id: volumeSlider
-                from: 0.0
-                to: 1.0
-                value: AppSettings.mainVolume
-                stepSize: 0.01
-                Layout.preferredWidth: 150
+        VolumeInput {
+            text: qsTr("Overdrive:")
+            value: AppSettings.outputOverdrive
+            onValueChanged: AppSettings.outputOverdrive = value
+            sliderWidth: 75
+        }
 
-                onMoved: {
-                    AppSettings.mainVolume = value;
-                    soundPlayer.setVolume(value);
-                }
-            }
+        CheckBox {
+            text: qsTr("Mic")
+            checked: AppSettings.micPassthroughEnabled
+            onToggled: AppSettings.micPassthroughEnabled = checked
+        }
 
-            Label {
-                Layout.preferredWidth: 35
-                text: `${Math.round(volumeSlider.value * 100)}%`
-                color: AppSettings.foregroundColor
-                font.pixelSize: 13
-            }
+        CheckBox {
+            text: qsTr("Monitor")
+            checked: AppSettings.audioMonitorEnabled
+            onToggled: AppSettings.audioMonitorEnabled = checked
         }
 
         Item { Layout.fillWidth: true }
 
-        ComboBox  {
-            id: deviceComboBox
-            model: audioDevices
-            textRole: "name"
-            Layout.preferredWidth: 300
+        RoundButton {
+            text: qsTr("Stop all")
+            radius: 7
+            onClicked: audioSystem.stopAll()
+        }
 
-            onActivated: (index) => soundPlayer.setDevice(mediaDevices.audioOutputs[index])
-            delegate: ItemDelegate {
-                width: deviceComboBox.width
-                text: model.name
-                highlighted: deviceComboBox.highlightedIndex === index
-            }
+        AudioDeviceSelect {
+            Layout.preferredWidth: 250
+            appSettingsPropName: "audioOutputDevice"
+            deviceType: AudioDeviceSelect.DeviceType.Output
         }
 
         Button {

@@ -2,10 +2,21 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="pl_PL" sourcelanguage="en_US">
 <context>
+    <name>AudioDeviceSelect</name>
+    <message>
+        <source>No device selected.</source>
+        <translation>Brak wybranego urządzenia.</translation>
+    </message>
+</context>
+<context>
     <name>Main</name>
     <message>
         <source>Show</source>
         <translation>Pokaż</translation>
+    </message>
+    <message>
+        <source>Mic Passthrough</source>
+        <translation>Przekazywanie mikrofonu</translation>
     </message>
     <message>
         <source>Exit</source>
@@ -17,6 +28,22 @@
     <message>
         <source>Volume:</source>
         <translation>Głośność:</translation>
+    </message>
+    <message>
+        <source>Overdrive:</source>
+        <translation>Przestery:</translation>
+    </message>
+    <message>
+        <source>Mic</source>
+        <translation>Mikrofon</translation>
+    </message>
+    <message>
+        <source>Monitor</source>
+        <translation>Monitor</translation>
+    </message>
+    <message>
+        <source>Stop all</source>
+        <translation>Zatrzymaj wszystkie</translation>
     </message>
     <message>
         <source>Settings</source>
@@ -50,7 +77,7 @@
     <name>SettingsScreen</name>
     <message>
         <source>Back</source>
-        <translation>Cofnij</translation>
+        <translation>Wróć</translation>
     </message>
     <message>
         <source>Restore defaults</source>
@@ -107,6 +134,26 @@
     <message>
         <source>Language:</source>
         <translation>Język:</translation>
+    </message>
+    <message>
+        <source>Input device:</source>
+        <translation>Urządzenie wejściowe:</translation>
+    </message>
+    <message>
+        <source>Volume:</source>
+        <translation>Głośność:</translation>
+    </message>
+    <message>
+        <source>Overdrive:</source>
+        <translation>Przestery:</translation>
+    </message>
+    <message>
+        <source>Monitor device:</source>
+        <translation>Urządzenie monitorujące:</translation>
+    </message>
+    <message>
+        <source>Match main output</source>
+        <translation>Używaj głównych ustawień</translation>
     </message>
 </context>
 <context>
