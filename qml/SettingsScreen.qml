@@ -4,6 +4,8 @@ import QtQuick.Layouts
 import QtQuick.Dialogs
 
 Item {
+    id: root
+
     signal backClicked()
 
     ColumnLayout {

@@ -48,12 +48,12 @@ qt_add_qml_module(${PROJECT_NAME}
         qml/Main.qml
         qml/MainScreen.qml
         qml/SettingsScreen.qml
-        qml/SoundElement.qml
-        qml/SoundList.qml
-        qml/SequenceInput.qml
         qml/AppSettings.qml
-        qml/VolumeInput.qml
-        qml/AudioDeviceSelect.qml
+        qml/components/SoundElement.qml
+        qml/components/SoundList.qml
+        qml/components/SequenceInput.qml
+        qml/components/VolumeInput.qml
+        qml/components/AudioDeviceSelect.qml
 )
 
 set_target_properties(${PROJECT_NAME}
