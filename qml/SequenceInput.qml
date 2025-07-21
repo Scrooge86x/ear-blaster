@@ -2,9 +2,10 @@ import QtQuick
 import QtQuick.Controls.Universal
 
 TextField {
+    id: root
+
     property string sequence
 
-    id: root
     readOnly: true
     placeholderText: qsTr("Choose hotkey...")
     Component.onCompleted: text = sequence

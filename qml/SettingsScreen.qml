@@ -25,12 +25,12 @@ Item {
             Layout.preferredWidth: 240
 
             currentIndex: AppSettings.closeBehavior
-            onActivated: (index) => AppSettings.closeBehavior = index
             delegate: ItemDelegate {
                 width: parent.width
                 text: modelData
                 highlighted: parent.highlightedIndex === index
             }
+            onActivated: (index) => AppSettings.closeBehavior = index
         }
 
         Label {
@@ -41,12 +41,12 @@ Item {
             Layout.preferredWidth: 150
 
             currentIndex: AppSettings.secondPressBehavior
-            onActivated: (index) => AppSettings.secondPressBehavior = index
             delegate: ItemDelegate {
                 width: parent.width
                 text: modelData
                 highlighted: parent.highlightedIndex === index
             }
+            onActivated: (index) => AppSettings.secondPressBehavior = index
         }
 
         Label {
@@ -73,8 +73,10 @@ Item {
                 Layout.preferredWidth: 10
                 Layout.fillHeight: true
                 color: AppSettings.backgroundColor
-                border.width: 1
-                border.color: AppSettings.foregroundColor
+                border {
+                    width: 1
+                    color: AppSettings.foregroundColor
+                }
             }
             Button {
                 text: qsTr("Background")
@@ -119,12 +121,12 @@ Item {
 
             currentIndex: model.indexOf(AppSettings.language)
             displayText: translator.getLanguageFullName(AppSettings.language)
-            onActivated: (index) => AppSettings.language = model[index];
             delegate: ItemDelegate {
                 width: parent.width
                 text: translator.getLanguageFullName(modelData)
                 highlighted: parent.highlightedIndex === index
             }
+            onActivated: (index) => AppSettings.language = model[index]
         }
 
         Label {
@@ -133,17 +135,17 @@ Item {
         RowLayout {
             VolumeInput {
                 text: qsTr("Volume:")
-                value: AppSettings.inputVolume
-                onValueChanged: AppSettings.inputVolume = value
                 sliderWidth: 100
                 Layout.rightMargin: 15
+                value: AppSettings.inputVolume
+                onValueChanged: AppSettings.inputVolume = value
             }
 
             VolumeInput {
                 text: qsTr("Overdrive:")
+                sliderWidth: 100
                 value: AppSettings.inputOverdrive
                 onValueChanged: AppSettings.inputOverdrive = value
-                sliderWidth: 100
             }
 
             AudioDeviceSelect {
@@ -159,19 +161,19 @@ Item {
         RowLayout {
             VolumeInput {
                 text: qsTr("Volume:")
-                value: AppSettings.monitorVolume
-                onValueChanged: AppSettings.monitorVolume = value
                 sliderWidth: 100
                 Layout.rightMargin: 15
                 enabled: !AppSettings.audioMonitorMatchOutput
+                value: AppSettings.monitorVolume
+                onValueChanged: AppSettings.monitorVolume = value
             }
 
             VolumeInput {
                 text: qsTr("Overdrive:")
-                value: AppSettings.monitorOverdrive
-                onValueChanged: AppSettings.monitorOverdrive = value
                 sliderWidth: 100
                 enabled: !AppSettings.audioMonitorMatchOutput
+                value: AppSettings.monitorOverdrive
+                onValueChanged: AppSettings.monitorOverdrive = value
             }
 
             CheckBox {

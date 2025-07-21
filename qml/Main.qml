@@ -5,6 +5,19 @@ import Qt.labs.platform
 ApplicationWindow {
     id: root
 
+    function exitApp() {
+        if (AppSettings.windowGeometry !== "") {
+            AppSettings.windowGeometry = JSON.stringify({
+                x: root.x,
+                y: root.y,
+                width: root.width,
+                height: root.height,
+                maximized: root.visibility === Window.Maximized,
+            });
+        }
+        Qt.exit(0);
+    }
+
     Universal.theme: Universal.Dark
     Universal.foreground: AppSettings.foregroundColor
     Universal.background: AppSettings.backgroundColor
@@ -20,19 +33,6 @@ ApplicationWindow {
     rightPadding: 7
     bottomPadding: 7
     leftPadding: 7
-
-    function exitApp() {
-        if (AppSettings.windowGeometry !== "") {
-            AppSettings.windowGeometry = JSON.stringify({
-                x: root.x,
-                y: root.y,
-                width: root.width,
-                height: root.height,
-                maximized: root.visibility === Window.Maximized,
-            });
-        }
-        Qt.exit(0);
-    }
 
     Component.onCompleted: {
         if (AppSettings.windowGeometry === "") {
@@ -72,13 +72,27 @@ ApplicationWindow {
 
     SystemTrayIcon {
         id: trayIcon
-        icon.source: "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico"
-        tooltip: "Ear Blaster"
-        Component.onCompleted: {
-            if (AppSettings.closeBehavior === AppSettings.CloseBehavior.HideKeepTray) {
-                trayIcon.safeShow()
+
+        // safeShow and safeHide functions are a workaround for the fact
+        // that trayIcon.hide() causes the menu and icons to get destroyed
+        function safeShow() {
+            if (!trayIcon.visible) {
+                trayIcon.show();
+                trayIcon.menu = trayMenu;
+                trayMenuShow.icon.source = "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico";
             }
         }
+
+        function safeHide() {
+            if (trayIcon.visible) {
+                trayMenuShow.icon.source = undefined;
+                trayIcon.menu = null;
+                trayIcon.hide();
+            }
+        }
+
+        icon.source: "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico"
+        tooltip: "Ear Blaster"
         menu: Menu {
             id: trayMenu
 
@@ -110,22 +124,9 @@ ApplicationWindow {
                 onTriggered: exitApp()
             }
         }
-
-        // safeShow and safeHide functions are a workaround for the fact
-        // that trayIcon.hide() causes the menu and icons to get destroyed
-        function safeShow() {
-            if (!trayIcon.visible) {
-                trayIcon.show();
-                trayIcon.menu = trayMenu;
-                trayMenuShow.icon.source = "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico";
-            }
-        }
-
-        function safeHide() {
-            if (trayIcon.visible) {
-                trayMenuShow.icon.source = undefined;
-                trayIcon.menu = null;
-                trayIcon.hide();
+        Component.onCompleted: {
+            if (AppSettings.closeBehavior === AppSettings.CloseBehavior.HideKeepTray) {
+                trayIcon.safeShow()
             }
         }
     }

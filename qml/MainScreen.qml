@@ -4,9 +4,37 @@ import QtQuick.Controls.Universal
 import QtQuick.Dialogs
 
 Item {
+    property ListModel audioDevices: ListModel {}
+
     signal settingsClicked()
 
-    property ListModel audioDevices: ListModel {}
+    function updateAudioDevices() {
+        audioDevices.clear();
+        for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
+            const device = mediaDevices.audioOutputs[i];
+            audioDevices.append({ name: device.description });
+            if (device.id.toString() === soundPlayer.getDevice().id.toString()) {
+                deviceComboBox.currentIndex = i
+            }
+        }
+    }
+
+    function addSoundFile(fileUrl) {
+        let filePath = fileUrl.toString().replace("file://", "")
+
+        // Remove leading slash on windows so the paths are [A-Z]:/* instead of /[A-Z]:/*
+        if (Qt.platform.os === "windows") {
+            filePath = filePath.substring(1);
+        }
+
+        const lastSlashPos = filePath.lastIndexOf("/");
+        const lastDotPos = filePath.lastIndexOf(".");
+        soundConfigModel.append({
+            name: filePath.substring(lastSlashPos + 1, lastDotPos),
+            path: filePath,
+            sequence: "",
+        });
+    }
 
     RowLayout {
         id: topBar
@@ -18,16 +46,16 @@ Item {
 
         VolumeInput {
             text: qsTr("Volume:")
+            sliderWidth: 100
             value: AppSettings.outputVolume
             onValueChanged: AppSettings.outputVolume = value
-            sliderWidth: 100
         }
 
         VolumeInput {
             text: qsTr("Overdrive:")
+            sliderWidth: 75
             value: AppSettings.outputOverdrive
             onValueChanged: AppSettings.outputOverdrive = value
-            sliderWidth: 75
         }
 
         CheckBox {
@@ -42,7 +70,9 @@ Item {
             onToggled: AppSettings.audioMonitorEnabled = checked
         }
 
-        Item { Layout.fillWidth: true }
+        Item {
+            Layout.fillWidth: true
+        }
 
         RoundButton {
             text: qsTr("Stop all")
@@ -115,18 +145,17 @@ Item {
 
     RoundButton {
         id: addSoundButton
-        anchors.right: parent.right
-        anchors.rightMargin: 30
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 10
         font.pixelSize: 30
-
-        onClicked: fileDialog.open()
-
         width: 50
         height: 50
         scale: addSoundButton.down ? 0.96 : 1
 
+        anchors {
+            right: parent.right
+            rightMargin: 30
+            bottom: parent.bottom
+            bottomMargin: 10
+        }
         contentItem: Text {
             text: "+"
             font.family: "Arial"
@@ -135,12 +164,13 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
         }
-
         background: Rectangle {
             anchors.fill: parent
             color: AppSettings.accentColor
             radius: addSoundButton.width / 2
         }
+
+        onClicked: fileDialog.open()
 
         FileDialog {
             id: fileDialog
@@ -176,10 +206,11 @@ Item {
 
     DropArea {
         id: fileDropArea
-        anchors.fill: parent
-        keys: ["text/uri-list"]
 
         property list<string> acceptedUrls: []
+
+        anchors.fill: parent
+        keys: ["text/uri-list"]
 
         onEntered: (drag) => {
             if (!drag.hasUrls) {
@@ -212,33 +243,5 @@ Item {
             }
             acceptedUrls = [];
         }
-    }
-
-    function updateAudioDevices() {
-        audioDevices.clear();
-        for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
-            const device = mediaDevices.audioOutputs[i];
-            audioDevices.append({ name: device.description });
-            if (device.id.toString() === soundPlayer.getDevice().id.toString()) {
-                deviceComboBox.currentIndex = i
-            }
-        }
-    }
-
-    function addSoundFile(fileUrl) {
-        let filePath = fileUrl.toString().replace("file://", "")
-
-        // Remove leading slash on windows so the paths are [A-Z]:/* instead of /[A-Z]:/*
-        if (Qt.platform.os === "windows") {
-            filePath = filePath.substring(1);
-        }
-
-        const lastSlashPos = filePath.lastIndexOf("/");
-        const lastDotPos = filePath.lastIndexOf(".");
-        soundConfigModel.append({
-            name: filePath.substring(lastSlashPos + 1, lastDotPos),
-            path: filePath,
-            sequence: "",
-        });
     }
 }

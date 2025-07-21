@@ -3,9 +3,12 @@ import QtQuick.Layouts
 import QtQuick.Controls.Universal
 
 Rectangle {
-    property ListModel listModel
-
     id: root
+
+    property ListModel listModel
+    property int uniqueIndex: 0
+    property bool disablePlayback: false
+
     clip: true
     color: AppSettings.backgroundColor
 
@@ -14,13 +17,10 @@ Rectangle {
         anchors.fill: root
         enabled: false
         z: 0
-        onClicked: forceActiveFocus()
         preventStealing: true
         propagateComposedEvents: true
+        onClicked: forceActiveFocus()
     }
-
-    property int uniqueIndex: 0
-    property bool disablePlayback: false
 
     Component {
         id: dragDelegate
@@ -29,15 +29,24 @@ Rectangle {
             id: dragArea
 
             property bool held: false
+
+            function releasedHandler() {
+                focusStealer.z = 0
+                focusStealer.cursorShape = Qt.ArrowCursor
+                held = false
+                z = 0
+            }
+
+            cursorShape: Qt.ClosedHandCursor
+            height: content.height
             anchors {
                 left: parent?.left
                 right: parent?.right
             }
-            height: content.height
-
-            drag.target: held ? content : undefined
-            drag.axis: Drag.YAxis
-            cursorShape: Qt.ClosedHandCursor
+            drag {
+                target: held ? content : undefined
+                axis: Drag.YAxis
+            }
 
             onPressed: {
                 focusStealer.z = 1
@@ -46,23 +55,20 @@ Rectangle {
                 z = -1
             }
 
-            function releasedHandler() {
-                focusStealer.z = 0
-                focusStealer.cursorShape = Qt.ArrowCursor
-                held = false
-                z = 0
-            }
             onReleased: releasedHandler()
             onCanceled: releasedHandler()
 
             SoundElement {
                 id: content
+
                 Drag.active: dragArea.held
                 Drag.source: dragArea
                 Drag.hotSpot.x: width / 2
                 Drag.hotSpot.y: height / 2
                 Drag.keys: ["sound-list"]
 
+                disablePlayback: root.disablePlayback
+                path: model.path
                 states: State {
                     when: dragArea.held
 
@@ -72,8 +78,6 @@ Rectangle {
                     }
                 }
 
-                disablePlayback: root.disablePlayback
-                path: model.path
                 Component.onCompleted: {
                     name = model.name // Avoids a binding loop in onNameChanged
                     sequence = model.sequence
