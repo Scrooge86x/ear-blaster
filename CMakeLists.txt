@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.19)
 project(ear-blaster LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -11,14 +11,16 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
     Core
 )
 
-qt_policy(SET QTP0001 NEW)
-qt_policy(SET QTP0004 NEW)
+qt_standard_project_setup(
+    REQUIRES 6.9
+    I18N_TRANSLATED_LANGUAGES pl
+)
 
-qt_standard_project_setup(I18N_TRANSLATED_LANGUAGES pl)
-
-qt_add_translations(ear-blaster
+qt_add_translations(${PROJECT_NAME}
     TS_FILE_DIR i18n
-    LUPDATE_OPTIONS -noobsolete
+    LUPDATE_OPTIONS
+        -noobsolete
+        -locations none
 )
 
 qt_add_executable(${PROJECT_NAME}
