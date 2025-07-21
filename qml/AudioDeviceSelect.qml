@@ -13,7 +13,7 @@ ComboBox {
 
     valueRole: "id"
     textRole: "description"
-    displayText: currentText.length ? currentText : qsTr("No device selected.")
+    displayText: root.currentText.length ? root.currentText : qsTr("No device selected.")
 
     model: switch (deviceType) {
         case AudioDeviceSelect.DeviceType.Input:
@@ -34,20 +34,20 @@ ComboBox {
     }
 
     onCurrentIndexChanged: {
-        const wasDeviceDisconnected = currentIndex === 0 && highlightedIndex === -1;
+        const wasDeviceDisconnected = root.currentIndex === 0 && root.highlightedIndex === -1;
         if (wasDeviceDisconnected) {
-            currentIndex = internal.getDeviceIndexByIdFn(AppSettings[appSettingsPropName]);
-            AppSettings[appSettingsPropName] = valueAt(currentIndex);
+            root.currentIndex = internal.getDeviceIndexByIdFn(AppSettings[root.appSettingsPropName]);
+            AppSettings[root.appSettingsPropName] = root.valueAt(currentIndex);
         }
     }
-    onActivated: (index) => AppSettings[appSettingsPropName] = valueAt(index)
+    onActivated: (index) => AppSettings[root.appSettingsPropName] = root.valueAt(index)
 
     // Cannot use indexOfValue here
-    Component.onCompleted: currentIndex = internal.getDeviceIndexByIdFn(AppSettings[appSettingsPropName])
+    Component.onCompleted: root.currentIndex = internal.getDeviceIndexByIdFn(AppSettings[root.appSettingsPropName])
 
     QtObject {
         id: internal
-        property var getDeviceIndexByIdFn: switch (deviceType) {
+        property var getDeviceIndexByIdFn: switch (root.deviceType) {
             case AudioDeviceSelect.DeviceType.Input:
                 (id) => audioSystem.getInputDeviceIndexById(id);
                 break;

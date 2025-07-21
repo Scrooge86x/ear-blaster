@@ -9,7 +9,7 @@ Item {
     ColumnLayout {
         Button {
             text: qsTr("Back")
-            onClicked: backClicked()
+            onClicked: root.backClicked()
         }
 
         Button {

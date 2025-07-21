@@ -4,20 +4,10 @@ import QtQuick.Controls.Universal
 import QtQuick.Dialogs
 
 Item {
+    id: root
     property ListModel audioDevices: ListModel {}
 
     signal settingsClicked()
-
-    function updateAudioDevices() {
-        audioDevices.clear();
-        for (let i = 0; i < mediaDevices.audioOutputs.length; ++i) {
-            const device = mediaDevices.audioOutputs[i];
-            audioDevices.append({ name: device.description });
-            if (device.id.toString() === soundPlayer.getDevice().id.toString()) {
-                deviceComboBox.currentIndex = i
-            }
-        }
-    }
 
     function addSoundFile(fileUrl) {
         let filePath = fileUrl.toString().replace("file://", "")
@@ -39,9 +29,9 @@ Item {
     RowLayout {
         id: topBar
         anchors {
-            top: parent.top
-            left: parent.left
-            right: parent.right
+            top: root.top
+            left: root.left
+            right: root.right
         }
 
         VolumeInput {
@@ -88,7 +78,7 @@ Item {
 
         Button {
             text: qsTr("Settings")
-            onClicked: settingsClicked()
+            onClicked: root.settingsClicked()
         }
     }
 
@@ -108,7 +98,7 @@ Item {
                         console.error("Error: corruted sound detected in config file.", JSON.stringify(sound));
                         continue;
                     }
-                    append(sound);
+                    soundConfigModel.append(sound);
                 }
             } catch (error) {
                 console.error("Failed parsing config file: ", error);
@@ -136,9 +126,9 @@ Item {
         listModel: soundConfigModel
         anchors {
             top: topBar.bottom
-            right: parent.right
-            bottom: parent.bottom
-            left: parent.left
+            right: root.right
+            bottom: root.bottom
+            left: root.left
             topMargin: 7
         }
     }
@@ -151,9 +141,9 @@ Item {
         scale: addSoundButton.down ? 0.96 : 1
 
         anchors {
-            right: parent.right
+            right: root.right
             rightMargin: 30
-            bottom: parent.bottom
+            bottom: root.bottom
             bottomMargin: 10
         }
         contentItem: Text {
@@ -184,14 +174,14 @@ Item {
             ]
             onAccepted: {
                 for (const file of selectedFiles) {
-                    addSoundFile(file);
+                    root.addSoundFile(file);
                 }
             }
         }
     }
 
     Rectangle {
-        anchors.fill: parent
+        anchors.fill: root
         color: fileDropArea.acceptedUrls.length ? Qt.rgba(0, 0, 0, 0.5) : "transparent"
 
         Text {
@@ -209,7 +199,7 @@ Item {
 
         property list<string> acceptedUrls: []
 
-        anchors.fill: parent
+        anchors.fill: root
         keys: ["text/uri-list"]
 
         onEntered: (drag) => {
@@ -239,7 +229,7 @@ Item {
 
         onDropped: (drop) => {
             for (const url of acceptedUrls) {
-                addSoundFile(url);
+                root.addSoundFile(url);
             }
             acceptedUrls = [];
         }

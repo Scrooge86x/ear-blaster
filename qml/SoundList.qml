@@ -81,11 +81,11 @@ Rectangle {
                 Component.onCompleted: {
                     name = model.name // Avoids a binding loop in onNameChanged
                     sequence = model.sequence
-                    initialIndex = uniqueIndex++
+                    initialIndex = root.uniqueIndex++
                 }
-                onDeleteRequested: listModel.remove(index, 1)
-                onNameChanged: listModel.setProperty(index, "name", name)
-                onSequenceChanged: listModel.setProperty(index, "sequence", sequence)
+                onDeleteRequested: root.listModel.remove(index, 1)
+                onNameChanged: root.listModel.setProperty(index, "name", name)
+                onSequenceChanged: root.listModel.setProperty(index, "sequence", sequence)
                 onFocusChanged: (hasFocus) => {
                     focusStealer.z = hasFocus ? 1 : 0;
                     focusStealer.enabled = hasFocus;
@@ -96,7 +96,7 @@ Rectangle {
             DropArea {
                 keys: ["sound-list"]
                 anchors.fill: parent
-                onEntered: (drag) => listModel.move(
+                onEntered: (drag) => root.listModel.move(
                     drag.source.DelegateModel.itemsIndex,
                     dragArea.DelegateModel.itemsIndex,
                     1
@@ -126,7 +126,7 @@ Rectangle {
                 cacheBuffer: 128
 
                 model: DelegateModel {
-                    model: listModel
+                    model: root.listModel
                     delegate: dragDelegate
                 }
 

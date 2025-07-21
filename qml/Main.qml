@@ -62,7 +62,7 @@ ApplicationWindow {
 
     onClosing: (close) => {
         if (AppSettings.closeBehavior == AppSettings.CloseBehavior.Quit) {
-            return exitApp();
+            return root.exitApp();
         }
 
         root.hide();
@@ -110,7 +110,6 @@ ApplicationWindow {
             MenuSeparator {}
 
             MenuItem {
-                id: trayMenuMicPassthrough
                 text: qsTr("Mic Passthrough")
                 checkable: true
                 checked: AppSettings.micPassthroughEnabled
@@ -121,7 +120,7 @@ ApplicationWindow {
 
             MenuItem {
                 text: qsTr("Exit")
-                onTriggered: exitApp()
+                onTriggered: root.exitApp()
             }
         }
         Component.onCompleted: {
@@ -138,7 +137,7 @@ ApplicationWindow {
             case AppSettings.CloseBehavior.HideToTray:   trayIcon.safeHide(); break;
             case AppSettings.CloseBehavior.HideKeepTray: trayIcon.safeShow(); break;
             default:
-                console.error("Invalid close behavior specified:", closeBehavior);
+                console.error("Invalid close behavior specified:", AppSettings.closeBehavior);
                 break;
             }
         }

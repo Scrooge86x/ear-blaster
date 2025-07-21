@@ -16,7 +16,7 @@ Rectangle {
     width: parent?.width // ?. because of "Cannot read property 'width' of null" when removing the sound
     height: 60
     radius: 10
-    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, isPlaying ? 0.15 : 0.075))
+    color: Qt.tint(AppSettings.backgroundColor, Qt.rgba(255, 255, 255, root.isPlaying ? 0.15 : 0.075))
 
     Text {
         id: tripleBar
@@ -27,7 +27,7 @@ Rectangle {
 
         anchors {
             verticalCenter: parent.verticalCenter
-            left: parent.left
+            left: root.left
             leftMargin: 7
         }
     }
@@ -36,11 +36,11 @@ Rectangle {
         id: soundNameInput
         font.pixelSize: 20
         color: AppSettings.foregroundColor
-        text: name
+        text: root.name
         leftPadding: 6
 
         anchors {
-            verticalCenter: parent.verticalCenter
+            verticalCenter: root.verticalCenter
             left: tripleBar.right
             leftMargin: 6
             right: playButton.left
@@ -56,7 +56,7 @@ Rectangle {
             }
         }
 
-        onTextChanged: name = text
+        onTextChanged: root.name = text
         onEditingFinished: focus = false
         onFocusChanged: root.focusChanged(focus)
 
@@ -64,7 +64,7 @@ Rectangle {
             x: 0
             y: -20
             font.pixelSize: 12
-            text: path
+            text: root.path
             delay: 400
             visible: !soundNameInput.focus && soundNameInput.hovered
         }
@@ -84,7 +84,7 @@ Rectangle {
             rightMargin: 10
         }
 
-        onClicked: audioSystem.play(initialIndex, path)
+        onClicked: audioSystem.play(initialIndex, root.path)
     }
 
     RoundButton {
@@ -96,12 +96,12 @@ Rectangle {
         radius: 7
 
         anchors {
-            verticalCenter: parent.verticalCenter
+            verticalCenter: root.verticalCenter
             right: deleteButton.left
             rightMargin: 10
         }
 
-        onClicked: audioSystem.stop(initialIndex)
+        onClicked: audioSystem.stop(root.initialIndex)
     }
 
     RoundButton {
@@ -113,14 +113,14 @@ Rectangle {
         radius: 7
 
         anchors {
-            verticalCenter: parent.verticalCenter
+            verticalCenter: root.verticalCenter
             right: sequenceInput.left
             rightMargin: 10
         }
 
         onClicked: {
-            audioSystem.stop(initialIndex);
-            deleteRequested();
+            audioSystem.stop(root.initialIndex);
+            root.deleteRequested();
         }
     }
 
@@ -130,8 +130,8 @@ Rectangle {
         height: 36
         sequence: root.sequence
         anchors {
-            verticalCenter: parent.verticalCenter
-            right: parent.right
+            verticalCenter: root.verticalCenter
+            right: root.right
             rightMargin: 10
         }
 
@@ -144,32 +144,32 @@ Rectangle {
         target: audioSystem
 
         function onSoundStarted(id) {
-            if (id === initialIndex) {
+            if (id === root.initialIndex) {
                 root.isPlaying = true;
             }
         }
         function onSoundStopped(id) {
-            if (id === initialIndex) {
+            if (id === root.initialIndex) {
                 root.isPlaying = false;
             }
         }
     }
 
     Connections {
-        enabled: sequence !== ""
+        enabled: root.sequence !== ""
         target: globalKeyListener
 
         function onCurrentSequenceChanged(hotkey) {
-            if (!disablePlayback && hotkey === sequence) {
+            if (!root.disablePlayback && hotkey === root.sequence) {
                 switch (AppSettings.secondPressBehavior) {
                 case AppSettings.SecondPressBehavior.StartOver:
-                    audioSystem.play(initialIndex, path);
+                    audioSystem.play(root.initialIndex, root.path);
                     break;
                 case AppSettings.SecondPressBehavior.StopSound:
                     if (root.isPlaying) {
-                        audioSystem.stop(initialIndex);
+                        audioSystem.stop(root.initialIndex);
                     } else {
-                        audioSystem.play(initialIndex, path);
+                        audioSystem.play(root.initialIndex, root.path);
                     }
                     break;
                 default:

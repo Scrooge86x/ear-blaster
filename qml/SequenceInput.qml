@@ -8,22 +8,22 @@ TextField {
 
     readOnly: true
     placeholderText: qsTr("Choose hotkey...")
-    Component.onCompleted: text = sequence
+    Component.onCompleted: root.text = root.sequence
 
     background: Rectangle {
-        anchors.fill: parent
+        anchors.fill: root
         color: AppSettings.backgroundColor
-        border.width: parent.focus ? 1 : 0
+        border.width: root.focus ? 1 : 0
         border.color: AppSettings.accentColor
         radius: 7
     }
 
     onEditingFinished: {
-        if (!text || text.endsWith("+") && !text.endsWith("Num+")) {
-            text = sequence;
+        if (!root.text || root.text.endsWith("+") && !root.text.endsWith("Num+")) {
+            root.text = root.sequence;
             return;
         }
-        sequence = text;
+        root.sequence = root.text;
     }
 
     Keys.onPressed: (event) => {
@@ -33,17 +33,17 @@ TextField {
 
         switch (event.key) {
         case Qt.Key_Backspace:
-            text = sequence = "";
-            return editingFinished();
+            root.text = root.sequence = "";
+            return root.editingFinished();
         case Qt.Key_Escape:
-            text = "";
-            return editingFinished();
+            root.text = "";
+            return root.editingFinished();
         case Qt.Key_Enter:
         case Qt.Key_Return:
             return;
         }
 
-        text = globalKeyListener.currentSequence;
+        root.text = globalKeyListener.currentSequence;
         event.accepted = true;
     }
 }
