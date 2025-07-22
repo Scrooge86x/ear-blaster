@@ -4,7 +4,9 @@ project(ear-blaster LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS
+set(QT_MIN_VERSION 6.9)
+
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
     Qml
     Quick
     Multimedia
@@ -12,7 +14,7 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
 )
 
 qt_standard_project_setup(
-    REQUIRES 6.9
+    REQUIRES ${QT_MIN_VERSION}
     I18N_TRANSLATED_LANGUAGES pl
 )
 
