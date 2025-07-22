@@ -2,6 +2,8 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs
+import ui.settings
+import ui.components
 
 Item {
     id: root

@@ -1,5 +1,6 @@
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
+import ui.settings
 
 RowLayout {
     id: root

@@ -35,26 +35,7 @@ qt_add_executable(${PROJECT_NAME}
     source/audiosystem/audioshared.h
 )
 
-set_source_files_properties(qml/AppSettings.qml PROPERTIES
-    QT_QML_SINGLETON_TYPE TRUE
-)
-
-qt_add_qml_module(${PROJECT_NAME}
-    URI ear-blaster
-    VERSION 1.0
-    RESOURCES
-        resources/ear-blaster.ico
-    QML_FILES
-        qml/Main.qml
-        qml/MainScreen.qml
-        qml/SettingsScreen.qml
-        qml/AppSettings.qml
-        qml/components/SoundElement.qml
-        qml/components/SoundList.qml
-        qml/components/SequenceInput.qml
-        qml/components/VolumeInput.qml
-        qml/components/AudioDeviceSelect.qml
-)
+add_subdirectory(ui)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
@@ -62,7 +43,7 @@ set_target_properties(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
         Qt6::Qml
         Qt6::Multimedia
         Qt6::Core

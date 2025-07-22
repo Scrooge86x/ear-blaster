@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls.Universal
+import ui.settings
 
 ComboBox {
     id: root

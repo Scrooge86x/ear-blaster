@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
     // The icon already set from the windows rc file, but in order for
     // ColorDialog to pick it up, it needs to also be set here
-    app.setWindowIcon(QIcon{ u":/qt/qml/ear-blaster/resources/ear-blaster.ico"_s });
+    app.setWindowIcon(QIcon{ u":/qt/qml/ui/resources/ear-blaster.ico"_s });
 
     Translator translator{};
     QQmlApplicationEngine engine{};
@@ -36,9 +36,10 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(u"translator"_s, &translator);
     engine.rootContext()->setContextProperty(u"globalKeyListener"_s, &GlobalKeyListener::instance());
 
-    engine.load(u"qrc:/qt/qml/ear-blaster/qml/Main.qml"_s);
-    if (engine.rootObjects().isEmpty())
+    engine.loadFromModule("ui", "Main");
+    if (engine.rootObjects().isEmpty()) {
         return -1;
+    }
 
     return app.exec();
 }
