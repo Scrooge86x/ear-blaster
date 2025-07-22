@@ -25,16 +25,8 @@ qt_add_translations(${PROJECT_NAME}
 
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
-    source/main.cpp
-    source/globalkeylistener.h source/globalkeylistener.cpp
-    source/translator.h source/translator.cpp
-    source/audiosystem/soundeffect.h source/audiosystem/soundeffect.cpp
-    source/audiosystem/audiosystem.h source/audiosystem/audiosystem.cpp
-    source/audiosystem/microphonepassthrough.h source/audiosystem/microphonepassthrough.cpp
-    source/audiosystem/audiodevice.h source/audiosystem/audiodevice.cpp
-    source/audiosystem/audioshared.h
 )
-
+add_subdirectory(cpp)
 add_subdirectory(ui)
 
 set_target_properties(${PROJECT_NAME}

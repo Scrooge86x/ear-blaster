@@ -6,7 +6,7 @@
 #include <QMap>
 #include <QAudioDevice>
 
-Q_MOC_INCLUDE("source/audiosystem/microphonepassthrough.h")
+Q_MOC_INCLUDE("cpp/audiosystem/microphonepassthrough.h")
 
 class SoundEffect;
 class AudioDevice;
