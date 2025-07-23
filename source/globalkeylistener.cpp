@@ -331,7 +331,7 @@ static inline QString sequenceToString(const Qt::Key key, const Qt::KeyboardModi
     case Qt::Key_Shift:
     case Qt::Key_Alt:
     case Qt::Key_Meta:
-        return QKeySequence{ modifiers.toInt() }.toString();
+        return QKeySequence{ static_cast<int>(modifiers.toInt()) }.toString();
     default:
         if (modifiers.testFlag(Qt::KeypadModifier)) {
             return QKeySequence{ key | modifiers }.toString().replace("Num+", "Num");
