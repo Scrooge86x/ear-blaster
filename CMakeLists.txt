@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.19)
 project(ear-blaster LANGUAGES CXX)
 
+if (NOT WIN32)
+    message(FATAL_ERROR "${PROJECT_NAME} only supports Windows as of now due to the use of global low-level keyboard hook for hotkey handling.")
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
