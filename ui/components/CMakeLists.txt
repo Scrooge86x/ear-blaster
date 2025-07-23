@@ -6,4 +6,6 @@ qt_add_qml_module(ui-components STATIC
         SequenceInput.qml
         VolumeInput.qml
         AudioDeviceSelect.qml
+    DEPENDENCIES
+        ui-settings
 )

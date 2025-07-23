@@ -9,4 +9,7 @@ qt_add_qml_module(${PROJECT_NAME}
         Main.qml
         MainScreen.qml
         SettingsScreen.qml
+    DEPENDENCIES
+        ui-settings
+        ui-components
 )
