@@ -32,6 +32,7 @@ qt_add_translations(${PROJECT_NAME}
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
 )
+
 add_subdirectory(cpp)
 add_subdirectory(ui)
 
@@ -46,3 +47,14 @@ target_link_libraries(${PROJECT_NAME}
         Qt6::Quick
         Qt6::Multimedia
 )
+
+include(InstallRequiredSystemLibraries)
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+qt_generate_deploy_qml_app_script(
+    TARGET ${PROJECT_NAME}
+    OUTPUT_SCRIPT deploy_script
+)
+install(SCRIPT ${deploy_script})
+
