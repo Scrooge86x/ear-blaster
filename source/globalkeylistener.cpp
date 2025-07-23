@@ -1,6 +1,8 @@
 #include "globalkeylistener.h"
 
+#ifndef NOMINMAX
 #define NOMINMAX
+#endif
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
@@ -329,7 +331,7 @@ static inline QString sequenceToString(const Qt::Key key, const Qt::KeyboardModi
     case Qt::Key_Shift:
     case Qt::Key_Alt:
     case Qt::Key_Meta:
-        return QKeySequence{ modifiers }.toString();
+        return QKeySequence{ modifiers.toInt() }.toString();
     default:
         if (modifiers.testFlag(Qt::KeypadModifier)) {
             return QKeySequence{ key | modifiers }.toString().replace("Num+", "Num");
@@ -467,7 +469,7 @@ GlobalKeyListener::GlobalKeyListener(QObject* parent)
         return;
     }
 
-    g_keyboardHook = ::SetWindowsHookEx(WH_KEYBOARD_LL, win32KeyboardHook, hookModule, NULL);
+    g_keyboardHook = ::SetWindowsHookEx(WH_KEYBOARD_LL, win32KeyboardHook, hookModule, 0);
     if (!g_keyboardHook) {
         qCWarning(gklLog) << "Couldn't create WH_KEYBOARD_LL hook.";
         return;
