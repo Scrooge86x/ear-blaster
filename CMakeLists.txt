@@ -55,6 +55,7 @@ install(TARGETS ${PROJECT_NAME}
 qt_generate_deploy_qml_app_script(
     TARGET ${PROJECT_NAME}
     OUTPUT_SCRIPT deploy_script
+    NO_TRANSLATIONS
 )
 install(SCRIPT ${deploy_script})
 
