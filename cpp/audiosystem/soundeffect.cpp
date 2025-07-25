@@ -17,9 +17,6 @@ SoundEffect::SoundEffect(
     , m_outputAudioDevice{ outputAudioDevice }
     , m_monitorAudioDevice{ monitorAudioDevice }
 {
-    m_decoder = new QAudioDecoder{ this };
-    m_decoder->setAudioFormat(AudioShared::getAudioFormat());
-
     connect(this, &SoundEffect::stopRequested,
             this, &SoundEffect::stop);
 
@@ -57,6 +54,9 @@ SoundEffect::SoundEffect(
             this, &SoundEffect::initAudioMonitorSink);
 
     connect(&m_thread, &QThread::started, this, [this] {
+        m_decoder = new QAudioDecoder{ this };
+        m_decoder->setAudioFormat(AudioShared::getAudioFormat());
+
         initAudioOutputSink();
         initAudioMonitorSink();
     });
