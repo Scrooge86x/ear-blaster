@@ -120,6 +120,13 @@ ApplicationWindow {
             MenuSeparator {}
 
             MenuItem {
+                text: qsTr("Stop all sounds")
+                onTriggered: audioSystem.stopAll()
+            }
+
+            MenuSeparator {}
+
+            MenuItem {
                 text: qsTr("Exit")
                 onTriggered: root.exitApp()
             }
