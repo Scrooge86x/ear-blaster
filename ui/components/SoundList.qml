@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
+import ui.settings
 
 Rectangle {
     id: root

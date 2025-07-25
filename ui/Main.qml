@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls.Universal
 import Qt.labs.platform
+import ui.settings
 
 ApplicationWindow {
     id: root
@@ -79,7 +80,7 @@ ApplicationWindow {
             if (!trayIcon.visible) {
                 trayIcon.show();
                 trayIcon.menu = trayMenu;
-                trayMenuShow.icon.source = "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico";
+                trayMenuShow.icon.source = "qrc:/qt/qml/ui/resources/ear-blaster.ico";
             }
         }
 
@@ -91,7 +92,7 @@ ApplicationWindow {
             }
         }
 
-        icon.source: "qrc:/qt/qml/ear-blaster/resources/ear-blaster.ico"
+        icon.source: "qrc:/qt/qml/ui/resources/ear-blaster.ico"
         tooltip: "Ear Blaster"
         menu: Menu {
             id: trayMenu
@@ -100,7 +101,7 @@ ApplicationWindow {
                 id: trayMenuShow
                 text: qsTr("Show")
                 onTriggered: {
-                    if (AppSettings.closeBehavior == AppSettings.CloseBehavior.HideToTray) {
+                    if (AppSettings.closeBehavior === AppSettings.CloseBehavior.HideToTray) {
                         trayIcon.safeHide();
                     }
                     root.show();

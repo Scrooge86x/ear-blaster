@@ -1,18 +1,24 @@
 cmake_minimum_required(VERSION 3.19)
 project(ear-blaster LANGUAGES CXX)
 
+if (NOT WIN32)
+    message(FATAL_ERROR "${PROJECT_NAME} only supports Windows as of now due to the use of global low-level keyboard hook for hotkey handling.")
+endif()
+
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS
+set(QT_MIN_VERSION 6.9)
+
+find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
+    Qml
     Quick
     Multimedia
     LinguistTools
-    Core
 )
 
 qt_standard_project_setup(
-    REQUIRES 6.9
+    REQUIRES ${QT_MIN_VERSION}
     I18N_TRANSLATED_LANGUAGES pl
 )
 
@@ -25,36 +31,10 @@ qt_add_translations(${PROJECT_NAME}
 
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
-    source/main.cpp
-    source/globalkeylistener.h source/globalkeylistener.cpp
-    source/translator.h source/translator.cpp
-    source/audiosystem/soundeffect.h source/audiosystem/soundeffect.cpp
-    source/audiosystem/audiosystem.h source/audiosystem/audiosystem.cpp
-    source/audiosystem/microphonepassthrough.h source/audiosystem/microphonepassthrough.cpp
-    source/audiosystem/audiodevice.h source/audiosystem/audiodevice.cpp
-    source/audiosystem/audioshared.h
 )
 
-set_source_files_properties(qml/AppSettings.qml PROPERTIES
-    QT_QML_SINGLETON_TYPE TRUE
-)
-
-qt_add_qml_module(${PROJECT_NAME}
-    URI ear-blaster
-    VERSION 1.0
-    RESOURCES
-        resources/ear-blaster.ico
-    QML_FILES
-        qml/Main.qml
-        qml/MainScreen.qml
-        qml/SettingsScreen.qml
-        qml/SoundElement.qml
-        qml/SoundList.qml
-        qml/SequenceInput.qml
-        qml/AppSettings.qml
-        qml/VolumeInput.qml
-        qml/AudioDeviceSelect.qml
-)
+add_subdirectory(cpp)
+add_subdirectory(ui)
 
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
@@ -62,8 +42,20 @@ set_target_properties(${PROJECT_NAME}
 )
 
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC
+    PRIVATE
         Qt6::Qml
+        Qt6::Quick
         Qt6::Multimedia
-        Qt6::Core
 )
+
+include(InstallRequiredSystemLibraries)
+install(TARGETS ${PROJECT_NAME}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+qt_generate_deploy_qml_app_script(
+    TARGET ${PROJECT_NAME}
+    OUTPUT_SCRIPT deploy_script
+    NO_TRANSLATIONS
+)
+install(SCRIPT ${deploy_script})
+
