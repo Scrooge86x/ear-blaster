@@ -10,6 +10,18 @@ Item {
 
     signal backClicked()
 
+    Dialog {
+        id: restoreDefaultsDialog
+        modal: true
+        anchors.centerIn: root
+        title: qsTr("Are you sure?")
+        standardButtons: Dialog.Yes | Dialog.No
+        onAccepted: AppSettings.restoreDefaults()
+
+        Label {
+            text: qsTr("This will restore every setting to their default value.")
+        }
+    }
     ColumnLayout {
         Button {
             text: qsTr("Back")
@@ -18,7 +30,7 @@ Item {
 
         Button {
             text: qsTr("Restore defaults")
-            onClicked: AppSettings.restoreDefaults()
+            onClicked: restoreDefaultsDialog.open()
         }
 
         Label {

@@ -155,6 +155,14 @@
         <source>Match main output</source>
         <translation>Używaj głównych ustawień</translation>
     </message>
+    <message>
+        <source>Are you sure?</source>
+        <translation>Czy jesteś pewny?</translation>
+    </message>
+    <message>
+        <source>This will restore every setting to their default value.</source>
+        <translation>Wszystkie ustawienia zostaną przywrócone do ich domyślnych wartości.</translation>
+    </message>
 </context>
 <context>
     <name>SoundElement</name>
