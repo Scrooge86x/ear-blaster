@@ -25,15 +25,16 @@ int main(int argc, char *argv[])
     // ColorDialog to pick it up, it needs to also be set here
     app.setWindowIcon(QIcon{ u":/qt/qml/ui/resources/ear-blaster.ico"_s });
 
-    Translator translator{};
     QQmlApplicationEngine engine{};
+
+    auto translator{ new Translator{ &app } };
     QObject::connect(
-        &translator, &Translator::currentLanguageChanged,
+        translator, &Translator::currentLanguageChanged,
         &engine, &QQmlApplicationEngine::retranslate
     );
 
     engine.rootContext()->setContextProperty(u"audioSystem"_s, new AudioSystem{ &app });
-    engine.rootContext()->setContextProperty(u"translator"_s, &translator);
+    engine.rootContext()->setContextProperty(u"translator"_s, translator);
     engine.rootContext()->setContextProperty(u"globalKeyListener"_s, &GlobalKeyListener::instance());
 
     engine.loadFromModule("ui", "Main");
