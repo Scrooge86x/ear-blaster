@@ -7,7 +7,6 @@ import ui.components
 
 Item {
     id: root
-    property ListModel audioDevices: ListModel {}
 
     signal settingsClicked()
 
@@ -21,7 +20,7 @@ Item {
 
         const lastSlashPos = filePath.lastIndexOf("/");
         const lastDotPos = filePath.lastIndexOf(".");
-        soundConfigModel.append({
+        soundListModel.append({
             name: filePath.substring(lastSlashPos + 1, lastDotPos),
             path: filePath,
             sequence: "",
@@ -85,7 +84,7 @@ Item {
     }
 
     ListModel {
-        id: soundConfigModel
+        id: soundListModel
         Component.onCompleted: {
             try {
                 const sounds = JSON.parse(AppSettings.sounds);
@@ -100,32 +99,32 @@ Item {
                         console.error("Error: corruted sound detected in config file.", JSON.stringify(sound));
                         continue;
                     }
-                    soundConfigModel.append(sound);
+                    soundListModel.append(sound);
                 }
             } catch (error) {
                 console.error("Failed parsing config file: ", error);
             }
         }
         Component.onDestruction: {
-            const soundList = [];
-            for (let i = 0; i < soundConfigModel.count; ++i) {
+            const sounds = [];
+            for (let i = 0; i < soundListModel.count; ++i) {
 
                 // Cannot directly push sound, cause it also includes other keys
-                const sound = soundConfigModel.get(i);
-                soundList.push({
+                const sound = soundListModel.get(i);
+                sounds.push({
                     name: sound.name,
                     path: sound.path,
                     sequence: sound.sequence,
                 });
             }
 
-            AppSettings.sounds = JSON.stringify(soundList);
+            AppSettings.sounds = JSON.stringify(sounds);
             console.info("Config written to:", AppSettings.location);
         }
     }
 
     SoundList {
-        listModel: soundConfigModel
+        listModel: soundListModel
         anchors {
             top: topBar.bottom
             right: root.right
