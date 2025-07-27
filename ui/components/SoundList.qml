@@ -9,9 +9,20 @@ Rectangle {
     property ListModel listModel
     property int uniqueIndex: 0
     property bool disablePlayback: false
+    property bool stealingFocus: false
 
     clip: true
     color: AppSettings.backgroundColor
+
+    onStealingFocusChanged: {
+        if (root.stealingFocus) {
+            focusStealer.z = 1
+            focusStealer.cursorShape = Qt.ClosedHandCursor
+        } else {
+            focusStealer.z = 0
+            focusStealer.cursorShape = Qt.ArrowCursor
+        }
+    }
 
     MouseArea {
         id: focusStealer
@@ -32,8 +43,7 @@ Rectangle {
             property bool held: false
 
             function releasedHandler() {
-                focusStealer.z = 0
-                focusStealer.cursorShape = Qt.ArrowCursor
+                root.stealingFocus = false;
                 held = false
                 z = 0
             }
@@ -50,8 +60,7 @@ Rectangle {
             }
 
             onPressed: {
-                focusStealer.z = 1
-                focusStealer.cursorShape = Qt.ClosedHandCursor
+                root.stealingFocus = true;
                 held = true
                 z = -1
             }

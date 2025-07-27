@@ -124,6 +124,7 @@ Item {
     }
 
     SoundList {
+        id: soundList
         listModel: soundListModel
         anchors {
             top: topBar.bottom
@@ -197,6 +198,7 @@ Item {
 
     DropArea {
         id: fileDropArea
+        enabled: !soundList.stealingFocus
 
         property list<string> acceptedUrls: []
 
