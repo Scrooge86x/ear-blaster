@@ -6,4 +6,5 @@ qt_add_qml_module(ui-settings STATIC
     URI ui.settings
     QML_FILES
         AppSettings.qml
+        SettingConnections.qml
 )

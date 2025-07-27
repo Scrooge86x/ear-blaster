@@ -151,6 +151,8 @@ ApplicationWindow {
         }
     }
 
+    SettingConnections {}
+
     Component {
         id: mainScreen
         MainScreen {
