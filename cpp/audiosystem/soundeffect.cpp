@@ -211,6 +211,7 @@ void SoundEffect::invalidateAudioOutputSink()
 
     m_outputIODevice = nullptr;
     m_outputAudioSink->reset();
+    m_outputAudioSink->stop();
     delete m_outputAudioSink;
     m_outputAudioSink = nullptr;
 }
@@ -247,6 +248,7 @@ void SoundEffect::invalidateAudioMonitorSink()
 
     m_monitorIODevice = nullptr;
     m_monitorAudioSink->reset();
+    m_monitorAudioSink->stop();
     delete m_monitorAudioSink;
     m_monitorAudioSink = nullptr;
 }
