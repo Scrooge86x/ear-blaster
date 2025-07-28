@@ -62,21 +62,25 @@ MicrophonePassthrough::~MicrophonePassthrough()
 
 void MicrophonePassthrough::invalidateAudioSource()
 {
-    if (m_audioSource && m_inputIODevice) {
-        m_inputIODevice = nullptr;
-        delete m_audioSource;
-        m_audioSource = nullptr;
+    if (!m_audioSource || !m_inputIODevice) {
+        return;
     }
+
+    m_inputIODevice = nullptr;
+    delete m_audioSource;
+    m_audioSource = nullptr;
 }
 
 void MicrophonePassthrough::invalidateAudioSink()
 {
-    if (m_audioSink && m_outputIODevice) {
-        m_outputIODevice = nullptr;
-        m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
-        delete m_audioSink;
-        m_audioSink = nullptr;
+    if (!m_audioSink || !m_outputIODevice) {
+        return;
     }
+
+    m_outputIODevice = nullptr;
+    m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
+    delete m_audioSink;
+    m_audioSink = nullptr;
 }
 
 void MicrophonePassthrough::initAudioSink()
