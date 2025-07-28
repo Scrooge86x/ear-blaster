@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs
+import QtMultimedia
 import ui.settings
 import ui.components
 
@@ -25,6 +26,39 @@ Item {
             path: filePath,
             sequence: "",
         });
+    }
+
+    property mediaFormat mediaFormatInfo
+    property list<string> supportedExtensions
+    property list<string> supportedExtensionFilters
+
+    Component.onCompleted: {
+        const extensionMap = {
+            [MediaFormat.AudioCodec.MP3]: "mp3",
+            [MediaFormat.AudioCodec.AAC]: "aac",
+            [MediaFormat.AudioCodec.AC3]: "ac3",
+            [MediaFormat.AudioCodec.EAC3]: "eac3",
+            [MediaFormat.AudioCodec.FLAC]: "flac",
+            [MediaFormat.AudioCodec.DolbyTrueHD]: "thd",
+            [MediaFormat.AudioCodec.Opus]: "opus",
+            [MediaFormat.AudioCodec.Vorbis]: "ogg",
+            [MediaFormat.AudioCodec.Wave]: "wav",
+            [MediaFormat.AudioCodec.WMA]: "wma",
+            [MediaFormat.AudioCodec.ALAC]: "alac",
+        };
+
+        const extensions = [];
+        const extensionFilters = [];
+
+        for (const format of root.mediaFormatInfo.supportedAudioCodecs(MediaFormat.Decode)) {
+            const extension = extensionMap[format];
+            extensions.push(extension);
+            extensionFilters.push(`${root.mediaFormatInfo.audioCodecDescription(format)} (*.${extension})`);
+        }
+        extensionFilters.unshift(`Audio (${extensions.map(format => `*.${format}`).join(" ")})`);
+
+        root.supportedExtensions = extensions;
+        root.supportedExtensionFilters = extensionFilters;
     }
 
     RowLayout {
@@ -169,11 +203,7 @@ Item {
             acceptLabel: qsTr("Select")
             rejectLabel: qsTr("Cancel")
             fileMode: FileDialog.OpenFiles
-            nameFilters: [
-                "Audio (*.mp3 *.wav)",
-                "MP3 (*.mp3)",
-                "WAV (*.wav)",
-            ]
+            nameFilters: root.supportedExtensionFilters
             onAccepted: {
                 for (const file of selectedFiles) {
                     root.addSoundFile(file);
@@ -210,8 +240,7 @@ Item {
                 return;
             }
 
-            const allowedExtensions = ["mp3", "wav"];
-
+            const allowedExtensions = root.supportedExtensions;
             for (let url of drag.urls) {
                 url = url.toString();
                 const lastDotPos = url.lastIndexOf(".");
