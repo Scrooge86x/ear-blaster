@@ -22,6 +22,7 @@ MicrophonePassthrough::MicrophonePassthrough()
             this, &MicrophonePassthrough::initAudioSink);
 
     connect(m_inputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+        m_outputAudioDevice->setEnabled(enabled);
         if (enabled) {
             initAudioSink();
             initAudioSource();

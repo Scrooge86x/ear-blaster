@@ -16,7 +16,7 @@ AudioSystem::AudioSystem(QObject *const parent)
         m_micPassthrough->outputDevice()->setDevice(m_outputAudioDevice->device());
     });
 
-    m_monitorAudioDevice->setEnabled(false);
+    m_outputAudioDevice->setEnabled(true);
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged,

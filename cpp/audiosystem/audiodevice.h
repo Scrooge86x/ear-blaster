@@ -38,7 +38,7 @@ private:
     QAudioDevice m_device{};
     float m_volume{ 1.f };
     float m_overdrive{};
-    bool m_enabled{ true };
+    bool m_enabled{};
 };
 
 #endif // AUDIODEVICE_H
