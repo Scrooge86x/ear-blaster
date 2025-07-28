@@ -50,12 +50,15 @@ ApplicationWindow {
 
             if (windowGeometry.maximized) {
                 root.visibility = Window.Maximized;
-            } else {
-                root.x      = windowGeometry.x;
-                root.y      = windowGeometry.y;
-                root.width  = Math.max(windowGeometry.width,  root.minimumWidth);
-                root.height = Math.max(windowGeometry.height, root.minimumHeight);
             }
+            if (windowGeometry.x < Screen.desktopAvailableWidth - 10) {
+                root.x = windowGeometry.x;
+            }
+            if (windowGeometry.y < Screen.desktopAvailableHeight - 10) {
+                root.y = windowGeometry.y;
+            }
+            root.width  = Math.max(windowGeometry.width,  root.minimumWidth);
+            root.height = Math.max(windowGeometry.height, root.minimumHeight);
         } catch (error) {
             console.error("Error while reading windowData: ", error);
         }
