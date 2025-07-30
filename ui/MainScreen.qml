@@ -83,6 +83,10 @@ Item {
             onValueChanged: AppSettings.outputOverdrive = value
         }
 
+        Item {
+            Layout.fillWidth: true
+        }
+
         Button {
             checkable: true
             icon.source: `qrc:/qt/qml/ui/resources/pictogrammers/microphone${checked ? "" : "-off"}.svg`
@@ -97,13 +101,8 @@ Item {
             onToggled: AppSettings.audioMonitorEnabled = checked
         }
 
-        Item {
-            Layout.fillWidth: true
-        }
-
-        RoundButton {
+        Button {
             text: qsTr("Stop all")
-            radius: 7
             onClicked: audioSystem.stopAll()
         }
 
@@ -114,7 +113,7 @@ Item {
         }
 
         Button {
-            text: qsTr("Settings")
+            icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/cog.svg"
             onClicked: root.settingsClicked()
         }
     }

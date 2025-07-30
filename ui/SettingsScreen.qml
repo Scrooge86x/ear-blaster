@@ -24,7 +24,7 @@ Item {
     }
     ColumnLayout {
         Button {
-            text: qsTr("Back")
+            icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/back-arrow.svg"
             onClicked: root.backClicked()
         }
 
@@ -122,7 +122,7 @@ Item {
             }
         }
 
-        CheckBox {
+        Switch {
             text: qsTr("Save window geometry")
             checked: AppSettings.windowGeometry
             onToggled: AppSettings.windowGeometry = checked ? "{}" : ""  // Anything other than "" will get filled in during shutdown

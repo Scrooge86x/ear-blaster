@@ -42,10 +42,6 @@
         <translation>Zatrzymaj wszystkie</translation>
     </message>
     <message>
-        <source>Settings</source>
-        <translation>Ustawienia</translation>
-    </message>
-    <message>
         <source>Select</source>
         <translation>Wybierz</translation>
     </message>
@@ -71,10 +67,6 @@
 </context>
 <context>
     <name>SettingsScreen</name>
-    <message>
-        <source>Back</source>
-        <translation>Wróć</translation>
-    </message>
     <message>
         <source>Restore defaults</source>
         <translation>Przywróć domyślne</translation>
