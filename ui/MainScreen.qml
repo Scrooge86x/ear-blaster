@@ -83,14 +83,16 @@ Item {
             onValueChanged: AppSettings.outputOverdrive = value
         }
 
-        CheckBox {
-            text: qsTr("Mic")
+        Button {
+            checkable: true
+            icon.source: `qrc:/qt/qml/ui/resources/pictogrammers/microphone${checked ? "" : "-off"}.svg`
             checked: AppSettings.micPassthroughEnabled
             onToggled: AppSettings.micPassthroughEnabled = checked
         }
 
-        CheckBox {
-            text: qsTr("Monitor")
+        Button {
+            checkable: true
+            icon.source: `qrc:/qt/qml/ui/resources/pictogrammers/headphones${checked ? "" : "-off"}.svg`
             checked: AppSettings.audioMonitorEnabled
             onToggled: AppSettings.audioMonitorEnabled = checked
         }

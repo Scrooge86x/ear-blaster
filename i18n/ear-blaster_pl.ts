@@ -22,6 +22,10 @@
         <source>Exit</source>
         <translation>Wyjdź</translation>
     </message>
+    <message>
+        <source>Stop all sounds</source>
+        <translation>Zatrzymaj wszystkie dźwięki</translation>
+    </message>
 </context>
 <context>
     <name>MainScreen</name>
@@ -32,14 +36,6 @@
     <message>
         <source>Overdrive:</source>
         <translation>Przestery:</translation>
-    </message>
-    <message>
-        <source>Mic</source>
-        <translation>Mikrofon</translation>
-    </message>
-    <message>
-        <source>Monitor</source>
-        <translation>Monitor</translation>
     </message>
     <message>
         <source>Stop all</source>

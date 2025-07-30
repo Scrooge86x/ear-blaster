@@ -5,6 +5,10 @@ qt_add_qml_module(${PROJECT_NAME}
     URI ui
     RESOURCES
         ../resources/ear-blaster.ico
+        ../resources/pictogrammers/headphones.svg
+        ../resources/pictogrammers/headphones-off.svg
+        ../resources/pictogrammers/microphone.svg
+        ../resources/pictogrammers/microphone-off.svg
     QML_FILES
         Main.qml
         MainScreen.qml
