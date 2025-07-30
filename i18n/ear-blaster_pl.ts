@@ -151,6 +151,14 @@
         <source>This will restore every setting to their default value.</source>
         <translation>Wszystkie ustawienia zostaną przywrócone do ich domyślnych wartości.</translation>
     </message>
+    <message>
+        <source>On</source>
+        <translation>Włączone</translation>
+    </message>
+    <message>
+        <source>Off</source>
+        <translation>Wyłączone</translation>
+    </message>
 </context>
 <context>
     <name>SoundElement</name>

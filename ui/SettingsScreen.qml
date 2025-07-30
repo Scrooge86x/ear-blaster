@@ -28,14 +28,15 @@ Item {
     ColumnLayout {
         spacing: 15
 
-        Button {
-            icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/back-arrow.svg"
-            onClicked: root.backClicked()
-        }
-
-        Button {
-            text: qsTr("Restore defaults")
-            onClicked: restoreDefaultsDialog.open()
+        ColumnLayout {
+            Button {
+                icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/back-arrow.svg"
+                onClicked: root.backClicked()
+            }
+            Button {
+                text: qsTr("Restore defaults")
+                onClicked: restoreDefaultsDialog.open()
+            }
         }
 
         ColumnLayout {
@@ -137,10 +138,16 @@ Item {
             }
         }
 
-        Switch {
-            text: qsTr("Save window geometry")
-            checked: AppSettings.windowGeometry
-            onToggled: AppSettings.windowGeometry = checked ? "{}" : ""  // Anything other than "" will get filled in during shutdown
+        ColumnLayout {
+            Label {
+                text: qsTr("Save window geometry")
+            }
+            Switch {
+                Layout.leftMargin: -5
+                text: checked ? qsTr("On") : qsTr("Off")
+                checked: AppSettings.windowGeometry
+                onToggled: AppSettings.windowGeometry = checked ? "{}" : ""  // Anything other than "" will get filled in during shutdown
+            }
         }
 
         ColumnLayout {
