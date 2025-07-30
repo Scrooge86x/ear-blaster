@@ -40,13 +40,15 @@ Item {
             text: qsTr("On close behavior:")
         }
         ComboBox  {
-            model: [qsTr("Quit"), qsTr("Hide to tray"), qsTr("Hide (tray always visible)")]
+            id: closeBehaviorComboBox
+            model: [QT_TR_NOOP("Quit"), QT_TR_NOOP("Hide to tray"), QT_TR_NOOP("Hide (tray always visible)")]
             Layout.preferredWidth: 240
 
             currentIndex: AppSettings.closeBehavior
+            displayText: qsTr(model[currentIndex])
             delegate: ItemDelegate {
                 width: parent.width
-                text: modelData
+                text: qsTr(closeBehaviorComboBox.model[index])
                 highlighted: parent.highlightedIndex === index
             }
             onActivated: (index) => AppSettings.closeBehavior = index
@@ -56,13 +58,15 @@ Item {
             text: qsTr("On second hotkey press:")
         }
         ComboBox  {
-            model: [qsTr("Restart sound"), qsTr("Stop sound")]
-            Layout.preferredWidth: 150
+            id: secondPressBehaviorComboBox
+            model: [QT_TR_NOOP("Restart sound"), QT_TR_NOOP("Stop sound")]
+            Layout.preferredWidth: 240
 
             currentIndex: AppSettings.secondPressBehavior
+            displayText: qsTr(model[currentIndex])
             delegate: ItemDelegate {
                 width: parent.width
-                text: modelData
+                text: qsTr(secondPressBehaviorComboBox.model[index])
                 highlighted: parent.highlightedIndex === index
             }
             onActivated: (index) => AppSettings.secondPressBehavior = index
