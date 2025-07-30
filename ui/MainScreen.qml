@@ -67,6 +67,7 @@ Item {
             top: root.top
             left: root.left
             right: root.right
+            leftMargin: 7
         }
 
         VolumeInput {

@@ -18,8 +18,11 @@ Item {
         standardButtons: Dialog.Yes | Dialog.No
         onAccepted: AppSettings.restoreDefaults()
 
-        Label {
-            text: qsTr("This will restore every setting to their default value.")
+        // Using ColumnLayout fixes: QML Dialog: Binding loop detected for property "implicitWidth"
+        ColumnLayout {
+            Label {
+                text: qsTr("This will restore every setting to their default value.")
+            }
         }
     }
     ColumnLayout {
