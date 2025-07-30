@@ -78,6 +78,7 @@ Item {
         }
 
         VolumeInput {
+            Layout.leftMargin: 5
             text: qsTr("Overdrive:")
             sliderWidth: 75
             value: AppSettings.outputOverdrive
