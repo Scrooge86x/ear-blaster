@@ -22,10 +22,6 @@ Settings {
             closeBehavior: AppSettings.CloseBehavior.HideKeepTray,
             secondPressBehavior: AppSettings.SecondPressBehavior.StopSound,
             windowGeometry: "{}", // Anything other than "" will get filled in during shutdown
-            language: "en",
-            audioOutputDevice: "",
-            audioInputDevice: "",
-            audioMonitorDevice: "",
             micPassthroughEnabled: false,
             audioMonitorEnabled: false,
             audioMonitorMatchOutput: true,
@@ -43,10 +39,10 @@ Settings {
     property string backgroundColor: getDefaults()["backgroundColor"]
     property string accentColor: getDefaults()["accentColor"]
     property string windowGeometry: getDefaults()["windowGeometry"] // { "width": 0, "height": 0, "x": 0, "y": 0, "maximized": false }
-    property string language: getDefaults()["language"]
-    property string audioOutputDevice: getDefaults()["audioOutputDevice"]
-    property string audioInputDevice: getDefaults()["audioInputDevice"]
-    property string audioMonitorDevice: getDefaults()["audioMonitorDevice"]
+    property string language: "en"
+    property string audioOutputDevice: ""
+    property string audioInputDevice: ""
+    property string audioMonitorDevice: ""
     property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
     property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
     property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
