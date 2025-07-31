@@ -160,19 +160,4 @@
         <translation>Wyłączone</translation>
     </message>
 </context>
-<context>
-    <name>SoundElement</name>
-    <message>
-        <source>play</source>
-        <translation>Odtwórz</translation>
-    </message>
-    <message>
-        <source>stop</source>
-        <translation>Zatrzymaj</translation>
-    </message>
-    <message>
-        <source>delete</source>
-        <translation>Usuń</translation>
-    </message>
-</context>
 </TS>

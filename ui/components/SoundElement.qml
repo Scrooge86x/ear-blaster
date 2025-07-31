@@ -73,8 +73,7 @@ Rectangle {
 
     RoundButton {
         id: playButton
-        text: qsTr("play")
-        Universal.foreground: "#fff"
+        icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/play.svg"
         radius: 7
         leftPadding: 15
         rightPadding: 15
@@ -90,11 +89,11 @@ Rectangle {
 
     RoundButton {
         id: stopButton
-        text: qsTr("stop")
-        Universal.foreground: "#fff"
+        icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/stop.svg"
         leftPadding: 15
         rightPadding: 15
         radius: 7
+        enabled: root.isPlaying
 
         anchors {
             verticalCenter: root.verticalCenter
@@ -107,8 +106,7 @@ Rectangle {
 
     RoundButton {
         id: deleteButton
-        text: qsTr("delete")
-        Universal.foreground: "#fff"
+        icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/trashcan.svg"
         leftPadding: 15
         rightPadding: 15
         radius: 7

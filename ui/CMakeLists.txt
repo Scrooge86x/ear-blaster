@@ -11,6 +11,9 @@ qt_add_qml_module(${PROJECT_NAME}
         ../resources/pictogrammers/microphone-off.svg
         ../resources/pictogrammers/cog.svg
         ../resources/pictogrammers/back-arrow.svg
+        ../resources/pictogrammers/play.svg
+        ../resources/pictogrammers/stop.svg
+        ../resources/pictogrammers/trashcan.svg
     QML_FILES
         Main.qml
         MainScreen.qml
