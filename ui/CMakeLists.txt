@@ -14,6 +14,7 @@ qt_add_qml_module(${PROJECT_NAME}
         ../resources/pictogrammers/play.svg
         ../resources/pictogrammers/stop.svg
         ../resources/pictogrammers/trashcan.svg
+        ../resources/pictogrammers/undo-arrow.svg
     QML_FILES
         Main.qml
         MainScreen.qml

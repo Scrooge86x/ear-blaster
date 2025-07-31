@@ -11,6 +11,17 @@ Rectangle {
     property bool disablePlayback: false
     property bool stealingFocus: false
 
+    function removeSound(index) {
+        soundRemovedPopup.close();
+
+        const lastSong = { index };
+        Object.assign(lastSong, root.listModel.get(index));
+        soundRemovedPopup.lastRemovedSong = lastSong;
+        root.listModel.remove(index, 1);
+
+        soundRemovedPopup.open();
+    }
+
     clip: true
     color: AppSettings.backgroundColor
 
@@ -21,6 +32,66 @@ Rectangle {
         } else {
             focusStealer.z = 0
             focusStealer.cursorShape = Qt.ArrowCursor
+        }
+    }
+
+    Popup {
+        id: soundRemovedPopup
+
+        property var lastRemovedSong
+
+        closePolicy: Popup.NoAutoClose
+        y: root.height - soundRemovedPopup.height
+        onAboutToShow: soundRemovedAnimation.start();
+        onClosed: {
+            soundRemovedPopup.lastRemovedSong = null;
+            soundRemovedAnimation.stop();
+        }
+
+        ColumnLayout {
+            RowLayout {
+                Label {
+                    text: qsTr('Sound "%1" removed.').arg(soundRemovedPopup.lastRemovedSong?.name)
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                }
+
+                RoundButton {
+                    icon.source: "qrc:/qt/qml/ui/resources/pictogrammers/undo-arrow.svg"
+                    radius: 7
+                    leftPadding: 15
+                    rightPadding: 15
+
+                    onClicked: {
+                        const lastSong = soundRemovedPopup.lastRemovedSong;
+                        if (!lastSong) {
+                            return;
+                        }
+
+                        const index = lastSong.index;
+                        delete lastSong.index;
+
+                        root.listModel.insert(index, lastSong);
+                        soundRemovedPopup.close();
+                    }
+                }
+            }
+            ProgressBar {
+                Layout.fillWidth: true
+                value: 1
+
+                NumberAnimation on value {
+                    id: soundRemovedAnimation
+                    running: false
+                    from: 1
+                    to: 0
+                    duration: 4000
+
+                    onFinished: soundRemovedPopup.close()
+                }
+            }
         }
     }
 
@@ -93,7 +164,7 @@ Rectangle {
                     sequence = model.sequence
                     initialIndex = root.uniqueIndex++
                 }
-                onDeleteRequested: root.listModel.remove(index, 1)
+                onDeleteRequested: root.removeSound(index)
                 onNameChanged: root.listModel.setProperty(index, "name", name)
                 onSequenceChanged: root.listModel.setProperty(index, "sequence", sequence)
                 onFocusChanged: (hasFocus) => {

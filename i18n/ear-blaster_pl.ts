@@ -160,4 +160,11 @@
         <translation>Wyłączone</translation>
     </message>
 </context>
+<context>
+    <name>SoundList</name>
+    <message>
+        <source>Sound &quot;%1&quot; removed.</source>
+        <translation>Dźwięk &quot;%1&quot; usunięty.</translation>
+    </message>
+</context>
 </TS>
