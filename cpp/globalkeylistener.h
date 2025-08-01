@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QString>
 
-// Don't worry about the name, this class will be extended in the future
 class GlobalKeyListener : public QObject
 {
     Q_OBJECT
@@ -12,7 +11,7 @@ class GlobalKeyListener : public QObject
 
 public:
     explicit GlobalKeyListener(QObject* parent = nullptr);
-    virtual ~GlobalKeyListener();
+    ~GlobalKeyListener();
 
     static GlobalKeyListener& instance();
     QString getCurrentSequence() const;
