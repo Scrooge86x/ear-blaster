@@ -10,11 +10,15 @@ class GlobalKeyListener : public QObject
     Q_PROPERTY(QString currentSequence READ getCurrentSequence NOTIFY currentSequenceChanged)
 
 public:
-    explicit GlobalKeyListener(QObject* parent = nullptr);
-    ~GlobalKeyListener();
+    GlobalKeyListener(const GlobalKeyListener&) = delete;
+    GlobalKeyListener& operator=(const GlobalKeyListener&) = delete;
 
     static GlobalKeyListener& instance();
     QString getCurrentSequence() const;
+
+private:
+    explicit GlobalKeyListener(QObject* parent = nullptr);
+    ~GlobalKeyListener();
 
 signals:
     void currentSequenceChanged(const QString& hotkey);
