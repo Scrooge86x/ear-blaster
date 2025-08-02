@@ -15,6 +15,7 @@ class AudioDevice;
 class SoundEffect : public QObject
 {
     Q_OBJECT
+    Q_DISABLE_COPY(SoundEffect)
 
 public:
     explicit SoundEffect(

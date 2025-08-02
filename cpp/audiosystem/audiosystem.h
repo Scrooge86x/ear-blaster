@@ -20,6 +20,7 @@ class AudioSystem : public QObject
     Q_PROPERTY(MicrophonePassthrough* micPassthrough READ micPassthrough CONSTANT FINAL)
     Q_PROPERTY(QList<QAudioDevice> audioInputs READ audioInputs NOTIFY audioInputsChanged FINAL)
     Q_PROPERTY(QList<QAudioDevice> audioOutputs READ audioOutputs NOTIFY audioOutputsChanged FINAL)
+    Q_DISABLE_COPY(AudioSystem)
 
 public:
     explicit AudioSystem(QObject* const parent = nullptr);

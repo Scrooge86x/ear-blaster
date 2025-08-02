@@ -14,6 +14,7 @@ class MicrophonePassthrough : public QObject
     Q_OBJECT
     Q_PROPERTY(AudioDevice* inputDevice READ inputDevice CONSTANT FINAL)
     Q_PROPERTY(AudioDevice* outputDevice READ outputDevice CONSTANT FINAL)
+    Q_DISABLE_COPY(MicrophonePassthrough)
 
 public:
     explicit MicrophonePassthrough();

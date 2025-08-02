@@ -8,11 +8,9 @@ class GlobalKeyListener : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString currentSequence READ getCurrentSequence NOTIFY currentSequenceChanged)
+    Q_DISABLE_COPY(GlobalKeyListener)
 
 public:
-    GlobalKeyListener(const GlobalKeyListener&) = delete;
-    GlobalKeyListener& operator=(const GlobalKeyListener&) = delete;
-
     static GlobalKeyListener& instance();
     QString getCurrentSequence() const;
 
