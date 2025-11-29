@@ -36,6 +36,17 @@ qt_add_executable(${PROJECT_NAME}
 add_subdirectory(cpp)
 add_subdirectory(ui)
 
+qt_add_qml_module(${PROJECT_NAME}
+    URI ui
+    RESOURCES
+        ${UI_RESOURCE_FILES}
+    QML_FILES
+        ${UI_QML_FILES}
+    DEPENDENCIES
+        ui-settings
+        ui-components
+)
+
 set_target_properties(${PROJECT_NAME}
     PROPERTIES
         WIN32_EXECUTABLE TRUE
@@ -49,9 +60,8 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 include(InstallRequiredSystemLibraries)
-install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-)
+install(TARGETS ${PROJECT_NAME})
+
 qt_generate_deploy_qml_app_script(
     TARGET ${PROJECT_NAME}
     OUTPUT_SCRIPT deploy_script

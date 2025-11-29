@@ -11,7 +11,7 @@
 int main(int argc, char *argv[])
 {
     // Fix for resize causing flickering
-    qputenv("QT_D3D_NO_FLIP", "1" );
+    qputenv("QT_D3D_NO_FLIP", "1");
 
     using namespace Qt::Literals::StringLiterals;
     QLoggingCategory::setFilterRules(u"qt.multimedia.ffmpeg.*=false"_s);
