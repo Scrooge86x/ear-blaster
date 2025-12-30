@@ -237,37 +237,78 @@ Item {
             }
         }
 
-        ColumnLayout {
-            Label {
-                text: qsTr("Text to speech locale:")
-            }
-            ComboBox {
-                id: ttsLocale
-                model: audioSystem.tts.availableLocales()
-                Layout.preferredWidth: 240
-
-                displayText: model[currentIndex].nativeLanguageName
-                delegate: ItemDelegate {
-                    width: parent.width
-                    text: ttsLocale.model[index].nativeLanguageName
-                    highlighted: parent.highlightedIndex === index
+        RowLayout {
+            ColumnLayout {
+                Label {
+                    text: qsTr("Text to speech locale:")
                 }
-                onActivated: (index) => AppSettings.ttsLocale = model[index].name
+                ComboBox {
+                    id: ttsLocale
+                    model: audioSystem.tts.availableLocales()
+                    Layout.preferredWidth: 240
 
-                Component.onCompleted: {
-                    let localeIndex = -1;
-                    for (let i = 0; i < model.length; ++i) {
-                        if (model[i].name === AppSettings.ttsLocale) {
-                            localeIndex = i;
-                            break;
-                        }
+                    displayText: model[currentIndex].nativeLanguageName
+                    delegate: ItemDelegate {
+                        width: parent.width
+                        text: ttsLocale.model[index].nativeLanguageName
+                        highlighted: parent.highlightedIndex === index
+                    }
+                    onActivated: (index) => {
+                        AppSettings.ttsLocale = model[index].name;
+                        ttsVoice.model = audioSystem.tts.availableVoices();
                     }
 
-                    if (localeIndex !== -1) {
-                        ttsLocale.currentIndex = localeIndex
-                    } else {
-                        AppSettings.ttsLocale = model[0].name;
-                        ttsLocale.currentIndex = 0;
+                    Component.onCompleted: {
+                        let localeIndex = -1;
+                        for (let i = 0; i < model.length; ++i) {
+                            if (model[i].name === AppSettings.ttsLocale) {
+                                localeIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (localeIndex !== -1) {
+                            ttsLocale.currentIndex = localeIndex
+                        } else {
+                            AppSettings.ttsLocale = model[0].name;
+                            ttsLocale.currentIndex = 0;
+                        }
+                    }
+                }
+            }
+
+            ColumnLayout {
+                Label {
+                    text: qsTr("Text to speech voice:")
+                }
+                ComboBox {
+                    id: ttsVoice
+                    model: audioSystem.tts.availableVoices()
+                    Layout.preferredWidth: 240
+
+                    displayText: model[currentIndex].name
+                    delegate: ItemDelegate {
+                        width: parent.width
+                        text: ttsVoice.model[index].name
+                        highlighted: parent.highlightedIndex === index
+                    }
+                    onActivated: (index) => AppSettings.ttsVoice = model[index].name
+
+                    Component.onCompleted: {
+                        let voiceIndex = -1;
+                        for (let i = 0; i < model.length; ++i) {
+                            if (model[i].name === AppSettings.ttsVoice) {
+                                voiceIndex = i;
+                                break;
+                            }
+                        }
+
+                        if (voiceIndex !== -1) {
+                            ttsVoice.currentIndex = voiceIndex
+                        } else {
+                            AppSettings.ttsLocale = model[0].name;
+                            ttsVoice.currentIndex = 0;
+                        }
                     }
                 }
             }

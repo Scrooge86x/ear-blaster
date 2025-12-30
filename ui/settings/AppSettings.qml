@@ -46,20 +46,21 @@ Settings {
     property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
     property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
     property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
-    property string ttsLocale: ""
+    property string ttsLocale: " " // Space is there so onTtsLocaleChanged always gets called
+    property string ttsVoice: " "
 
     onOutputVolumeChanged: {
-        audioSystem.outputDevice.volume = outputVolume
+        audioSystem.outputDevice.volume = outputVolume;
         if (audioMonitorMatchOutput) {
-            audioSystem.monitorDevice.volume = outputVolume
+            audioSystem.monitorDevice.volume = outputVolume;
         }
     }
     onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
     onMonitorVolumeChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.volume = monitorVolume
     onOutputOverdriveChanged: {
-        audioSystem.outputDevice.overdrive = outputOverdrive
+        audioSystem.outputDevice.overdrive = outputOverdrive;
         if (audioMonitorMatchOutput) {
-            audioSystem.monitorDevice.overdrive = outputOverdrive
+            audioSystem.monitorDevice.overdrive = outputOverdrive;
         }
     }
     onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
@@ -72,14 +73,25 @@ Settings {
     onAudioMonitorEnabledChanged: audioSystem.monitorDevice.enabled = audioMonitorEnabled
     onAudioMonitorMatchOutputChanged: {
         if (audioMonitorMatchOutput) {
-            audioSystem.monitorDevice.volume = outputVolume
-            audioSystem.monitorDevice.overdrive = outputOverdrive
+            audioSystem.monitorDevice.volume = outputVolume;
+            audioSystem.monitorDevice.overdrive = outputOverdrive;
         } else {
-            audioSystem.monitorDevice.volume = monitorVolume
-            audioSystem.monitorDevice.overdrive = monitorOverdrive
+            audioSystem.monitorDevice.volume = monitorVolume;
+            audioSystem.monitorDevice.overdrive = monitorOverdrive;
         }
     }
-    onTtsLocaleChanged: audioSystem.tts.locale = Qt.locale(ttsLocale)
+    onTtsLocaleChanged: {
+        audioSystem.tts.locale = Qt.locale(ttsLocale)
+        ttsLocale = audioSystem.tts.locale.name
+    }
+    onTtsVoiceChanged: {
+        for (const voice of audioSystem.tts.availableVoices()) {
+            if (voice.name === ttsVoice) {
+                audioSystem.tts.voice = voice;
+            }
+        }
+        ttsVoice = audioSystem.tts.voice.name;
+    }
 
     enum CloseBehavior {
         Quit,
