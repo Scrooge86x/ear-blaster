@@ -43,7 +43,7 @@ Item {
             Label {
                 text: qsTr("On close behavior:")
             }
-            ComboBox  {
+            ComboBox {
                 id: closeBehaviorComboBox
                 model: [QT_TR_NOOP("Quit"), QT_TR_NOOP("Hide to tray"), QT_TR_NOOP("Hide (tray always visible)")]
                 Layout.preferredWidth: 240
@@ -63,7 +63,7 @@ Item {
             Label {
                 text: qsTr("On second hotkey press:")
             }
-            ComboBox  {
+            ComboBox {
                 id: secondPressBehaviorComboBox
                 model: [QT_TR_NOOP("Restart sound"), QT_TR_NOOP("Stop sound")]
                 Layout.preferredWidth: 240
@@ -233,6 +233,42 @@ Item {
                     Layout.preferredWidth: 250
                     appSettingsPropName: "audioMonitorDevice"
                     deviceType: AudioDeviceSelect.DeviceType.Output
+                }
+            }
+        }
+
+        ColumnLayout {
+            Label {
+                text: qsTr("Text to speech locale:")
+            }
+            ComboBox {
+                id: ttsLocale
+                model: audioSystem.tts.availableLocales()
+                Layout.preferredWidth: 240
+
+                displayText: model[currentIndex].nativeLanguageName
+                delegate: ItemDelegate {
+                    width: parent.width
+                    text: ttsLocale.model[index].nativeLanguageName
+                    highlighted: parent.highlightedIndex === index
+                }
+                onActivated: (index) => AppSettings.ttsLocale = model[index].name
+
+                Component.onCompleted: {
+                    let localeIndex = -1;
+                    for (let i = 0; i < model.length; ++i) {
+                        if (model[i].name === AppSettings.ttsLocale) {
+                            localeIndex = i;
+                            break;
+                        }
+                    }
+
+                    if (localeIndex !== -1) {
+                        ttsLocale.currentIndex = localeIndex
+                    } else {
+                        AppSettings.ttsLocale = model[0].name;
+                        ttsLocale.currentIndex = 0;
+                    }
                 }
             }
         }

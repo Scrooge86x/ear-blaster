@@ -46,6 +46,7 @@ Settings {
     property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
     property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
     property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
+    property string ttsLocale: ""
 
     onOutputVolumeChanged: {
         audioSystem.outputDevice.volume = outputVolume
@@ -78,6 +79,7 @@ Settings {
             audioSystem.monitorDevice.overdrive = monitorOverdrive
         }
     }
+    onTtsLocaleChanged: audioSystem.tts.locale = Qt.locale(ttsLocale)
 
     enum CloseBehavior {
         Quit,
