@@ -13,6 +13,7 @@ set(QT_MIN_VERSION 6.9)
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
     Qml
     Quick
+    TextToSpeech
     Multimedia
     LinguistTools
 )

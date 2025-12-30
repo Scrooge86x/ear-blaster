@@ -166,9 +166,49 @@ Item {
         anchors {
             top: topBar.bottom
             right: root.right
-            bottom: root.bottom
+            bottom: ttsContainer.top
             left: root.left
             topMargin: 7
+            bottomMargin: 7
+        }
+    }
+
+    Rectangle {
+        id: ttsContainer
+
+        color: AppSettings.backgroundColor
+        height: 50
+        anchors {
+            left: root.left
+            right: root.right
+            bottom: root.bottom
+        }
+
+        RowLayout {
+            anchors.fill: parent
+
+            TextField {
+                id: ttsText
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: AppSettings.foregroundColor
+                placeholderTextColor: Qt.tint(AppSettings.foregroundColor, Qt.rgba(0, 0, 0, 0.3))
+                placeholderText: "Text to speech..."
+
+                background: Rectangle {
+                    border.color: AppSettings.foregroundColor
+                    color: AppSettings.backgroundColor
+                    radius: 7
+                }
+            }
+
+            RoundButton {
+                text: "Play TTS"
+                Layout.fillHeight: true
+                radius: 7
+                onClicked: audioSystem.tts.say(ttsText.text)
+            }
         }
     }
 
@@ -180,9 +220,9 @@ Item {
         scale: addSoundButton.down ? 0.96 : 1
 
         anchors {
-            right: root.right
-            rightMargin: 30
-            bottom: root.bottom
+            right: soundList.right
+            rightMargin: 25
+            bottom: soundList.bottom
             bottomMargin: 10
         }
         contentItem: Text {
