@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs
 import QtMultimedia
+import QtTextToSpeech
 import ui.settings
 import ui.components
 
@@ -196,6 +197,11 @@ Item {
                 placeholderTextColor: Qt.tint(AppSettings.foregroundColor, Qt.rgba(0, 0, 0, 0.3))
                 placeholderText: "Text to speech..."
 
+                onAccepted: {
+                    audioSystem.tts.say(text);
+                    text = "";
+                }
+
                 background: Rectangle {
                     border.color: AppSettings.foregroundColor
                     color: AppSettings.backgroundColor
@@ -204,10 +210,19 @@ Item {
             }
 
             RoundButton {
-                text: "Play TTS"
+                id: ttsButton
+                text: audioSystem.tts.state === TextToSpeech.Speaking ? "Stop TTS" : "Play TTS"
                 Layout.fillHeight: true
                 radius: 7
-                onClicked: audioSystem.tts.say(ttsText.text)
+                onClicked: {
+                    if (audioSystem.tts.state === TextToSpeech.Speaking) {
+
+                        // .pause() cause .stop() crashes as of Qt 6.9.1
+                        audioSystem.tts.pause(TextToSpeech.Immediate);
+                    } else {
+                        audioSystem.tts.say(ttsText.text);
+                    }
+                }
             }
         }
     }
