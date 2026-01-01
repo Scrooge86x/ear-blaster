@@ -11,7 +11,8 @@ AudioSystem::AudioSystem(QObject *const parent)
 {
     m_outputAudioDevice  = new AudioDevice{ this };
     m_monitorAudioDevice = new AudioDevice{ this };
-    m_micPassthrough     = new MicrophonePassthrough{};
+
+    m_micPassthrough = new MicrophonePassthrough{};
     connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this] {
         m_micPassthrough->outputDevice()->setDevice(m_outputAudioDevice->device());
     });
@@ -60,6 +61,17 @@ void AudioSystem::stopAll() const
 {
     m_outputAudioDevice->setEnabled(false);
     m_outputAudioDevice->setEnabled(true);
+}
+
+void AudioSystem::playTTS(const QString& text)
+{
+    m_tts.say(text);
+}
+
+void AudioSystem::stopTTS()
+{
+    // .pause() because .stop() crashes as of Qt 6.9.1
+    m_tts.pause(QTextToSpeech::BoundaryHint::Immediate);
 }
 
 QList<QAudioDevice> AudioSystem::audioInputs()

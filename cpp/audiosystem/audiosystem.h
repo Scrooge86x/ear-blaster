@@ -32,6 +32,9 @@ public:
     Q_INVOKABLE void stop(const int id) const;
     Q_INVOKABLE void stopAll() const;
 
+    Q_INVOKABLE void playTTS(const QString& text);
+    Q_INVOKABLE void stopTTS();
+
     MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
     AudioDevice* monitorDevice() const { return m_monitorAudioDevice; }

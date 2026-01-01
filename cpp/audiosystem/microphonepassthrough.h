@@ -17,6 +17,7 @@ class MicrophonePassthrough : public QObject
     Q_DISABLE_COPY(MicrophonePassthrough)
 
 public:
+    // No parent object because it's moving itself to a different thread
     explicit MicrophonePassthrough();
     ~MicrophonePassthrough();
 

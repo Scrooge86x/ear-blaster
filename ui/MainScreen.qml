@@ -198,7 +198,7 @@ Item {
                 placeholderText: "Text to speech..."
 
                 onAccepted: {
-                    audioSystem.tts.say(text);
+                    audioSystem.playTTS(text);
                     text = "";
                 }
 
@@ -216,11 +216,9 @@ Item {
                 radius: 7
                 onClicked: {
                     if (audioSystem.tts.state === TextToSpeech.Speaking) {
-
-                        // .pause() cause .stop() crashes as of Qt 6.9.1
-                        audioSystem.tts.pause(TextToSpeech.Immediate);
+                        audioSystem.stopTTS();
                     } else {
-                        audioSystem.tts.say(ttsText.text);
+                        audioSystem.playTTS(ttsText.text);
                     }
                 }
             }
