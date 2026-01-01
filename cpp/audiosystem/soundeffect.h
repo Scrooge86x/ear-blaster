@@ -26,8 +26,6 @@ public:
 
     void play(const QUrl& filePath);
 
-    const AudioDevice& outputDevice() const { return m_outputAudioDevice; }
-
 signals:
     void stopRequested();
     void startedPlaying();

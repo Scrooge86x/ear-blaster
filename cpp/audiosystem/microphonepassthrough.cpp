@@ -9,20 +9,19 @@
 #include <QtTypes>
 #include <QMediaDevices>
 
-MicrophonePassthrough::MicrophonePassthrough()
+MicrophonePassthrough::MicrophonePassthrough(const AudioDevice& outputAudioDevice)
     : QObject{ nullptr }
+    , m_outputAudioDevice{ outputAudioDevice }
 {
     m_inputAudioDevice = new AudioDevice{ this };
     m_inputAudioDevice->setEnabled(false);
     connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSource);
 
-    m_outputAudioDevice = new AudioDevice{ this };
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
+    connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSink);
 
     connect(m_inputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
-        m_outputAudioDevice->setEnabled(enabled);
         if (enabled) {
             initAudioSink();
             initAudioSource();
@@ -34,7 +33,7 @@ MicrophonePassthrough::MicrophonePassthrough()
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
-        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
+        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice.device())) {
             invalidateAudioSink();
         }
     });
@@ -86,11 +85,11 @@ void MicrophonePassthrough::invalidateAudioSink()
 void MicrophonePassthrough::initAudioSink()
 {
     invalidateAudioSink();
-    if (m_outputAudioDevice->device().isNull() || !m_outputAudioDevice->enabled()) {
+    if (m_outputAudioDevice.device().isNull() || !m_outputAudioDevice.enabled()) {
         return;
     }
 
-    m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), AudioShared::getAudioFormat(), this };
+    m_audioSink = new QAudioSink{ m_outputAudioDevice.device(), AudioShared::getAudioFormat(), this };
     m_audioSink->setVolume(m_inputAudioDevice->volume());
     connect(m_inputAudioDevice, &AudioDevice::volumeChanged,
             m_audioSink, &QAudioSink::setVolume);
@@ -112,7 +111,7 @@ void MicrophonePassthrough::initAudioSource()
 
 void MicrophonePassthrough::processBuffer()
 {
-    if (!m_outputIODevice || !m_inputIODevice) {
+    if (!m_outputIODevice || !m_inputIODevice || !m_outputAudioDevice.enabled()) {
         return;
     }
 

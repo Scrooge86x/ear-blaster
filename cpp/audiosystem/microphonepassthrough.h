@@ -13,16 +13,14 @@ class MicrophonePassthrough : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(AudioDevice* inputDevice READ inputDevice CONSTANT FINAL)
-    Q_PROPERTY(AudioDevice* outputDevice READ outputDevice CONSTANT FINAL)
     Q_DISABLE_COPY(MicrophonePassthrough)
 
 public:
     // No parent object because it's moving itself to a different thread
-    explicit MicrophonePassthrough();
+    explicit MicrophonePassthrough(const AudioDevice& outputAudioDevice);
     ~MicrophonePassthrough();
 
     AudioDevice* inputDevice() const { return m_inputAudioDevice; }
-    AudioDevice* outputDevice() const { return m_outputAudioDevice; }
 
 private:
     void initAudioSink();
@@ -41,7 +39,7 @@ private:
     QAudioSink* m_audioSink{};
 
     AudioDevice* m_inputAudioDevice{};
-    AudioDevice* m_outputAudioDevice{};
+    const AudioDevice& m_outputAudioDevice;
 };
 
 #endif // MICROPHONEPASSTHROUGH_H

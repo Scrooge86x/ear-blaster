@@ -12,11 +12,7 @@ AudioSystem::AudioSystem(QObject *const parent)
     m_outputAudioDevice  = new AudioDevice{ this };
     m_monitorAudioDevice = new AudioDevice{ this };
 
-    m_micPassthrough = new MicrophonePassthrough{};
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this] {
-        m_micPassthrough->outputDevice()->setDevice(m_outputAudioDevice->device());
-    });
-
+    m_micPassthrough = new MicrophonePassthrough{ *m_outputAudioDevice };
     m_outputAudioDevice->setEnabled(true);
 
     const auto mediaDevices{ new QMediaDevices{ this } };
