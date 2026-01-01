@@ -91,8 +91,8 @@ void MicrophonePassthrough::initAudioSink()
     }
 
     m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), AudioShared::getAudioFormat(), this };
-    m_audioSink->setVolume(m_outputAudioDevice->volume());
-    connect(m_outputAudioDevice, &AudioDevice::volumeChanged,
+    m_audioSink->setVolume(m_inputAudioDevice->volume());
+    connect(m_inputAudioDevice, &AudioDevice::volumeChanged,
             m_audioSink, &QAudioSink::setVolume);
     m_outputIODevice = m_audioSink->start();
 }
@@ -120,7 +120,7 @@ void MicrophonePassthrough::processBuffer()
     AudioShared::addOverdrive(
         reinterpret_cast<AudioShared::SampleType*>(buffer.data()),
         buffer.length(),
-        m_outputAudioDevice->overdrive()
+        m_inputAudioDevice->overdrive()
     );
     m_outputIODevice->write(buffer);
 }

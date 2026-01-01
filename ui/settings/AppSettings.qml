@@ -55,7 +55,7 @@ Settings {
             audioSystem.monitorDevice.volume = outputVolume;
         }
     }
-    onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
+    onInputVolumeChanged: audioSystem.micPassthrough.inputDevice.volume = inputVolume
     onMonitorVolumeChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.volume = monitorVolume
     onOutputOverdriveChanged: {
         audioSystem.outputDevice.overdrive = outputOverdrive;
@@ -63,7 +63,7 @@ Settings {
             audioSystem.monitorDevice.overdrive = outputOverdrive;
         }
     }
-    onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
+    onInputOverdriveChanged: audioSystem.micPassthrough.inputDevice.overdrive = inputOverdrive
     onMonitorOverdriveChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.overdrive = monitorOverdrive
     onLanguageChanged: translator.currentLanguage = language
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
