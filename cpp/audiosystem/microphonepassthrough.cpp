@@ -18,8 +18,15 @@ MicrophonePassthrough::MicrophonePassthrough()
             this, &MicrophonePassthrough::initAudioSource);
 
     m_outputAudioDevice = new AudioDevice{ this };
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged,
-            this, &MicrophonePassthrough::initAudioSink);
+    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this]() {
+        if (m_outputAudioDevice->device().isNull()) {
+            invalidateAudioSource();
+            invalidateAudioSink();
+        } else {
+            initAudioSink();
+            initAudioSource();
+        }
+    });
 
     connect(m_inputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
         m_outputAudioDevice->setEnabled(enabled);
