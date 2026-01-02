@@ -2,15 +2,28 @@
 
 TextToSpeech::TextToSpeech(
     const AudioDevice& outputAudioDevice,
-    const AudioDevice& monitorAudioDevice,
-    QObject* const parent
+    const AudioDevice& monitorAudioDevice
 )
-    : QObject{ parent }
-    , m_outputAudioDevice{ outputAudioDevice }
+    : m_outputAudioDevice{ outputAudioDevice }
     , m_monitorAudioDevice{ monitorAudioDevice }
     , m_audioOutput{ outputAudioDevice, {}, this }
     , m_monitorOutput{ monitorAudioDevice, {}, this }
-{}
+{
+    connect(&m_thread, &QThread::started, this, [this] {
+        m_audioOutput.initialize();
+        m_monitorOutput.initialize();
+    });
+    m_thread.start();
+    this->moveToThread(&m_thread);
+}
+
+TextToSpeech::~TextToSpeech()
+{
+    if (m_thread.isRunning()) {
+        m_thread.quit();
+        m_thread.wait();
+    }
+}
 
 void TextToSpeech::say(const QString& text)
 {

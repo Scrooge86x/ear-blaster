@@ -6,6 +6,8 @@
 #include <QMap>
 #include <QAudioDevice>
 
+#include <memory>
+
 Q_MOC_INCLUDE("microphonepassthrough.h")
 Q_MOC_INCLUDE("texttospeech.h")
 
@@ -33,11 +35,11 @@ public:
     Q_INVOKABLE void stop(const int id) const;
     Q_INVOKABLE void stopAll() const;
 
-    MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
+    MicrophonePassthrough* micPassthrough() const { return m_micPassthrough.get(); }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
     AudioDevice* monitorDevice() const { return m_monitorAudioDevice; }
 
-    TextToSpeech* tts() { return m_tts; }
+    TextToSpeech* tts() { return m_tts.get(); }
 
     static QList<QAudioDevice> audioInputs();
     static QList<QAudioDevice> audioOutputs();
@@ -56,10 +58,10 @@ signals:
 
 private:
     QMap<int, SoundEffect*> m_soundEffectMap{};
-    MicrophonePassthrough* m_micPassthrough{};
     AudioDevice* m_outputAudioDevice{};
     AudioDevice* m_monitorAudioDevice{};
-    TextToSpeech* m_tts{};
+    std::unique_ptr<MicrophonePassthrough> m_micPassthrough{};
+    std::unique_ptr<TextToSpeech> m_tts{};
 };
 
 #endif // AUDIOSYSTEM_H

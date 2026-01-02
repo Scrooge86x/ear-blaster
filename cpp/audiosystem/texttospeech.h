@@ -7,21 +7,23 @@
 #include <QTextToSpeech>
 #include <QLocale>
 #include <QVoice>
+#include <QThread>
 
 class AudioDevice;
 
 class TextToSpeech : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QTextToSpeech::State state READ state CONSTANT)
-    Q_PROPERTY(QLocale locale READ locale WRITE setLocale CONSTANT)
-    Q_PROPERTY(QVoice voice READ voice WRITE setVoice CONSTANT)
+    Q_PROPERTY(QTextToSpeech::State state READ state CONSTANT FINAL)
+    Q_PROPERTY(QLocale locale READ locale WRITE setLocale CONSTANT FINAL)
+    Q_PROPERTY(QVoice voice READ voice WRITE setVoice CONSTANT FINAL)
+    Q_DISABLE_COPY_MOVE(TextToSpeech)
 
 public:
     explicit TextToSpeech(
         const AudioDevice& outputAudioDevice,
-        const AudioDevice& monitorAudioDevice,
-        QObject* const parent = nullptr
+        const AudioDevice& monitorAudioDevice
     );
+    ~TextToSpeech();
 
     Q_INVOKABLE void say(const QString& text);
     Q_INVOKABLE void stop();
@@ -45,6 +47,7 @@ private:
     const AudioDevice& m_monitorAudioDevice;
 
     QTextToSpeech m_tts{};
+    QThread m_thread{};
 };
 
 #endif // TEXTTOSPEECH_H
