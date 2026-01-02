@@ -13,7 +13,7 @@ class MicrophonePassthrough : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(AudioDevice* inputDevice READ inputDevice CONSTANT FINAL)
-    Q_DISABLE_COPY(MicrophonePassthrough)
+    Q_DISABLE_COPY_MOVE(MicrophonePassthrough)
 
 public:
     // No parent object because it's moving itself to a different thread

@@ -1,6 +1,8 @@
 #ifndef SOUNDEFFECT_H
 #define SOUNDEFFECT_H
 
+#include "audiooutput.h"
+
 #include <QObject>
 #include <QUrl>
 #include <QAudioBuffer>
@@ -8,8 +10,6 @@
 #include <QThread>
 
 class QAudioDecoder;
-class QAudioSink;
-class QIODevice;
 class AudioDevice;
 
 class SoundEffect : public QObject
@@ -31,22 +31,17 @@ signals:
     void startedPlaying();
     void stoppedPlaying();
 
+private slots:
+    void onAudioOutputInit();
+
 private:
     void stop();
     void processBuffer();
 
-    void initAudioOutputSink();
-    void invalidateAudioOutputSink();
-    void initAudioMonitorSink();
-    void invalidateAudioMonitorSink();
-
     QAudioDecoder* m_decoder{};
 
-    QAudioSink* m_outputAudioSink{};
-    QAudioSink* m_monitorAudioSink{};
-
-    QIODevice* m_outputIODevice{};
-    QIODevice* m_monitorIODevice{};
+    AudioOutput m_audioOutput;
+    AudioOutput m_monitorOutput;
 
     QAudioBuffer m_currentBuffer{};
     qint64 m_bytesWritten{};

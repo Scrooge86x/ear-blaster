@@ -3,6 +3,7 @@ qt_add_library(AudioSystem STATIC
     audiosystem.h audiosystem.cpp
     microphonepassthrough.h microphonepassthrough.cpp
     audiodevice.h audiodevice.cpp
+    audiooutput.h audiooutput.cpp
     audioshared.h
 )
 

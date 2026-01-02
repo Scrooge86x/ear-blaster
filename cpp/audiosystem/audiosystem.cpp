@@ -55,8 +55,9 @@ void AudioSystem::stop(const int id) const
 
 void AudioSystem::stopAll() const
 {
-    m_outputAudioDevice->setEnabled(false);
-    m_outputAudioDevice->setEnabled(true);
+    for (const auto& soundEffect : std::as_const(m_soundEffectMap)) {
+        emit soundEffect->stopRequested();
+    }
 }
 
 void AudioSystem::playTTS(const QString& text)
