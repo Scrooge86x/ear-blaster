@@ -81,14 +81,20 @@ void SoundEffect::stop()
 void SoundEffect::onAudioOutputInit()
 {
     const QAudioSink* const outputAudioSink{ m_audioOutput.audioSink() };
-    connect(outputAudioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State state) {
-        switch (state) {
+    connect(outputAudioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State currentState) {
+        static QAudio::State previousState{ QAudio::StoppedState };
+
+        switch (currentState) {
         case QAudio::ActiveState:
             emit startedPlaying();
             break;
         case QAudio::SuspendedState:
         case QAudio::StoppedState:
         case QAudio::IdleState:
+            if (previousState != QAudio::ActiveState) {
+                break;
+            }
+
             m_currentBuffer = {};
             m_bytesWritten = 0;
             emit stoppedPlaying();
@@ -96,6 +102,8 @@ void SoundEffect::onAudioOutputInit()
         default:
             break;
         }
+
+        previousState = currentState;
     });
 }
 
