@@ -20,7 +20,7 @@ class SoundEffect : public QObject
 public:
     explicit SoundEffect(
         const AudioDevice& outputAudioDevice,
-        const AudioDevice& mmonitorAudioDevice
+        const AudioDevice& monitorAudioDevice
     );
     ~SoundEffect();
 

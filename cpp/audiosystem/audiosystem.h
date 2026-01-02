@@ -5,13 +5,14 @@
 #include <QUrl>
 #include <QMap>
 #include <QAudioDevice>
-#include <QTextToSpeech>
 
 Q_MOC_INCLUDE("microphonepassthrough.h")
+Q_MOC_INCLUDE("texttospeech.h")
 
 class SoundEffect;
 class AudioDevice;
 class MicrophonePassthrough;
+class TextToSpeech;
 
 class AudioSystem : public QObject
 {
@@ -19,7 +20,7 @@ class AudioSystem : public QObject
     Q_PROPERTY(AudioDevice* outputDevice READ outputDevice CONSTANT FINAL)
     Q_PROPERTY(AudioDevice* monitorDevice READ monitorDevice CONSTANT FINAL)
     Q_PROPERTY(MicrophonePassthrough* micPassthrough READ micPassthrough CONSTANT FINAL)
-    Q_PROPERTY(QTextToSpeech* tts READ tts CONSTANT FINAL)
+    Q_PROPERTY(TextToSpeech* tts READ tts CONSTANT FINAL)
     Q_PROPERTY(QList<QAudioDevice> audioInputs READ audioInputs NOTIFY audioInputsChanged FINAL)
     Q_PROPERTY(QList<QAudioDevice> audioOutputs READ audioOutputs NOTIFY audioOutputsChanged FINAL)
     Q_DISABLE_COPY(AudioSystem)
@@ -32,15 +33,11 @@ public:
     Q_INVOKABLE void stop(const int id) const;
     Q_INVOKABLE void stopAll() const;
 
-    Q_INVOKABLE void playTTS(const QString& text);
-    Q_INVOKABLE void stopTTS();
-
     MicrophonePassthrough* micPassthrough() const { return m_micPassthrough; }
     AudioDevice* outputDevice() const { return m_outputAudioDevice; }
     AudioDevice* monitorDevice() const { return m_monitorAudioDevice; }
 
-    QTextToSpeech* tts() { return &m_tts; }
-    const QTextToSpeech* tts() const { return &m_tts; }
+    TextToSpeech* tts() { return m_tts; }
 
     static QList<QAudioDevice> audioInputs();
     static QList<QAudioDevice> audioOutputs();
@@ -62,7 +59,7 @@ private:
     MicrophonePassthrough* m_micPassthrough{};
     AudioDevice* m_outputAudioDevice{};
     AudioDevice* m_monitorAudioDevice{};
-    QTextToSpeech m_tts{};
+    TextToSpeech* m_tts{};
 };
 
 #endif // AUDIOSYSTEM_H

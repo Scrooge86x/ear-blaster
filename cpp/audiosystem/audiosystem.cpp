@@ -3,6 +3,7 @@
 #include "soundeffect.h"
 #include "audiodevice.h"
 #include "microphonepassthrough.h"
+#include "texttospeech.h"
 
 #include <QMediaDevices>
 
@@ -14,6 +15,8 @@ AudioSystem::AudioSystem(QObject *const parent)
 
     m_micPassthrough = new MicrophonePassthrough{ *m_outputAudioDevice };
     m_outputAudioDevice->setEnabled(true);
+
+    m_tts = new TextToSpeech{ *m_outputAudioDevice, *m_monitorAudioDevice, this };
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged,
@@ -58,17 +61,6 @@ void AudioSystem::stopAll() const
     for (const auto& soundEffect : std::as_const(m_soundEffectMap)) {
         emit soundEffect->stopRequested();
     }
-}
-
-void AudioSystem::playTTS(const QString& text)
-{
-    m_tts.say(text);
-}
-
-void AudioSystem::stopTTS()
-{
-    // .pause() because .stop() crashes as of Qt 6.9.1
-    m_tts.pause(QTextToSpeech::BoundaryHint::Immediate);
 }
 
 QList<QAudioDevice> AudioSystem::audioInputs()

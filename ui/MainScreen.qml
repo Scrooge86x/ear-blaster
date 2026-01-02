@@ -198,7 +198,7 @@ Item {
                 placeholderText: "Text to speech..."
 
                 onAccepted: {
-                    audioSystem.playTTS(text);
+                    audioSystem.tts.say(text);
                     text = "";
                 }
 
@@ -216,9 +216,9 @@ Item {
                 radius: 7
                 onClicked: {
                     if (audioSystem.tts.state === TextToSpeech.Speaking) {
-                        audioSystem.stopTTS();
+                        audioSystem.tts.stop();
                     } else {
-                        audioSystem.playTTS(ttsText.text);
+                        audioSystem.tts.say(ttsText.text);
                     }
                 }
             }
