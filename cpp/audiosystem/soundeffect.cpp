@@ -47,10 +47,6 @@ SoundEffect::~SoundEffect()
 void SoundEffect::play(const QUrl& filePath)
 {
     QMetaObject::invokeMethod(this, [this, filePath]() {
-        if (!m_outputAudioDevice.enabled()) {
-            return;
-        }
-
         if (!m_audioOutput.start()) {
             return;
         }
@@ -81,9 +77,8 @@ void SoundEffect::stop()
 void SoundEffect::onAudioOutputInit()
 {
     const QAudioSink* const outputAudioSink{ m_audioOutput.audioSink() };
-    connect(outputAudioSink, &QAudioSink::stateChanged, this, [this](const QAudio::State currentState) {
-        static QAudio::State previousState{ QAudio::StoppedState };
-
+    connect(outputAudioSink, &QAudioSink::stateChanged,
+            this, [this, previousState = QAudio::StoppedState](const QAudio::State currentState) mutable {
         switch (currentState) {
         case QAudio::ActiveState:
             emit startedPlaying();
