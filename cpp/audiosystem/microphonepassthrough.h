@@ -1,6 +1,8 @@
 #ifndef MICROPHONEPASSTHROUGH_H
 #define MICROPHONEPASSTHROUGH_H
 
+#include "audiooutput.h"
+
 #include <QObject>
 #include <QThread>
 
@@ -23,8 +25,6 @@ public:
     AudioDevice* inputDevice() const { return m_inputAudioDevice; }
 
 private:
-    void initAudioSink();
-    void invalidateAudioSink();
     void initAudioSource();
     void invalidateAudioSource();
 
@@ -33,10 +33,9 @@ private:
     QThread m_thread{};
 
     QIODevice* m_inputIODevice{};
-    QIODevice* m_outputIODevice{};
-
     QAudioSource* m_audioSource{};
-    QAudioSink* m_audioSink{};
+
+    AudioOutput m_audioOutput;
 
     AudioDevice* m_inputAudioDevice{};
     const AudioDevice& m_outputAudioDevice;

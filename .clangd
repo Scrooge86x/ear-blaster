@@ -1,0 +1,2 @@
+CompileFlags:
+  Add: [-Wno-braced-scalar-init] # Disable broken warning (https://github.com/llvm/llvm-project/issues/57286)
