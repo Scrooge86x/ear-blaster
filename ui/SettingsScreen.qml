@@ -258,7 +258,7 @@ Item {
                         ttsVoice.model = audioSystem.tts.availableVoices();
                     }
 
-                    Component.onCompleted: {
+                    onModelChanged: {
                         let localeIndex = -1;
                         for (let i = 0; i < model.length; ++i) {
                             if (model[i].name === AppSettings.ttsLocale) {
@@ -294,7 +294,7 @@ Item {
                     }
                     onActivated: (index) => AppSettings.ttsVoice = model[index].name
 
-                    Component.onCompleted: {
+                    onModelChanged: {
                         let voiceIndex = -1;
                         for (let i = 0; i < model.length; ++i) {
                             if (model[i].name === AppSettings.ttsVoice) {
