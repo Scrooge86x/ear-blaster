@@ -3,6 +3,7 @@
 
 #include <QAudioFormat>
 #include <QtAudio>
+#include <QAudioBuffer>
 
 namespace AudioShared {
 
@@ -38,6 +39,52 @@ void addOverdrive(
         double boosted{ static_cast<double>(*samples) * gain };
         *samples++ = std::clamp<double>(boosted, minVal, maxVal);
     }
+}
+
+inline QAudioBuffer monoToStereo(const QAudioBuffer& monoBuffer)
+{
+    const QAudioFormat monoBufferFormat{ monoBuffer.format() };
+    const int frameCount{ static_cast<int>(monoBuffer.frameCount()) };
+
+    QAudioFormat stereoBufferFormat{ monoBufferFormat };
+    stereoBufferFormat.setChannelCount(2);
+
+    // Hope for NRVO...
+    QAudioBuffer stereoBuffer{ frameCount, stereoBufferFormat };
+
+    if (!monoBuffer.isValid()
+            || !stereoBuffer.isValid()
+            || monoBufferFormat.channelCount() != 1) {
+        return stereoBuffer;
+    }
+
+    const auto monoBufferToStereoBuffer = [&monoBuffer, &stereoBuffer, &frameCount]<typename T>() {
+        const T* const monoData{ monoBuffer.constData<T>() };
+        T* const stereoData{ stereoBuffer.data<T>() };
+        for (int i{}; i < frameCount; ++i) {
+            stereoData[i * 2 + 0] = monoData[i];
+            stereoData[i * 2 + 1] = monoData[i];
+        }
+    };
+
+    switch (monoBufferFormat.sampleFormat()) {
+        case QAudioFormat::UInt8:
+            monoBufferToStereoBuffer.template operator()<quint8>();
+            break;
+        case QAudioFormat::Int16:
+            monoBufferToStereoBuffer.template operator()<qint16>();
+            break;
+        case QAudioFormat::Int32:
+            monoBufferToStereoBuffer.template operator()<qint32>();
+            break;
+        case QAudioFormat::Float:
+            monoBufferToStereoBuffer.template operator()<float>();
+            break;
+        default:
+            break;
+    }
+
+    return stereoBuffer;
 }
 
 }
