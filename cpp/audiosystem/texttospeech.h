@@ -9,10 +9,16 @@
 #include <QVoice>
 #include <QThread>
 
+#include <QQueue>
+#include <QAudioBuffer>
+#include <QMutex>
+
 class AudioDevice;
 
 class TextToSpeech : public QObject {
     Q_OBJECT
+
+    // TODO: Add signals and connect them in AudioSystem
     Q_PROPERTY(QTextToSpeech::State state READ state CONSTANT FINAL)
     Q_PROPERTY(QLocale locale READ locale WRITE setLocale CONSTANT FINAL)
     Q_PROPERTY(QVoice voice READ voice WRITE setVoice CONSTANT FINAL)
@@ -25,9 +31,6 @@ public:
     );
     ~TextToSpeech();
 
-    Q_INVOKABLE void say(const QString& text);
-    Q_INVOKABLE void stop();
-
     QTextToSpeech::State state() const { return m_tts.state(); }
 
     QLocale locale() const { return m_tts.locale(); }
@@ -39,7 +42,17 @@ public:
     Q_INVOKABLE QList<QLocale> availableLocales() const { return m_tts.availableLocales(); }
     Q_INVOKABLE QList<QVoice> availableVoices() const { return m_tts.availableVoices(); }
 
+signals:
+    void say(const QString& text);
+    void stop();
+
 private:
+    void onSay(const QString& text);
+    void onStop();
+
+    void onSynthesisChunk(const QAudioBuffer& audioBuffer);
+    void processQueue();
+
     AudioOutput m_audioOutput;
     AudioOutput m_monitorOutput;
 
@@ -48,6 +61,12 @@ private:
 
     QTextToSpeech m_tts{};
     QThread m_thread{};
+
+    QAudioBuffer m_currentBuffer{};
+    qint64 m_bytesWritten{ -1 };
+
+    QQueue<QAudioBuffer> m_audioQueue{};
+    QMutex m_mutex{};
 };
 
 #endif // TEXTTOSPEECH_H
