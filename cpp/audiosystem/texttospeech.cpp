@@ -23,6 +23,11 @@ TextToSpeech::TextToSpeech(
     connect(this, &TextToSpeech::stop,
             this, &TextToSpeech::onStop);
 
+    connect(&m_tts, &QTextToSpeech::localeChanged,
+            this, &TextToSpeech::stop);
+    connect(&m_tts, &QTextToSpeech::voiceChanged,
+            this, &TextToSpeech::stop);
+
     connect(&m_tts, &QTextToSpeech::stateChanged, this, [this](const QTextToSpeech::State state) {
         if (state == QTextToSpeech::Ready && m_audioQueue.size()) {
             m_audioOutput.start();
