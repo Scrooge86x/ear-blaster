@@ -2,6 +2,7 @@
 #define AUDIOOUTPUT_H
 
 #include "audiodevice.h"
+#include "audioshared.h"
 
 #include <QObject>
 #include <QPointer>
@@ -28,14 +29,19 @@ public:
     bool start();
     void stop();
 
-    void initialize();
+    bool initialize(const QAudioFormat& format = AudioShared::getAudioFormat());
     void invalidate();
+
+    QAudioFormat format() const;
 
     QAudioSink* audioSink() const;
     QIODevice* ioDevice() const;
 
 signals:
     void initialized();
+
+private slots:
+    void onDeviceChanged();
 
 private:
     AudioOutputConfig m_config{};

@@ -1,5 +1,4 @@
 #include "audiooutput.h"
-#include "audioshared.h"
 
 #include <QMediaDevices>
 #include <QIODevice>
@@ -15,7 +14,7 @@ AudioOutput::AudioOutput(
     , m_audioDevice{ audioDevice }
 {
     connect(&m_audioDevice, &AudioDevice::deviceChanged,
-            this, &AudioOutput::initialize);
+            this, &AudioOutput::onDeviceChanged);
 
     connect(&m_audioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
         if (enabled) {
@@ -68,20 +67,33 @@ QIODevice* AudioOutput::ioDevice() const
     return m_ioDevice;
 }
 
-void AudioOutput::initialize()
+void AudioOutput::onDeviceChanged()
+{
+    const auto oldFormat{ format() };
+    if (oldFormat.sampleFormat() == QAudioFormat::Unknown) {
+        initialize();
+    } else {
+        initialize(oldFormat);
+    }
+}
+
+bool AudioOutput::initialize(const QAudioFormat& format)
 {
     invalidate();
     if (m_audioDevice.device().isNull()) {
-        return;
+        return false;
+    }
+
+    if (!m_audioDevice.device().isFormatSupported(format)) {
+        return false;
     }
 
     m_audioSink = new QAudioSink{
         m_audioDevice.device(),
-        AudioShared::getAudioFormat(),
+        format,
         this
     };
 
-    constexpr QAudioFormat format{ AudioShared::getAudioFormat() };
     m_audioSink->setBufferSize(
         format.sampleRate()
         * format.bytesPerSample()
@@ -96,6 +108,7 @@ void AudioOutput::initialize()
     }
 
     emit initialized();
+    return true;
 }
 
 void AudioOutput::invalidate()
@@ -112,4 +125,12 @@ void AudioOutput::invalidate()
     m_audioSink->reset();
     m_audioSink->stop();
     m_audioSink->deleteLater();
+}
+
+QAudioFormat AudioOutput::format() const
+{
+    if (!m_audioSink) {
+        return {};
+    }
+    return m_audioSink->format();
 }
