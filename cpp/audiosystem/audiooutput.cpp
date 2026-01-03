@@ -34,7 +34,8 @@ AudioOutput::AudioOutput(
 
 bool AudioOutput::start()
 {
-    if (!m_audioSink || !m_audioDevice.enabled()) {
+    stop();
+    if (m_audioSink.isNull() || !m_audioDevice.enabled()) {
         return false;
     }
 
@@ -49,7 +50,7 @@ void AudioOutput::stop()
         m_ioDevice = nullptr;
     }
 
-    if (m_audioSink) {
+    if (!m_audioSink.isNull()) {
         m_audioSink->reset();
     }
 }
@@ -61,7 +62,7 @@ QAudioSink* AudioOutput::audioSink() const
 
 QIODevice* AudioOutput::ioDevice() const
 {
-    if (!m_audioSink || m_audioSink->state() == QtAudio::StoppedState) {
+    if (m_audioSink.isNull() || m_audioSink->state() == QtAudio::StoppedState) {
         return nullptr;
     }
     return m_ioDevice;
@@ -69,35 +70,30 @@ QIODevice* AudioOutput::ioDevice() const
 
 void AudioOutput::onDeviceChanged()
 {
-    const auto oldFormat{ format() };
-    if (oldFormat.sampleFormat() == QAudioFormat::Unknown) {
-        initialize();
-    } else {
-        initialize(oldFormat);
-    }
+    initialize();
 }
 
-bool AudioOutput::initialize(const QAudioFormat& format)
+bool AudioOutput::initialize()
 {
     invalidate();
     if (m_audioDevice.device().isNull()) {
         return false;
     }
 
-    if (!m_audioDevice.device().isFormatSupported(format)) {
+    if (!m_audioDevice.device().isFormatSupported(m_config.format)) {
         return false;
     }
 
     m_audioSink = new QAudioSink{
         m_audioDevice.device(),
-        format,
+        m_config.format,
         this
     };
 
     m_audioSink->setBufferSize(
-        format.sampleRate()
-        * format.bytesPerSample()
-        * format.channelCount()
+        m_config.format.sampleRate()
+        * m_config.format.bytesPerSample()
+        * m_config.format.channelCount()
         * m_config.bufferedMs / 1000.f
     );
 
@@ -118,7 +114,7 @@ void AudioOutput::invalidate()
         m_ioDevice = nullptr;
     }
 
-    if (!m_audioSink) {
+    if (m_audioSink.isNull()) {
         return;
     }
 
@@ -129,8 +125,14 @@ void AudioOutput::invalidate()
 
 QAudioFormat AudioOutput::format() const
 {
-    if (!m_audioSink) {
+    if (m_audioSink.isNull()) {
         return {};
     }
     return m_audioSink->format();
+}
+
+void AudioOutput::setFormat(const QAudioFormat& format)
+{
+    m_config.format = format;
+    initialize();
 }

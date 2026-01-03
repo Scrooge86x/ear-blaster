@@ -13,6 +13,7 @@ class QAudioSink;
 struct AudioOutputConfig {
     float bufferedMs{ 150.f };
     bool initializeVolume{ true };
+    QAudioFormat format{ AudioShared::getAudioFormat() };
 };
 
 class AudioOutput : public QObject {
@@ -29,10 +30,11 @@ public:
     bool start();
     void stop();
 
-    bool initialize(const QAudioFormat& format = AudioShared::getAudioFormat());
+    bool initialize();
     void invalidate();
 
     QAudioFormat format() const;
+    void setFormat(const QAudioFormat& format);
 
     QAudioSink* audioSink() const;
     QIODevice* ioDevice() const;
