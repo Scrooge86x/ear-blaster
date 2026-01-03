@@ -19,7 +19,6 @@ class TextToSpeech : public QObject {
     Q_OBJECT
     // Signals are not connected to the properties because TextToSpeech is on its own thread
     // qml objects shouldn't be able to access them
-    Q_PROPERTY(QTextToSpeech::State state READ state CONSTANT FINAL)
     Q_PROPERTY(QLocale locale READ locale WRITE setLocale CONSTANT FINAL)
     Q_PROPERTY(QVoice voice READ voice WRITE setVoice CONSTANT FINAL)
     Q_DISABLE_COPY_MOVE(TextToSpeech)
@@ -31,7 +30,7 @@ public:
     );
     ~TextToSpeech();
 
-    QTextToSpeech::State state() const { return m_tts.state(); }
+    Q_INVOKABLE bool isPlaying() const { return m_isPlaying; }
 
     QLocale locale() const { return m_tts.locale(); }
     void setLocale(const QLocale& locale) { m_tts.setLocale(locale); }
@@ -67,6 +66,7 @@ private:
 
     QQueue<QAudioBuffer> m_audioQueue{};
     QMutex m_mutex{};
+    bool m_isPlaying{};
 };
 
 #endif // TEXTTOSPEECH_H

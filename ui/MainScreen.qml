@@ -215,7 +215,7 @@ Item {
                 Layout.fillHeight: true
                 radius: 7
                 onClicked: {
-                    if (audioSystem.tts.state === TextToSpeech.Speaking) {
+                    if (audioSystem.tts.isPlaying()) {
                         audioSystem.tts.stop();
                     } else {
                         audioSystem.tts.say(ttsText.text);

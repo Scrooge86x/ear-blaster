@@ -56,6 +56,7 @@ void TextToSpeech::onSay(const QString& text)
         return;
     }
     onStop();
+    m_isPlaying = true;
 
     // TODO: Consider using some lockfree spsc queue instead
     // current solution has no performance problems so it's low priority
@@ -70,6 +71,9 @@ void TextToSpeech::onStop()
 {
     m_audioOutput.stop();
     m_audioQueue.clear();
+    m_currentBuffer = {};
+    m_bytesWritten = 0;
+    m_isPlaying = false;
 }
 
 void TextToSpeech::processQueue()
