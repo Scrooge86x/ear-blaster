@@ -35,12 +35,36 @@ TextToSpeech::TextToSpeech(
         }
     });
 
-    // TODO: Actually preload the right format, this is a placeholder
-    QAudioFormat format{};
-    format.setChannelCount(2);
-    format.setSampleFormat(QAudioFormat::Int16);
-    format.setSampleRate(16'000);
-    m_audioOutput.setFormat(format);
+    connect(&m_thread, &QThread::started, this, [this] {
+        // HACK
+        // the call to QTextToSpeech::synthesize causes the playback to be
+        // laggy for the whole runtime (somehow lags the engine used by the backend?)
+        // the only solutions I've found after trying everything was to call QTextToSpeech::synthesize
+        // after around 3 seconds, but I don't like magic numbers that could be different on another pc
+        // and the other solution is what you see below...
+        // undocumented backend magic like always with less popular features in Qt
+        m_tts.setEngine("mock");
+        m_tts.setEngine("sapi");
+        // HACK END
+
+        // Preload the right format so there is no delay on the first playback
+        using namespace Qt::Literals::StringLiterals;
+        m_tts.synthesize(u"a"_s, this, [this, isInitialized = false](const QAudioBuffer& audioBuffer) mutable {
+            if (isInitialized) {
+                return;
+            }
+            isInitialized = true;
+
+            auto format{ audioBuffer.format() };
+            if (format.channelCount() == 1) {
+                format.setChannelCount(2);
+            }
+
+            QMetaObject::invokeMethod(this, [this, format]() {
+                m_audioOutput.setFormat(format);
+            }, Qt::QueuedConnection);
+        });
+    });
 
     m_thread.start();
     this->moveToThread(&m_thread);
@@ -98,6 +122,8 @@ void TextToSpeech::processQueue()
             format.setChannelCount(2);
         }
 
+        // According to https://doc.qt.io/qt-6/qtexttospeech.html#synthesize
+        // the format can technically change so it must be handled unfortunately
         if (m_audioOutput.format() != format) {
             m_audioOutput.setFormat(format);
             if (!m_audioOutput.start()) {
