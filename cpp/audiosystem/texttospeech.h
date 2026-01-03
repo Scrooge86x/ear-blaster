@@ -17,8 +17,8 @@ class AudioDevice;
 
 class TextToSpeech : public QObject {
     Q_OBJECT
-
-    // TODO: Add signals and connect them in AudioSystem
+    // Signals are not connected to the properties because TextToSpeech is on its own thread
+    // qml objects shouldn't be able to access them
     Q_PROPERTY(QTextToSpeech::State state READ state CONSTANT FINAL)
     Q_PROPERTY(QLocale locale READ locale WRITE setLocale CONSTANT FINAL)
     Q_PROPERTY(QVoice voice READ voice WRITE setVoice CONSTANT FINAL)

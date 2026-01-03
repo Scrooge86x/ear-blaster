@@ -55,6 +55,8 @@ signals:
     void soundStopped(int id);
     void audioInputsChanged();
     void audioOutputsChanged();
+    void ttsStarted();
+    void ttsStopped();
 
 private:
     QMap<int, SoundEffect*> m_soundEffectMap{};

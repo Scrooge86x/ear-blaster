@@ -211,7 +211,7 @@ Item {
 
             RoundButton {
                 id: ttsButton
-                text: audioSystem.tts.state === TextToSpeech.Speaking ? "Stop TTS" : "Play TTS"
+                text: "Play TTS"
                 Layout.fillHeight: true
                 radius: 7
                 onClicked: {
@@ -219,6 +219,17 @@ Item {
                         audioSystem.tts.stop();
                     } else {
                         audioSystem.tts.say(ttsText.text);
+                    }
+                }
+
+                Connections {
+                    target: audioSystem
+
+                    function onTtsStarted() {
+                        ttsButton.text = "Stop TTS";
+                    }
+                    function onTtsStopped() {
+                        ttsButton.text = "Play TTS";
                     }
                 }
             }

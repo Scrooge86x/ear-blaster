@@ -51,10 +51,11 @@ TextToSpeech::~TextToSpeech()
 
 void TextToSpeech::onSay(const QString& text)
 {
-    onStop();
     if (text.isEmpty() || m_tts.state() != QTextToSpeech::Ready) {
+        emit stop();
         return;
     }
+    onStop();
 
     // TODO: Consider using some lockfree spsc queue instead
     // current solution has no performance problems so it's low priority
@@ -75,7 +76,7 @@ void TextToSpeech::processQueue()
 {
     if (m_bytesWritten == -1) {
         if (m_audioQueue.empty()) {
-            m_audioOutput.stop();
+            emit stop();
             return;
         }
 

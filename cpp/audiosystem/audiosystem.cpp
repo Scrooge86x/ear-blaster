@@ -17,6 +17,8 @@ AudioSystem::AudioSystem(QObject *const parent)
     m_outputAudioDevice->setEnabled(true);
 
     m_tts = std::make_unique<TextToSpeech>(*m_outputAudioDevice, *m_monitorAudioDevice);
+    connect(m_tts.get(), &TextToSpeech::say, this, &AudioSystem::ttsStarted);
+    connect(m_tts.get(), &TextToSpeech::stop, this, &AudioSystem::ttsStopped);
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged,
