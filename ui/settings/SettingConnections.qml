@@ -1,6 +1,16 @@
 import QtQuick
 
 Item {
+    Component.onCompleted: {
+        // Update the values with defaults (check AppSettings.qml)
+        if (AppSettings.ttsLocale === "") {
+            AppSettings.ttsLocale = " ";
+            AppSettings.ttsVoice = " ";
+        }
+        if (AppSettings.ttsVoice === "") {
+            AppSettings.ttsVoice = " ";
+        }
+    }
 
     function invalidateDisconnectedDevices(devicesToCheck, deviceList) {
         const isInvalidDevice = {};

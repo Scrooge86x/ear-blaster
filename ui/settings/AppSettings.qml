@@ -46,8 +46,8 @@ Settings {
     property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
     property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
     property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
-    property string ttsLocale: " " // Space is there so onTtsLocaleChanged always gets called
-    property string ttsVoice: " "
+    property string ttsLocale: ""
+    property string ttsVoice: ""
 
     onOutputVolumeChanged: {
         audioSystem.outputDevice.volume = outputVolume;
