@@ -306,7 +306,7 @@ Item {
                         if (voiceIndex !== -1) {
                             ttsVoice.currentIndex = voiceIndex
                         } else {
-                            AppSettings.ttsLocale = model[0].name;
+                            AppSettings.ttsVoice = model[0].name;
                             ttsVoice.currentIndex = 0;
                         }
                     }

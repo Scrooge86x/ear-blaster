@@ -52,6 +52,7 @@ TextToSpeech::TextToSpeech(
         // undocumented backend magic like always with less popular features in Qt
         m_tts.setEngine("mock");
         m_tts.setEngine("sapi");
+        emit engineInitialized();
         // HACK END
 
         // Preload the right format so there is no delay on the first playback
@@ -74,8 +75,14 @@ TextToSpeech::TextToSpeech(
         });
     });
 
-    m_thread.start();
     this->moveToThread(&m_thread);
+    m_thread.start();
+
+    // Wait for the engine to initialize to prevent a race condition with AppSettings
+    QEventLoop waitingLoop{};
+    connect(this, &TextToSpeech::engineInitialized,
+            &waitingLoop, &QEventLoop::quit);
+    waitingLoop.exec();
 }
 
 TextToSpeech::~TextToSpeech()

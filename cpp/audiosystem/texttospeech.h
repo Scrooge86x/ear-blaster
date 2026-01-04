@@ -44,6 +44,7 @@ public:
 signals:
     void say(const QString& text);
     void stop();
+    void engineInitialized();
 
 private:
     void onSay(const QString& text);

@@ -36,8 +36,8 @@ MicrophonePassthrough::MicrophonePassthrough(const AudioDevice& outputAudioDevic
         }
     });
 
-    m_thread.start();
     this->moveToThread(&m_thread);
+    m_thread.start();
 }
 
 MicrophonePassthrough::~MicrophonePassthrough()

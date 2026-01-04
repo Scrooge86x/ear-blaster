@@ -84,8 +84,8 @@ Settings {
         }
     }
     onTtsLocaleChanged: {
-        audioSystem.tts.locale = Qt.locale(ttsLocale)
-        ttsLocale = audioSystem.tts.locale.name
+        audioSystem.tts.locale = Qt.locale(ttsLocale);
+        ttsLocale = audioSystem.tts.locale.name;
     }
     onTtsVoiceChanged: {
         for (const voice of audioSystem.tts.availableVoices()) {

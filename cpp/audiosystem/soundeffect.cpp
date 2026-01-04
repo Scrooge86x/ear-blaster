@@ -38,8 +38,9 @@ SoundEffect::SoundEffect(
         m_audioOutput.initialize();
         m_monitorOutput.initialize();
     });
-    m_thread.start();
+
     this->moveToThread(&m_thread);
+    m_thread.start();
 }
 
 SoundEffect::~SoundEffect()
