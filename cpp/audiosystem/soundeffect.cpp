@@ -25,6 +25,12 @@ SoundEffect::SoundEffect(
     connect(&m_audioOutput, &AudioOutput::initialized,
             this, &SoundEffect::onAudioOutputInit);
 
+    connect(&m_monitorAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+        if (m_audioOutput.ioDevice()) {
+            m_monitorOutput.start();
+        }
+    });
+
     connect(&m_thread, &QThread::started, this, [this] {
         m_decoder = new QAudioDecoder{ this };
         m_decoder->setAudioFormat(AudioShared::getAudioFormat());
@@ -131,10 +137,10 @@ void SoundEffect::processBuffer()
     const qint64 numSamples{ bytesToWrite / bytesPerSample };
 
     QIODevice* const monitorIODevice{ m_monitorOutput.ioDevice() };
-    if (monitorIODevice && m_monitorAudioDevice.enabled()) {
+    if (monitorIODevice) {
         const QAudioSink* const monitorAudioSink{ m_monitorOutput.audioSink() };
 
-        // Synchronize devices if m_monitorAudioSink was just started
+        // Synchronize devices if monitorAudioSink was just started
         if (monitorAudioSink->bytesFree() == monitorAudioSink->bufferSize()) {
             QByteArray padding{ outputAudioSink->bufferSize() - outputAudioSink->bytesFree(), '\0' };
             monitorIODevice->write(padding);

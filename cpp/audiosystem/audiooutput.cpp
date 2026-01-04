@@ -17,9 +17,7 @@ AudioOutput::AudioOutput(
             this, &AudioOutput::onDeviceChanged);
 
     connect(&m_audioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
-        if (enabled) {
-            start();
-        } else {
+        if (!enabled) {
             stop();
         }
     });
@@ -52,6 +50,7 @@ void AudioOutput::stop()
 
     if (!m_audioSink.isNull()) {
         m_audioSink->reset();
+        m_audioSink->stop();
     }
 }
 
