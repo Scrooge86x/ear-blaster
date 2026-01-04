@@ -25,6 +25,8 @@ Settings {
             micPassthroughEnabled: false,
             audioMonitorEnabled: false,
             audioMonitorMatchOutput: true,
+            ttsPitch: 0.0,
+            ttsRate: 0.0,
         };
     }
 
@@ -48,6 +50,8 @@ Settings {
     property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
     property string ttsLocale: ""
     property string ttsVoice: ""
+    property real ttsPitch: getDefaults()["ttsPitch"]
+    property real ttsRate: getDefaults()["ttsRate"]
 
     onOutputVolumeChanged: {
         audioSystem.outputDevice.volume = outputVolume;
@@ -95,6 +99,8 @@ Settings {
         }
         ttsVoice = audioSystem.tts.voice().name;
     }
+    onTtsPitchChanged: audioSystem.tts.setPitch(ttsPitch)
+    onTtsRateChanged: audioSystem.tts.setRate(ttsRate)
 
     enum CloseBehavior {
         Quit,

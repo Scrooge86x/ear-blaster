@@ -237,10 +237,15 @@ Item {
             }
         }
 
-        RowLayout {
-            ColumnLayout {
+        ColumnLayout {
+            spacing: 0
+
+            Label {
+                text: qsTr("Text to speech:")
+            }
+            RowLayout {
                 Label {
-                    text: qsTr("Text to speech locale:")
+                    text: qsTr("Locale:")
                 }
                 ComboBox {
                     id: ttsLocale
@@ -275,11 +280,9 @@ Item {
                         }
                     }
                 }
-            }
 
-            ColumnLayout {
                 Label {
-                    text: qsTr("Text to speech voice:")
+                    text: qsTr("Voice:")
                 }
                 ComboBox {
                     id: ttsVoice
@@ -310,6 +313,48 @@ Item {
                             ttsVoice.currentIndex = 0;
                         }
                     }
+                }
+
+                Item { Layout.preferredWidth: 10 }
+
+                Label {
+                    text: qsTr("Pitch:")
+                    color: AppSettings.foregroundColor
+                }
+                Slider {
+                    id: ttsPitchSlider
+                    from: -1.0
+                    to: 1.0
+                    stepSize: 0.1
+                    Layout.preferredWidth: 100
+                    value: AppSettings.ttsPitch
+                    onValueChanged: AppSettings.ttsPitch = value
+                }
+                Label {
+                    Layout.preferredWidth: 25
+                    text: ttsPitchSlider.value.toFixed(1)
+                    color: AppSettings.foregroundColor
+                    font.pixelSize: 13
+                }
+
+                Label {
+                    text: qsTr("Rate:")
+                    color: AppSettings.foregroundColor
+                }
+                Slider {
+                    id: ttsRateSlider
+                    from: -1.0
+                    to: 1.0
+                    stepSize: 0.1
+                    Layout.preferredWidth: 100
+                    value: AppSettings.ttsRate
+                    onValueChanged: AppSettings.ttsRate = value
+                }
+                Label {
+                    Layout.preferredWidth: 25
+                    text: ttsRateSlider.value.toFixed(1)
+                    color: AppSettings.foregroundColor
+                    font.pixelSize: 13
                 }
             }
         }

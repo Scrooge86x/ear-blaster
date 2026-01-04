@@ -35,6 +35,8 @@ public:
     Q_INVOKABLE void setLocale(const QLocale& locale) { m_tts.setLocale(locale); }
     Q_INVOKABLE QVoice voice() const { return m_tts.voice(); }
     Q_INVOKABLE void setVoice(const QVoice& voice) { m_tts.setVoice(voice); }
+    Q_INVOKABLE void setPitch(const double pitch);
+    Q_INVOKABLE void setRate(const double rate);
 
     Q_INVOKABLE QList<QLocale> availableLocales() const { return m_tts.availableLocales(); }
     Q_INVOKABLE QList<QVoice> availableVoices() const { return m_tts.availableVoices(); }

@@ -7,6 +7,8 @@
 #include <QAudioSink>
 #include <QTimer>
 
+#include <cmath>
+
 Q_STATIC_LOGGING_CATEGORY(ttsLog, "ear-blaster-texttospeech")
 
 TextToSpeech::TextToSpeech(
@@ -96,6 +98,21 @@ TextToSpeech::~TextToSpeech()
         m_thread.quit();
         m_thread.wait();
     }
+}
+
+void TextToSpeech::setPitch(const double pitch)
+{
+    emit stop();
+
+    // For sapi at least any more precision than one decimal place
+    // causes the engine to not synthesize at all (not documented btw)
+    m_tts.setPitch(std::round(pitch * 10.0) / 10.0);
+}
+
+void TextToSpeech::setRate(const double rate)
+{
+    emit stop();
+    m_tts.setRate(rate);
 }
 
 void TextToSpeech::onSay(const QString& text)
