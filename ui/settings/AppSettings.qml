@@ -68,7 +68,10 @@ Settings {
     onLanguageChanged: translator.currentLanguage = language
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
     onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)
-    onAudioMonitorDeviceChanged: audioSystem.monitorDevice.device = audioSystem.getOutputDeviceById(audioMonitorDevice)
+    onAudioMonitorDeviceChanged: {
+        audioSystem.monitorDevice.device = audioSystem.getOutputDeviceById(audioMonitorDevice);
+        audioMonitorEnabled = false;
+    }
     onMicPassthroughEnabledChanged: audioSystem.micPassthrough.inputDevice.enabled = micPassthroughEnabled
     onAudioMonitorEnabledChanged: audioSystem.monitorDevice.enabled = audioMonitorEnabled
     onAudioMonitorMatchOutputChanged: {
