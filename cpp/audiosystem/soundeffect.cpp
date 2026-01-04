@@ -125,16 +125,15 @@ void SoundEffect::processBuffer()
     }
 
     const QAudioSink* const outputAudioSink{ m_audioOutput.audioSink() };
-    const qint64 bytesToWrite{ std::min(
-        outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
-    ) };
-
     if (!outputAudioSink->bytesFree()) {
         return QTimer::singleShot(50, this, &SoundEffect::processBuffer);
     }
 
     constexpr int bytesPerSample{ AudioShared::getAudioFormat().bytesPerSample() };
     const auto samplesWritten{ m_bytesWritten / bytesPerSample };
+    const qint64 bytesToWrite{ std::min(
+        outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
+    ) };
     const qint64 numSamples{ bytesToWrite / bytesPerSample };
 
     QIODevice* const monitorIODevice{ m_monitorOutput.ioDevice() };

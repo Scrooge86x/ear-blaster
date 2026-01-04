@@ -28,6 +28,11 @@ TextToSpeech::TextToSpeech(
     connect(&m_tts, &QTextToSpeech::voiceChanged,
             this, &TextToSpeech::stop);
 
+    // While the sound will stop itself on deviceChanged the stop signal
+    // must be emitted so the gui can synchronize
+    connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
+            this, &TextToSpeech::stop);
+
     connect(&m_monitorAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
         if (m_audioOutput.ioDevice()) {
             m_monitorOutput.start();
@@ -121,6 +126,7 @@ void TextToSpeech::onStop()
     m_isPlaying = false;
 }
 
+// TODO: Resolve code duplication with SoundEffect::processBuffer
 void TextToSpeech::processQueue()
 {
     if (m_bytesWritten == -1) {
@@ -156,10 +162,6 @@ void TextToSpeech::processQueue()
     }
 
     const QAudioSink* const outputAudioSink{ m_audioOutput.audioSink() };
-    const qint64 bytesToWrite{ std::min(
-        outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
-    ) };
-
     if (!outputAudioSink->bytesFree()) {
         return QTimer::singleShot(50, this, &TextToSpeech::processQueue);
     }
@@ -170,6 +172,9 @@ void TextToSpeech::processQueue()
     }
 
     const auto samplesWritten{ m_bytesWritten / bytesPerSample };
+    const qint64 bytesToWrite{ std::min(
+        outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
+    ) };
     const qint64 numSamples{ bytesToWrite / bytesPerSample };
 
     QIODevice* const monitorIODevice{ m_monitorOutput.ioDevice() };
