@@ -28,9 +28,16 @@ TextToSpeech::TextToSpeech(
     connect(&m_tts, &QTextToSpeech::voiceChanged,
             this, &TextToSpeech::stop);
 
+    connect(&m_monitorAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
+        if (m_audioOutput.ioDevice()) {
+            m_monitorOutput.start();
+        }
+    });
+
     connect(&m_tts, &QTextToSpeech::stateChanged, this, [this](const QTextToSpeech::State state) {
         if (state == QTextToSpeech::Ready && m_audioQueue.size()) {
             m_audioOutput.start();
+            m_monitorOutput.start();
             processQueue();
         }
     });
@@ -62,6 +69,7 @@ TextToSpeech::TextToSpeech(
 
             QMetaObject::invokeMethod(this, [this, format]() {
                 m_audioOutput.setFormat(format);
+                m_monitorOutput.setFormat(format);
             }, Qt::QueuedConnection);
         });
     });
@@ -99,9 +107,10 @@ void TextToSpeech::onSay(const QString& text)
 void TextToSpeech::onStop()
 {
     m_audioOutput.stop();
+    m_monitorOutput.stop();
     m_audioQueue.clear();
     m_currentBuffer = {};
-    m_bytesWritten = 0;
+    m_bytesWritten = -1;
     m_isPlaying = false;
 }
 
@@ -129,6 +138,8 @@ void TextToSpeech::processQueue()
             if (!m_audioOutput.start()) {
                 return;
             }
+            m_monitorOutput.setFormat(format);
+            m_monitorOutput.start();
         }
     }
 
@@ -144,6 +155,19 @@ void TextToSpeech::processQueue()
 
     if (!outputAudioSink->bytesFree()) {
         return QTimer::singleShot(50, this, &TextToSpeech::processQueue);
+    }
+
+    QIODevice* const monitorIODevice{ m_monitorOutput.ioDevice() };
+    if (monitorIODevice) {
+        const QAudioSink* const monitorAudioSink{ m_monitorOutput.audioSink() };
+
+        // Synchronize devices if monitorAudioSink was just started
+        if (monitorAudioSink->bytesFree() == monitorAudioSink->bufferSize()) {
+            QByteArray padding{ outputAudioSink->bufferSize() - outputAudioSink->bytesFree(), '\0' };
+            monitorIODevice->write(padding);
+        }
+
+        monitorIODevice->write(m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite);
     }
 
     m_bytesWritten += outputIODevice->write(m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite);
