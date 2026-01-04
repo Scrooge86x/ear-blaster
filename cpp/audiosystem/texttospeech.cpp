@@ -157,6 +157,14 @@ void TextToSpeech::processQueue()
         return QTimer::singleShot(50, this, &TextToSpeech::processQueue);
     }
 
+    const int bytesPerSample{ m_audioOutput.format().bytesPerSample() };
+    if (!bytesPerSample) {
+        return;
+    }
+
+    const auto samplesWritten{ m_bytesWritten / bytesPerSample };
+    const qint64 numSamples{ bytesToWrite / bytesPerSample };
+
     QIODevice* const monitorIODevice{ m_monitorOutput.ioDevice() };
     if (monitorIODevice) {
         const QAudioSink* const monitorAudioSink{ m_monitorOutput.audioSink() };
@@ -167,9 +175,26 @@ void TextToSpeech::processQueue()
             monitorIODevice->write(padding);
         }
 
-        monitorIODevice->write(m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite);
+        QByteArray samplesCopy{ m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite };
+        if (m_monitorAudioDevice.overdrive()) {
+            AudioShared::addOverdrive(
+                samplesCopy.data(),
+                m_audioOutput.format().sampleFormat(),
+                numSamples,
+                m_monitorAudioDevice.overdrive()
+            );
+        }
+        monitorIODevice->write(samplesCopy);
     }
 
+    if (m_outputAudioDevice.overdrive()) {
+        AudioShared::addOverdrive(
+            m_currentBuffer.data<char>() + samplesWritten,
+            m_audioOutput.format().sampleFormat(),
+            numSamples,
+            m_outputAudioDevice.overdrive()
+        );
+    }
     m_bytesWritten += outputIODevice->write(m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite);
 
     if (m_bytesWritten == m_currentBuffer.byteCount()) {
