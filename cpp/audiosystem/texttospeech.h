@@ -17,10 +17,6 @@ class AudioDevice;
 
 class TextToSpeech : public QObject {
     Q_OBJECT
-    // Signals are not connected to the properties because TextToSpeech is on its own thread
-    // qml objects shouldn't be able to access them
-    Q_PROPERTY(QLocale locale READ locale WRITE setLocale CONSTANT FINAL)
-    Q_PROPERTY(QVoice voice READ voice WRITE setVoice CONSTANT FINAL)
     Q_DISABLE_COPY_MOVE(TextToSpeech)
 
 public:
@@ -32,11 +28,13 @@ public:
 
     Q_INVOKABLE bool isPlaying() const { return m_isPlaying; }
 
-    QLocale locale() const { return m_tts.locale(); }
-    void setLocale(const QLocale& locale) { m_tts.setLocale(locale); }
-
-    QVoice voice() const { return m_tts.voice(); }
-    void setVoice(const QVoice& voice) { m_tts.setVoice(voice); }
+    // Signals can't be used for these properties because TextToSpeech is on its own thread
+    // The limitation comes from qml code not being able to connect to
+    // signals that arent on the qml engine thread
+    Q_INVOKABLE QLocale locale() const { return m_tts.locale(); }
+    Q_INVOKABLE void setLocale(const QLocale& locale) { m_tts.setLocale(locale); }
+    Q_INVOKABLE QVoice voice() const { return m_tts.voice(); }
+    Q_INVOKABLE void setVoice(const QVoice& voice) { m_tts.setVoice(voice); }
 
     Q_INVOKABLE QList<QLocale> availableLocales() const { return m_tts.availableLocales(); }
     Q_INVOKABLE QList<QVoice> availableVoices() const { return m_tts.availableVoices(); }

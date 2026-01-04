@@ -84,16 +84,16 @@ Settings {
         }
     }
     onTtsLocaleChanged: {
-        audioSystem.tts.locale = Qt.locale(ttsLocale);
-        ttsLocale = audioSystem.tts.locale.name;
+        audioSystem.tts.setLocale(Qt.locale(ttsLocale));
+        ttsLocale = audioSystem.tts.locale().name;
     }
     onTtsVoiceChanged: {
         for (const voice of audioSystem.tts.availableVoices()) {
             if (voice.name === ttsVoice) {
-                audioSystem.tts.voice = voice;
+                audioSystem.tts.setVoice(voice);
             }
         }
-        ttsVoice = audioSystem.tts.voice.name;
+        ttsVoice = audioSystem.tts.voice().name;
     }
 
     enum CloseBehavior {
