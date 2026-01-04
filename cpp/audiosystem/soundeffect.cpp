@@ -148,15 +148,23 @@ void SoundEffect::processBuffer()
 
         QByteArray samplesCopy{ m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite };
         if (m_monitorAudioDevice.overdrive()) {
-            auto currentSamples{ reinterpret_cast<AudioShared::SampleType*>(samplesCopy.data()) };
-            AudioShared::addOverdrive(currentSamples, numSamples, m_monitorAudioDevice.overdrive());
+            AudioShared::addOverdrive(
+                samplesCopy.data(),
+                AudioShared::getAudioFormat().sampleFormat(),
+                numSamples,
+                m_monitorAudioDevice.overdrive()
+            );
         }
         monitorIODevice->write(samplesCopy);
     }
 
     if (m_outputAudioDevice.overdrive()) {
-        const auto currentSamples{ m_currentBuffer.data<AudioShared::SampleType>() + samplesWritten };
-        AudioShared::addOverdrive(currentSamples, numSamples, m_outputAudioDevice.overdrive());
+        AudioShared::addOverdrive(
+            m_currentBuffer.data<char>() + samplesWritten,
+            AudioShared::getAudioFormat().sampleFormat(),
+            numSamples,
+            m_outputAudioDevice.overdrive()
+        );
     }
     m_bytesWritten += outputIODevice->write(m_currentBuffer.data<char>() + m_bytesWritten, bytesToWrite);
 

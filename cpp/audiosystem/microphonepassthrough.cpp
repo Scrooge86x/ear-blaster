@@ -85,7 +85,8 @@ void MicrophonePassthrough::processBuffer()
 
     QByteArray buffer{ m_inputIODevice->readAll() };
     AudioShared::addOverdrive(
-        reinterpret_cast<AudioShared::SampleType*>(buffer.data()),
+        buffer.data(),
+        AudioShared::getAudioFormat().sampleFormat(),
         buffer.length(),
         m_inputAudioDevice->overdrive()
     );
