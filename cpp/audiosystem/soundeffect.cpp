@@ -130,7 +130,6 @@ void SoundEffect::processBuffer()
     }
 
     constexpr int bytesPerSample{ AudioShared::getAudioFormat().bytesPerSample() };
-    const auto samplesWritten{ m_bytesWritten / bytesPerSample };
     const qint64 bytesToWrite{ std::min(
         outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
     ) };
@@ -160,7 +159,7 @@ void SoundEffect::processBuffer()
 
     if (m_outputAudioDevice.overdrive()) {
         AudioShared::addOverdrive(
-            m_currentBuffer.data<char>() + samplesWritten,
+            m_currentBuffer.data<char>() + m_bytesWritten,
             AudioShared::getAudioFormat().sampleFormat(),
             numSamples,
             m_outputAudioDevice.overdrive()

@@ -188,7 +188,6 @@ void TextToSpeech::processQueue()
         return;
     }
 
-    const auto samplesWritten{ m_bytesWritten / bytesPerSample };
     const qint64 bytesToWrite{ std::min(
         outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
     ) };
@@ -218,7 +217,7 @@ void TextToSpeech::processQueue()
 
     if (m_outputAudioDevice.overdrive()) {
         AudioShared::addOverdrive(
-            m_currentBuffer.data<char>() + samplesWritten,
+            m_currentBuffer.data<char>() + m_bytesWritten,
             m_audioOutput.format().sampleFormat(),
             numSamples,
             m_outputAudioDevice.overdrive()
