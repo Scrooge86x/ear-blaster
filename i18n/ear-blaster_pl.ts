@@ -57,6 +57,18 @@
             <numerusform>Upuść %n plików.</numerusform>
         </translation>
     </message>
+    <message>
+        <source>Text to speech...</source>
+        <translation>Tekst na mowę...</translation>
+    </message>
+    <message>
+        <source>Play TTS</source>
+        <translation>Odtwórz TTS</translation>
+    </message>
+    <message>
+        <source>Stop TTS</source>
+        <translation>Zatrzymaj TTS</translation>
+    </message>
 </context>
 <context>
     <name>SequenceInput</name>
@@ -158,6 +170,26 @@
     <message>
         <source>Off</source>
         <translation>Wyłączone</translation>
+    </message>
+    <message>
+        <source>Text to speech:</source>
+        <translation>Synteza mowy:</translation>
+    </message>
+    <message>
+        <source>Locale:</source>
+        <translation>Region:</translation>
+    </message>
+    <message>
+        <source>Voice:</source>
+        <translation>Głos:</translation>
+    </message>
+    <message>
+        <source>Pitch:</source>
+        <translation>Ton:</translation>
+    </message>
+    <message>
+        <source>Rate:</source>
+        <translation>Tempo:</translation>
     </message>
 </context>
 <context>

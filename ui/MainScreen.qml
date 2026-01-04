@@ -195,7 +195,7 @@ Item {
                 Layout.fillHeight: true
                 color: AppSettings.foregroundColor
                 placeholderTextColor: Qt.tint(AppSettings.foregroundColor, Qt.rgba(0, 0, 0, 0.3))
-                placeholderText: "Text to speech..."
+                placeholderText: qsTr("Text to speech...")
 
                 onAccepted: {
                     audioSystem.tts.say(text);
@@ -211,7 +211,10 @@ Item {
 
             RoundButton {
                 id: ttsButton
-                text: "Play TTS"
+
+                property string untranslatedText
+
+                text: qsTr(untranslatedText)
                 Layout.fillHeight: true
                 radius: 7
                 onClicked: {
@@ -226,10 +229,10 @@ Item {
                     target: audioSystem
 
                     function onTtsStarted() {
-                        ttsButton.text = "Stop TTS";
+                        ttsButton.untranslatedText = QT_TR_NOOP("Stop TTS");
                     }
                     function onTtsStopped() {
-                        ttsButton.text = "Play TTS";
+                        ttsButton.untranslatedText = QT_TR_NOOP("Play TTS");
                     }
                 }
             }
