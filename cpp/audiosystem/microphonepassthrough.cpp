@@ -9,6 +9,8 @@
 #include <QtTypes>
 #include <QMediaDevices>
 
+#include <QDebug>
+
 MicrophonePassthrough::MicrophonePassthrough(const AudioDevice& outputAudioDevice)
     : QObject{ nullptr }
     , m_audioOutput{ outputAudioDevice, { .initializeVolume{ false } }, this }
@@ -19,13 +21,20 @@ MicrophonePassthrough::MicrophonePassthrough(const AudioDevice& outputAudioDevic
     connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSource);
 
+    connect(&m_audioOutput, &AudioOutput::initialized, this, [this]() {
+        if (m_inputIODevice) {
+            m_inputIODevice->reset();
+            m_audioOutput.start();
+            processBuffer();
+        }
+    });
+
     connect(m_inputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
         if (enabled) {
             m_audioOutput.start();
             initAudioSource();
         } else {
             invalidateAudioSource();
-            m_audioOutput.stop();
         }
     });
 
