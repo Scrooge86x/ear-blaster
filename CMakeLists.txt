@@ -13,6 +13,7 @@ set(QT_MIN_VERSION 6.9)
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
     Qml
     Quick
+    TextToSpeech
     Multimedia
     LinguistTools
 )
@@ -28,6 +29,10 @@ qt_add_translations(${PROJECT_NAME}
         -noobsolete
         -locations none
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    add_compile_options(-Wno-braced-scalar-init) # Disable broken warning (https://github.com/llvm/llvm-project/issues/57286)
+endif()
 
 qt_add_executable(${PROJECT_NAME}
     resources/icon.rc
@@ -68,4 +73,3 @@ qt_generate_deploy_qml_app_script(
     NO_TRANSLATIONS
 )
 install(SCRIPT ${deploy_script})
-

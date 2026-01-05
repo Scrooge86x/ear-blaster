@@ -3,6 +3,7 @@ import QtQuick.Layouts
 import QtQuick.Controls.Universal
 import QtQuick.Dialogs
 import QtMultimedia
+import QtTextToSpeech
 import ui.settings
 import ui.components
 
@@ -166,9 +167,75 @@ Item {
         anchors {
             top: topBar.bottom
             right: root.right
-            bottom: root.bottom
+            bottom: ttsContainer.top
             left: root.left
             topMargin: 7
+            bottomMargin: 7
+        }
+    }
+
+    Rectangle {
+        id: ttsContainer
+
+        color: AppSettings.backgroundColor
+        height: 50
+        anchors {
+            left: root.left
+            right: root.right
+            bottom: root.bottom
+        }
+
+        RowLayout {
+            anchors.fill: parent
+
+            TextField {
+                id: ttsText
+
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                color: AppSettings.foregroundColor
+                placeholderTextColor: Qt.tint(AppSettings.foregroundColor, Qt.rgba(0, 0, 0, 0.3))
+                placeholderText: qsTr("Text to speech...")
+
+                onAccepted: {
+                    audioSystem.tts.say(text);
+                    text = "";
+                }
+
+                background: Rectangle {
+                    border.color: AppSettings.foregroundColor
+                    color: AppSettings.backgroundColor
+                    radius: 7
+                }
+            }
+
+            RoundButton {
+                id: ttsButton
+
+                property string untranslatedText
+
+                text: qsTr(untranslatedText)
+                Layout.fillHeight: true
+                radius: 7
+                onClicked: {
+                    if (audioSystem.tts.isPlaying()) {
+                        audioSystem.tts.stop();
+                    } else {
+                        audioSystem.tts.say(ttsText.text);
+                    }
+                }
+
+                Connections {
+                    target: audioSystem
+
+                    function onTtsStarted() {
+                        ttsButton.untranslatedText = QT_TR_NOOP("Stop TTS");
+                    }
+                    function onTtsStopped() {
+                        ttsButton.untranslatedText = QT_TR_NOOP("Play TTS");
+                    }
+                }
+            }
         }
     }
 
@@ -180,9 +247,9 @@ Item {
         scale: addSoundButton.down ? 0.96 : 1
 
         anchors {
-            right: root.right
-            rightMargin: 30
-            bottom: root.bottom
+            right: soundList.right
+            rightMargin: 25
+            bottom: soundList.bottom
             bottomMargin: 10
         }
         contentItem: Text {

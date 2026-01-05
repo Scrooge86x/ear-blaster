@@ -25,6 +25,8 @@ Settings {
             micPassthroughEnabled: false,
             audioMonitorEnabled: false,
             audioMonitorMatchOutput: true,
+            ttsPitch: 0.0,
+            ttsRate: 0.0,
         };
     }
 
@@ -46,38 +48,59 @@ Settings {
     property bool micPassthroughEnabled: getDefaults()["micPassthroughEnabled"]
     property bool audioMonitorEnabled: getDefaults()["audioMonitorEnabled"]
     property bool audioMonitorMatchOutput: getDefaults()["audioMonitorMatchOutput"]
+    property string ttsLocale: ""
+    property string ttsVoice: ""
+    property real ttsPitch: getDefaults()["ttsPitch"]
+    property real ttsRate: getDefaults()["ttsRate"]
 
     onOutputVolumeChanged: {
-        audioSystem.outputDevice.volume = outputVolume
+        audioSystem.outputDevice.volume = outputVolume;
         if (audioMonitorMatchOutput) {
-            audioSystem.monitorDevice.volume = outputVolume
+            audioSystem.monitorDevice.volume = outputVolume;
         }
     }
-    onInputVolumeChanged: audioSystem.micPassthrough.outputDevice.volume = inputVolume
+    onInputVolumeChanged: audioSystem.micPassthrough.inputDevice.volume = inputVolume
     onMonitorVolumeChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.volume = monitorVolume
     onOutputOverdriveChanged: {
-        audioSystem.outputDevice.overdrive = outputOverdrive
+        audioSystem.outputDevice.overdrive = outputOverdrive;
         if (audioMonitorMatchOutput) {
-            audioSystem.monitorDevice.overdrive = outputOverdrive
+            audioSystem.monitorDevice.overdrive = outputOverdrive;
         }
     }
-    onInputOverdriveChanged: audioSystem.micPassthrough.outputDevice.overdrive = inputOverdrive
+    onInputOverdriveChanged: audioSystem.micPassthrough.inputDevice.overdrive = inputOverdrive
     onMonitorOverdriveChanged: if (!audioMonitorMatchOutput) audioSystem.monitorDevice.overdrive = monitorOverdrive
     onLanguageChanged: translator.currentLanguage = language
     onAudioOutputDeviceChanged: audioSystem.outputDevice.device = audioSystem.getOutputDeviceById(audioOutputDevice)
     onAudioInputDeviceChanged: audioSystem.micPassthrough.inputDevice.device = audioSystem.getInputDeviceById(audioInputDevice)
-    onAudioMonitorDeviceChanged: audioSystem.monitorDevice.device = audioSystem.getOutputDeviceById(audioMonitorDevice)
+    onAudioMonitorDeviceChanged: {
+        audioSystem.monitorDevice.device = audioSystem.getOutputDeviceById(audioMonitorDevice);
+        audioMonitorEnabled = false;
+    }
     onMicPassthroughEnabledChanged: audioSystem.micPassthrough.inputDevice.enabled = micPassthroughEnabled
     onAudioMonitorEnabledChanged: audioSystem.monitorDevice.enabled = audioMonitorEnabled
     onAudioMonitorMatchOutputChanged: {
         if (audioMonitorMatchOutput) {
-            audioSystem.monitorDevice.volume = outputVolume
-            audioSystem.monitorDevice.overdrive = outputOverdrive
+            audioSystem.monitorDevice.volume = outputVolume;
+            audioSystem.monitorDevice.overdrive = outputOverdrive;
         } else {
-            audioSystem.monitorDevice.volume = monitorVolume
-            audioSystem.monitorDevice.overdrive = monitorOverdrive
+            audioSystem.monitorDevice.volume = monitorVolume;
+            audioSystem.monitorDevice.overdrive = monitorOverdrive;
         }
     }
+    onTtsLocaleChanged: {
+        audioSystem.tts.setLocale(Qt.locale(ttsLocale));
+        ttsLocale = audioSystem.tts.locale().name;
+    }
+    onTtsVoiceChanged: {
+        for (const voice of audioSystem.tts.availableVoices()) {
+            if (voice.name === ttsVoice) {
+                audioSystem.tts.setVoice(voice);
+            }
+        }
+        ttsVoice = audioSystem.tts.voice().name;
+    }
+    onTtsPitchChanged: audioSystem.tts.setPitch(ttsPitch)
+    onTtsRateChanged: audioSystem.tts.setRate(ttsRate)
 
     enum CloseBehavior {
         Quit,

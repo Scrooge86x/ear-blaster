@@ -3,6 +3,7 @@
 #include "soundeffect.h"
 #include "audiodevice.h"
 #include "microphonepassthrough.h"
+#include "texttospeech.h"
 
 #include <QMediaDevices>
 
@@ -11,12 +12,13 @@ AudioSystem::AudioSystem(QObject *const parent)
 {
     m_outputAudioDevice  = new AudioDevice{ this };
     m_monitorAudioDevice = new AudioDevice{ this };
-    m_micPassthrough     = new MicrophonePassthrough{};
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this] {
-        m_micPassthrough->outputDevice()->setDevice(m_outputAudioDevice->device());
-    });
 
+    m_micPassthrough = std::make_unique<MicrophonePassthrough>(*m_outputAudioDevice);
     m_outputAudioDevice->setEnabled(true);
+
+    m_tts = std::make_unique<TextToSpeech>(*m_outputAudioDevice, *m_monitorAudioDevice);
+    connect(m_tts.get(), &TextToSpeech::say, this, &AudioSystem::ttsStarted);
+    connect(m_tts.get(), &TextToSpeech::stop, this, &AudioSystem::ttsStopped);
 
     const auto mediaDevices{ new QMediaDevices{ this } };
     connect(mediaDevices, &QMediaDevices::audioOutputsChanged,
@@ -31,7 +33,6 @@ AudioSystem::~AudioSystem()
         soundEffect->deleteLater();
     }
     m_soundEffectMap.clear();
-    delete m_micPassthrough;
 }
 
 void AudioSystem::play(const int id, const QUrl& path)
@@ -58,8 +59,9 @@ void AudioSystem::stop(const int id) const
 
 void AudioSystem::stopAll() const
 {
-    m_outputAudioDevice->setEnabled(false);
-    m_outputAudioDevice->setEnabled(true);
+    for (const auto& soundEffect : std::as_const(m_soundEffectMap)) {
+        emit soundEffect->stopRequested();
+    }
 }
 
 QList<QAudioDevice> AudioSystem::audioInputs()

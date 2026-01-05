@@ -9,50 +9,44 @@
 #include <QtTypes>
 #include <QMediaDevices>
 
-MicrophonePassthrough::MicrophonePassthrough()
+#include <QDebug>
+
+MicrophonePassthrough::MicrophonePassthrough(const AudioDevice& outputAudioDevice)
     : QObject{ nullptr }
+    , m_audioOutput{ outputAudioDevice, { .initializeVolume{ false } }, this }
+    , m_outputAudioDevice{ outputAudioDevice }
 {
     m_inputAudioDevice = new AudioDevice{ this };
     m_inputAudioDevice->setEnabled(false);
     connect(m_inputAudioDevice, &AudioDevice::deviceChanged,
             this, &MicrophonePassthrough::initAudioSource);
 
-    m_outputAudioDevice = new AudioDevice{ this };
-    connect(m_outputAudioDevice, &AudioDevice::deviceChanged, this, [this]() {
-        if (m_outputAudioDevice->device().isNull()) {
-            invalidateAudioSource();
-            invalidateAudioSink();
-        } else {
-            initAudioSink();
-            initAudioSource();
+    connect(&m_audioOutput, &AudioOutput::initialized, this, [this]() {
+        if (m_inputIODevice) {
+            m_inputIODevice->reset();
+            m_audioOutput.start();
+            processBuffer();
         }
     });
 
     connect(m_inputAudioDevice, &AudioDevice::enabledChanged, this, [this](const bool enabled) {
-        m_outputAudioDevice->setEnabled(enabled);
         if (enabled) {
-            initAudioSink();
+            m_audioOutput.start();
             initAudioSource();
         } else {
             invalidateAudioSource();
-            invalidateAudioSink();
         }
     });
 
     const auto mediaDevices{ new QMediaDevices{ this } };
-    connect(mediaDevices, &QMediaDevices::audioOutputsChanged, this, [this] {
-        if (!QMediaDevices::audioOutputs().contains(m_outputAudioDevice->device())) {
-            invalidateAudioSink();
-        }
-    });
     connect(mediaDevices, &QMediaDevices::audioInputsChanged, this, [this] {
         if (!QMediaDevices::audioInputs().contains(m_inputAudioDevice->device())) {
             invalidateAudioSource();
         }
     });
 
-    m_thread.start();
     this->moveToThread(&m_thread);
+    m_thread.start();
 }
 
 MicrophonePassthrough::~MicrophonePassthrough()
@@ -78,32 +72,6 @@ void MicrophonePassthrough::invalidateAudioSource()
     m_audioSource = nullptr;
 }
 
-void MicrophonePassthrough::invalidateAudioSink()
-{
-    if (!m_audioSink || !m_outputIODevice) {
-        return;
-    }
-
-    m_outputIODevice = nullptr;
-    m_audioSink->reset(); // Prevents IAudioClient3::GetCurrentPadding failed "AUDCLNT_E_DEVICE_INVALIDATED"
-    delete m_audioSink;
-    m_audioSink = nullptr;
-}
-
-void MicrophonePassthrough::initAudioSink()
-{
-    invalidateAudioSink();
-    if (m_outputAudioDevice->device().isNull() || !m_outputAudioDevice->enabled()) {
-        return;
-    }
-
-    m_audioSink = new QAudioSink{ m_outputAudioDevice->device(), AudioShared::getAudioFormat(), this };
-    m_audioSink->setVolume(m_outputAudioDevice->volume());
-    connect(m_outputAudioDevice, &AudioDevice::volumeChanged,
-            m_audioSink, &QAudioSink::setVolume);
-    m_outputIODevice = m_audioSink->start();
-}
-
 void MicrophonePassthrough::initAudioSource()
 {
     invalidateAudioSource();
@@ -119,15 +87,17 @@ void MicrophonePassthrough::initAudioSource()
 
 void MicrophonePassthrough::processBuffer()
 {
-    if (!m_outputIODevice || !m_inputIODevice) {
+    QIODevice* const outputIODevice{ m_audioOutput.ioDevice() };
+    if (!outputIODevice || !m_inputIODevice) {
         return;
     }
 
     QByteArray buffer{ m_inputIODevice->readAll() };
     AudioShared::addOverdrive(
-        reinterpret_cast<AudioShared::SampleType*>(buffer.data()),
+        buffer.data(),
+        AudioShared::getAudioFormat().sampleFormat(),
         buffer.length(),
-        m_outputAudioDevice->overdrive()
+        m_inputAudioDevice->overdrive()
     );
-    m_outputIODevice->write(buffer);
+    outputIODevice->write(buffer);
 }

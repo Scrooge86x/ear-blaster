@@ -16,8 +16,8 @@ Ear Blaster: a lightweight, Qt-based soundboard with customizable keybinds.
 - Handles edge cases such as device unplugging gracefully
 
 ## User Interface:
-<img width="975" height="730" alt="image" src="https://github.com/user-attachments/assets/c6054c36-d110-410d-a8dd-49deba7069d0" />
-<img width="975" height="730" alt="image" src="https://github.com/user-attachments/assets/189a1a1f-c731-4c76-ba76-69917a25665c" />
+<img width="975" height="730" alt="image" src="https://github.com/user-attachments/assets/176b4c86-0b32-4ba3-8818-4c3ddaf1cc32" />
+<img width="975" height="730" alt="image" src="https://github.com/user-attachments/assets/99c8276a-096d-452c-8942-f5567fbfbf41" />
 
 ## WARNING:
 This project is a **work in progress** - expect missing features, bugs, and many changes.
