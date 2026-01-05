@@ -25,11 +25,6 @@ TextToSpeech::TextToSpeech(
     connect(this, &TextToSpeech::stop,
             this, &TextToSpeech::onStop);
 
-    connect(&m_tts, &QTextToSpeech::localeChanged,
-            this, &TextToSpeech::stop);
-    connect(&m_tts, &QTextToSpeech::voiceChanged,
-            this, &TextToSpeech::stop);
-
     // While the sound will stop itself on deviceChanged the stop signal
     // must be emitted so the gui can synchronize
     connect(&m_outputAudioDevice, &AudioDevice::deviceChanged,
@@ -98,6 +93,18 @@ TextToSpeech::~TextToSpeech()
         m_thread.quit();
         m_thread.wait();
     }
+}
+
+void TextToSpeech::setLocale(const QLocale& locale)
+{
+    emit stop();
+    m_tts.setLocale(locale);
+}
+
+void TextToSpeech::setVoice(const QVoice& voice)
+{
+    emit stop();
+    m_tts.setVoice(voice);
 }
 
 void TextToSpeech::setPitch(const double pitch)

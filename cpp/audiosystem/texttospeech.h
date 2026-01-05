@@ -32,9 +32,9 @@ public:
     // The limitation comes from qml code not being able to connect to
     // signals that arent on the qml engine thread
     Q_INVOKABLE QLocale locale() const { return m_tts.locale(); }
-    Q_INVOKABLE void setLocale(const QLocale& locale) { m_tts.setLocale(locale); }
+    Q_INVOKABLE void setLocale(const QLocale& locale);
     Q_INVOKABLE QVoice voice() const { return m_tts.voice(); }
-    Q_INVOKABLE void setVoice(const QVoice& voice) { m_tts.setVoice(voice); }
+    Q_INVOKABLE void setVoice(const QVoice& voice);
     Q_INVOKABLE void setPitch(const double pitch);
     Q_INVOKABLE void setRate(const double rate);
 
