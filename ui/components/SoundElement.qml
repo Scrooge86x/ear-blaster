@@ -37,7 +37,7 @@ Rectangle {
         id: soundNameInput
         font.pixelSize: 20
         color: AppSettings.foregroundColor
-        text: root.name
+        text: activeFocus ? root.name : soundNameInputMetrics.elidedText
         leftPadding: 6
 
         anchors {
@@ -57,9 +57,17 @@ Rectangle {
             }
         }
 
-        onTextChanged: root.name = text
+        onTextEdited: root.name = text
         onEditingFinished: focus = false
         onFocusChanged: root.focusChanged(focus)
+
+        TextMetrics {
+            id: soundNameInputMetrics
+            font: soundNameInput.font
+            elide: Text.ElideRight
+            elideWidth: soundNameInput.width - soundNameInput.leftPadding - soundNameInput.rightPadding
+            text: root.name
+        }
 
         ToolTip {
             x: 0
