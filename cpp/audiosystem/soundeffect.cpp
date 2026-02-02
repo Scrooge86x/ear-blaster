@@ -129,10 +129,14 @@ void SoundEffect::processBuffer()
         return QTimer::singleShot(50, this, &SoundEffect::processBuffer);
     }
 
-    constexpr int bytesPerSample{ AudioShared::getAudioFormat().bytesPerSample() };
+    // Writing exactly bytesFree() bytes can occasionally cause skipped samples
+    // when using ffmpeg backend on Qt 6.9 and playing songs that need to be resampled
+    // a headroom of 1 byte seems to fix it
     const qint64 bytesToWrite{ std::min(
-        outputAudioSink->bytesFree(), m_currentBuffer.byteCount() - m_bytesWritten
+        outputAudioSink->bytesFree() - 1, m_currentBuffer.byteCount() - m_bytesWritten
     ) };
+
+    constexpr int bytesPerSample{ AudioShared::getAudioFormat().bytesPerSample() };
     const qint64 numSamples{ bytesToWrite / bytesPerSample };
 
     QIODevice* const monitorIODevice{ m_monitorOutput.ioDevice() };
